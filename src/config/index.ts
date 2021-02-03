@@ -1,8 +1,11 @@
-import authConfig from './auth';
+import authConfig from './auth'
 
-const config = {};
+const config = {
+  production: process.env.NODE_ENV === 'production',
+  testing: process.env.NODE_ENV === 'test',
+}
 
 export default {
   ...config,
   ...authConfig,
-};
+}
