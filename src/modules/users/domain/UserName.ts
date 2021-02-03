@@ -15,6 +15,7 @@ export class InvalidUserNameError extends DomainError {
 
 export default class UserName extends ValueObject<UserNameProps> {
   static MAX_NAME_LENGTH = 25
+  static MIN_NAME_LENGTH = 5
 
   get value() {
     return this.props.name
@@ -29,8 +30,9 @@ export default class UserName extends ValueObject<UserNameProps> {
 
     const usernameResult = Guard.againstNullOrUndefined(guardArgument)
     const maxLengthResult = Guard.againstLongerThan(this.MAX_NAME_LENGTH, guardArgument)
+    const minLengthResult = Guard.againstShorterThan(this.MIN_NAME_LENGTH, guardArgument)
 
-    const combinedResult = Guard.combine([usernameResult, maxLengthResult])
+    const combinedResult = Guard.combine([usernameResult, maxLengthResult, minLengthResult])
     if (!combinedResult.isSuccess) {
       const message = combinedResult.message as string
 
