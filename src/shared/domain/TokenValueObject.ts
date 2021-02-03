@@ -35,8 +35,8 @@ export abstract class TokenValueObject extends ValueObject<TokenValueObjectProps
     super(props)
   }
 
-  static createValueObject(
-    props: TokenValueObjectProps,
+  protected static createValueObject(
+    props?: TokenValueObjectProps,
     options?: TokenValueObjectOptions
   ): ErrorOr<TokenValueObjectProps> {
     const TOKEN_LENGTH = options?.TOKEN_LENGTH || this.DEFAULT_TOKEN_LENGTH

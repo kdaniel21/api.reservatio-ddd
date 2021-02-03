@@ -3,15 +3,17 @@ import { Result } from '@shared/core/Result'
 import { TokenValueObject, TokenValueObjectProps } from '@shared/domain/TokenValueObject'
 
 export default class UserPasswordResetToken extends TokenValueObject {
-  static TOKEN_LENGTH = 30
-  static EXPIRATION_HOURS = 12
+  static tokenOptions = {
+    TOKEN_LENGTH: 30,
+    EXPIRATION_HOURS: 12,
+  }
 
   private constructor(public props: TokenValueObjectProps) {
     super(props)
   }
 
-  static create(props: TokenValueObjectProps): ErrorOr<UserPasswordResetToken> {
-    const validPropsOrError = TokenValueObject.createValueObject(props)
+  static create(props?: TokenValueObjectProps): ErrorOr<UserPasswordResetToken> {
+    const validPropsOrError = TokenValueObject.createValueObject(props, this.tokenOptions)
 
     if (validPropsOrError.isFailure()) return Result.fail(validPropsOrError.value)
 
