@@ -12,7 +12,7 @@ export default class UserPasswordResetToken extends TokenValueObject {
     EXPIRATION_HOURS: 12,
   }
 
-  private constructor(public props: TokenValueObjectProps) {
+  private constructor(props: TokenValueObjectProps) {
     super(props)
   }
 

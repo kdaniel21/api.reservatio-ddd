@@ -3,9 +3,7 @@ interface ValueObjectProps {
 }
 
 export default abstract class ValueObject<T extends ValueObjectProps> {
-  constructor(public props: T) {
-    this.props = { ...props }
-  }
+  constructor(protected props: T) {}
 
   equals(valueObject: ValueObject<T>): boolean {
     const propsStringified = JSON.stringify(this.props)

@@ -16,7 +16,7 @@ export default class UserName extends ValueObject<UserNameProps> {
     return this.props.name
   }
 
-  private constructor(public props: UserNameProps) {
+  private constructor(props: UserNameProps) {
     super(props)
   }
 
