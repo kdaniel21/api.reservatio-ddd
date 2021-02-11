@@ -1,16 +1,11 @@
-import { DomainError, ErrorOr } from '@shared/core/DomainError'
+import { ErrorOr } from '@shared/core/DomainError'
 import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import ValueObject from '@shared/domain/ValueObject'
+import InvalidUserNameError from './errors/InvalidUserNameError'
 
 interface UserNameProps {
   name: string
-}
-
-export class InvalidUserNameError extends DomainError {
-  constructor(error: string) {
-    super({ message: error })
-  }
 }
 
 export default class UserName extends ValueObject<UserNameProps> {

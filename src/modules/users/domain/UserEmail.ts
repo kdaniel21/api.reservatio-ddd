@@ -1,15 +1,10 @@
-import { DomainError, ErrorOr } from '@shared/core/DomainError'
+import { ErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import ValueObject from '@shared/domain/ValueObject'
+import InvalidUserEmailError from './errors/InvalidUserEmailError'
 
 interface UserEmailProps {
   email: string
-}
-
-export class InvalidEmailError extends DomainError {
-  constructor() {
-    super({ message: 'Invalid email address!' })
-  }
 }
 
 export default class UserEmail extends ValueObject<UserEmailProps> {
@@ -25,7 +20,7 @@ export default class UserEmail extends ValueObject<UserEmailProps> {
 
   static create(email: string): ErrorOr<UserEmail> {
     const isValid = this.isValidEmail(email)
-    if (!isValid) return Result.fail(new InvalidEmailError())
+    if (!isValid) return Result.fail(new InvalidUserEmailError())
 
     const userEmail = new UserEmail({ email: this.format(email) })
 
