@@ -43,23 +43,37 @@ export abstract class TokenValueObject extends ValueObject<TokenValueObjectProps
     const EXPIRATION_HOURS = options?.EXPIRATION_HOURS || this.DEFAULT_EXPIRATION_HOURS
 
     if (!props) {
-      const token = TextUtils.generateRandomCharacters(TOKEN_LENGTH).toUpperCase()
-      const expiresAt = new Date(Date.now() + EXPIRATION_HOURS * 60 * 60 * 1000)
-
-      return Result.ok({ token, expiresAt })
+      const newToken = this.generateNewTokenObject(TOKEN_LENGTH, EXPIRATION_HOURS)
+      return Result.ok(newToken)
     }
 
-    const guardResult = Guard.againstNullOrUndefinedBulk([
+    const guardResultUndefined = Guard.againstNullOrUndefinedBulk([
       { argument: props.token, argumentName: 'token' },
       { argument: props.expiresAt, argumentName: 'expiration' },
     ])
-    if (!guardResult.isSuccess)
-      return Result.fail(new AppError.MissingArgumentError(guardResult.message as string))
+    if (!guardResultUndefined.isSuccess)
+      return Result.fail(
+        new AppError.UndefinedArgumentError(guardResultUndefined.message as string)
+      )
+
+    const guardResultLength = Guard.againstShorterThan(TOKEN_LENGTH, {
+      argument: props.token,
+      argumentName: 'token',
+    })
+    if (!guardResultLength.isSuccess)
+      return Result.fail(new AppError.InputShortError(guardResultLength.message as string))
 
     return Result.ok(props)
   }
 
   isCodeValid(code: string): boolean {
     return !this.isExpired && code.toUpperCase() === this.token.toUpperCase()
+  }
+
+  private static generateNewTokenObject(length: number, expirationHours: number) {
+    const token = TextUtils.generateRandomCharacters(length).toUpperCase()
+    const expiresAt = new Date(Date.now() + expirationHours * 60 * 60 * 1000)
+
+    return { token, expiresAt }
   }
 }

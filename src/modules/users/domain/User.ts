@@ -70,7 +70,7 @@ export default class User extends AggregateRoot<UserProps> {
     ])
 
     if (!guardResult.isSuccess)
-      return Result.fail(new AppError.MissingArgumentError(guardResult.message as string))
+      return Result.fail(new AppError.UndefinedArgumentError(guardResult.message as string))
 
     const isNewUser = !!id
     const user = new User({
