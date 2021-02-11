@@ -20,7 +20,7 @@ describe('UserEmail Value Object', () => {
 
     expect(validUserEmailOrError.isSuccess()).toBe(false)
     expect(validUserEmailOrError.isFailure()).toBe(true)
-    expect(validUserEmailOrError.value).toBeInstanceOf(InvalidUserEmailError)
+    expect(validUserEmailOrError.error).toBeInstanceOf(InvalidUserEmailError)
   })
 
   it('should not allow to create object with empty string', () => {
@@ -30,7 +30,7 @@ describe('UserEmail Value Object', () => {
 
     expect(validUserEmailOrError.isSuccess()).toBe(false)
     expect(validUserEmailOrError.isFailure()).toBe(true)
-    expect(validUserEmailOrError.value).toBeInstanceOf(InvalidUserEmailError)
+    expect(validUserEmailOrError.error).toBeInstanceOf(InvalidUserEmailError)
   })
 
   it('should make the valid email address lowercase', () => {

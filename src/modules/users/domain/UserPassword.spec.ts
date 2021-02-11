@@ -22,7 +22,7 @@ describe('UserPassword Value Object', () => {
 
     expect(userPasswordOrError.isSuccess()).toBe(false)
     expect(userPasswordOrError.isFailure()).toBe(true)
-    expect(userPasswordOrError.value).toBeInstanceOf(InvalidUserPasswordError)
+    expect(userPasswordOrError.error).toBeInstanceOf(InvalidUserPasswordError)
   })
 
   it('should fail when using a too long password', () => {
@@ -33,7 +33,7 @@ describe('UserPassword Value Object', () => {
 
     expect(userPasswordOrError.isSuccess()).toBe(false)
     expect(userPasswordOrError.isFailure()).toBe(true)
-    expect(userPasswordOrError.value).toBeInstanceOf(InvalidUserPasswordError)
+    expect(userPasswordOrError.error).toBeInstanceOf(InvalidUserPasswordError)
   })
 
   it('should fail when not using uppercase characters', () => {
@@ -43,7 +43,7 @@ describe('UserPassword Value Object', () => {
 
     expect(userPasswordOrError.isSuccess()).toBe(false)
     expect(userPasswordOrError.isFailure()).toBe(true)
-    expect(userPasswordOrError.value).toBeInstanceOf(InvalidUserPasswordError)
+    expect(userPasswordOrError.error).toBeInstanceOf(InvalidUserPasswordError)
   })
 
   it('should give the hash of the password', async () => {

@@ -1,8 +1,8 @@
 export class Failure<E, S = any> {
-  constructor(private readonly error: E) {}
+  constructor(public readonly error: E) {}
 
-  get value(): E {
-    return this.error
+  get value(): S {
+    throw new Error('Cannot retrieve value from failed result.')
   }
 
   isFailure(): this is Failure<E, S> {
@@ -15,7 +15,11 @@ export class Failure<E, S = any> {
 }
 
 export class Success<E, S> {
-  constructor(readonly value?: S) {}
+  constructor(public readonly value?: S) {}
+
+  get error(): E {
+    throw new Error('Cannot retrieve error from successful result.')
+  }
 
   isFailure(): this is Failure<E, S> {
     return false

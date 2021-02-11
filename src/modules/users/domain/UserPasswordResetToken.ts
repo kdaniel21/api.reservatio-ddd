@@ -19,7 +19,7 @@ export default class UserPasswordResetToken extends TokenValueObject {
   static create(props?: TokenValueObjectProps): ErrorOr<UserPasswordResetToken> {
     const validPropsOrError = TokenValueObject.createValueObject(props, this.tokenOptions)
 
-    if (validPropsOrError.isFailure()) return Result.fail(validPropsOrError.value)
+    if (validPropsOrError.isFailure()) return Result.fail(validPropsOrError.error)
 
     const validProps = validPropsOrError.value as TokenValueObjectProps
     const userPasswordResetToken = new UserPasswordResetToken(validProps)

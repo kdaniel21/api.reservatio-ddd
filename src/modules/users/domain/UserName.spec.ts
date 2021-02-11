@@ -20,7 +20,7 @@ describe('UserName value object', () => {
 
     expect(userNameOrError.isSuccess()).toBe(false)
     expect(userNameOrError.isFailure()).toBe(true)
-    expect(userNameOrError.value).toBeInstanceOf(InvalidUserNameError)
+    expect(userNameOrError.error).toBeInstanceOf(InvalidUserNameError)
   })
 
   it('should fail when passing in an empty string', () => {
@@ -30,6 +30,6 @@ describe('UserName value object', () => {
 
     expect(userNameOrError.isSuccess()).toBe(false)
     expect(userNameOrError.isFailure()).toBe(true)
-    expect(userNameOrError.value).toBeInstanceOf(InvalidUserNameError)
+    expect(userNameOrError.error).toBeInstanceOf(InvalidUserNameError)
   })
 })
