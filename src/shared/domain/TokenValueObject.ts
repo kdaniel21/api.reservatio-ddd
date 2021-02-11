@@ -28,7 +28,7 @@ export abstract class TokenValueObject extends ValueObject<TokenValueObjectProps
   }
 
   get isExpired(): boolean {
-    return this.props.expiresAt.getTime() > Date.now()
+    return this.props.expiresAt.getTime() < Date.now()
   }
 
   constructor(props: TokenValueObjectProps) {
