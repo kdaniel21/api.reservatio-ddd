@@ -1,9 +1,13 @@
 import { ErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
-import { TokenValueObject, TokenValueObjectProps } from '@shared/domain/TokenValueObject'
+import {
+  TokenValueObject,
+  TokenValueObjectOptions,
+  TokenValueObjectProps,
+} from '@shared/domain/TokenValueObject'
 
 export default class UserPasswordResetToken extends TokenValueObject {
-  static tokenOptions = {
+  static tokenOptions: TokenValueObjectOptions = {
     TOKEN_LENGTH: 30,
     EXPIRATION_HOURS: 12,
   }

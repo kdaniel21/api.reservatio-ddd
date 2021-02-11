@@ -1,5 +1,6 @@
 import faker from 'faker'
-import UserPassword, { InvalidPasswordError } from './UserPassword'
+import { InvalidUserPasswordError } from './errors/InvalidUserPasswordError'
+import UserPassword from './UserPassword'
 
 const validPassword = 'Th1sIsAG00dPassw0rd'
 
@@ -21,7 +22,7 @@ describe('UserPassword Value Object', () => {
 
     expect(userPasswordOrError.isSuccess()).toBe(false)
     expect(userPasswordOrError.isFailure()).toBe(true)
-    expect(userPasswordOrError.value).toBeInstanceOf(InvalidPasswordError)
+    expect(userPasswordOrError.value).toBeInstanceOf(InvalidUserPasswordError)
   })
 
   it('should fail when using a too long password', () => {
@@ -32,7 +33,7 @@ describe('UserPassword Value Object', () => {
 
     expect(userPasswordOrError.isSuccess()).toBe(false)
     expect(userPasswordOrError.isFailure()).toBe(true)
-    expect(userPasswordOrError.value).toBeInstanceOf(InvalidPasswordError)
+    expect(userPasswordOrError.value).toBeInstanceOf(InvalidUserPasswordError)
   })
 
   it('should fail when not using uppercase characters', () => {
@@ -42,7 +43,7 @@ describe('UserPassword Value Object', () => {
 
     expect(userPasswordOrError.isSuccess()).toBe(false)
     expect(userPasswordOrError.isFailure()).toBe(true)
-    expect(userPasswordOrError.value).toBeInstanceOf(InvalidPasswordError)
+    expect(userPasswordOrError.value).toBeInstanceOf(InvalidUserPasswordError)
   })
 
   it('should give the hash of the password', async () => {

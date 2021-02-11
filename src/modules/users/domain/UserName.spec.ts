@@ -1,5 +1,6 @@
 import faker from 'faker'
-import UserName, { InvalidUserNameError } from './UserName'
+import InvalidUserNameError from './errors/InvalidUserNameError'
+import UserName from './UserName'
 
 describe('UserName value object', () => {
   it('should create a valid UserName object', () => {

@@ -1,9 +1,9 @@
-import { MissingArgumentError } from '@modules/users/domain/User'
 import { ErrorOr } from '@shared/core/DomainError'
 import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import TextUtils from '@shared/utils/TextUtils'
 import ValueObject from './ValueObject'
+import { AppError } from '@shared/core/AppError'
 
 export interface TokenValueObjectProps {
   token: string
@@ -54,7 +54,7 @@ export abstract class TokenValueObject extends ValueObject<TokenValueObjectProps
       { argument: props.expiresAt, argumentName: 'expiration' },
     ])
     if (!guardResult.isSuccess)
-      return Result.fail(new MissingArgumentError(guardResult.message as string))
+      return Result.fail(new AppError.MissingArgumentError(guardResult.message as string))
 
     return Result.ok(props)
   }
