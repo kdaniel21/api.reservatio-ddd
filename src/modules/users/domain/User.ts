@@ -4,10 +4,11 @@ import UserPassword from './UserPassword'
 import { RefreshToken } from './tokens'
 import AggregateRoot from '@shared/domain/AggregateRoot'
 import UniqueID from '@shared/domain/UniqueID'
-import { DomainError, ErrorOr } from '@shared/core/DomainError'
+import { ErrorOr } from '@shared/core/DomainError'
 import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import UserPasswordResetToken from './UserPasswordResetToken'
+import { AppError } from '@shared/core/AppError'
 
 interface UserProps {
   email: UserEmail
@@ -18,12 +19,6 @@ interface UserProps {
   isEmailConfirmed?: boolean
   passwordResetToken?: UserPasswordResetToken | undefined
   isDeleted?: boolean
-}
-
-export class MissingArgumentError extends DomainError {
-  constructor(error: string) {
-    super({ message: error })
-  }
 }
 
 export default class User extends AggregateRoot<UserProps> {
@@ -75,7 +70,7 @@ export default class User extends AggregateRoot<UserProps> {
     ])
 
     if (!guardResult.isSuccess)
-      return Result.fail(new MissingArgumentError(guardResult.message as string))
+      return Result.fail(new AppError.MissingArgumentError(guardResult.message as string))
 
     const isNewUser = !!id
     const user = new User({
