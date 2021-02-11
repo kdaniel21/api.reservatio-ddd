@@ -21,7 +21,7 @@ export default class UserPassword extends ValueObject<UserPasswordProps> {
   }
 
   get isHashed() {
-    return this.props.isHashed
+    return this.props.isHashed || false
   }
 
   private constructor(props: UserPasswordProps) {

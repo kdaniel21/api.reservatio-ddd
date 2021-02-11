@@ -1,6 +1,8 @@
 import faker from 'faker'
+import bcrypt from 'bcrypt'
 import { InvalidUserPasswordError } from './errors/InvalidUserPasswordError'
 import UserPassword from './UserPassword'
+import config from '@config'
 
 const validPassword = 'Th1sIsAG00dPassw0rd'
 
@@ -13,6 +15,7 @@ describe('UserPassword Value Object', () => {
     expect(userPasswordOrError.isSuccess()).toBe(true)
     expect(userPasswordOrError.isFailure()).toBe(false)
     expect(userPasswordOrError.value?.value).toBe(password)
+    expect(userPasswordOrError.value?.isHashed).toBe(false)
   })
 
   it('should fail when using a too short password', () => {
@@ -64,5 +67,34 @@ describe('UserPassword Value Object', () => {
     const hashedPassword = await userPassword.getHashedValue()
 
     expect(hashedPassword).toBe(password)
+  })
+
+  it('should validate hashed password successfully against plain-text password', async () => {
+    const password = validPassword
+    const hashedPassword = await bcrypt.hash(password, config.bcryptSaltRounds)
+    const userPassword = UserPassword.create({ password: hashedPassword, isHashed: true })
+
+    const isPasswordMatching = await userPassword.value?.comparePassword(password)
+
+    expect(isPasswordMatching).toBe(true)
+  })
+
+  it('should validate plain-text password successfully against plain-text password', async () => {
+    const password = validPassword
+    const userPassword = UserPassword.create({ password, isHashed: false })
+
+    const isPasswordMatching = await userPassword.value?.comparePassword(password)
+
+    expect(isPasswordMatching).toBe(true)
+  })
+
+  it('should fail validation of hashed password against wrong plain-text password', async () => {
+    const wrongPassword = faker.internet.password(20)
+    const hashedPassword = await bcrypt.hash(validPassword, config.bcryptSaltRounds)
+    const userPassword = UserPassword.create({ password: hashedPassword, isHashed: true })
+
+    const isPasswordMatching = await userPassword.value?.comparePassword(wrongPassword)
+
+    expect(isPasswordMatching).toBe(false)
   })
 })
