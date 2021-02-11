@@ -15,7 +15,10 @@ export interface TokenValueObjectOptions {
   TOKEN_LENGTH: number
 }
 
-export abstract class TokenValueObject<T> extends ValueObject<TokenValueObjectProps> {
+export abstract class TokenValueObject extends ValueObject<TokenValueObjectProps> {
+  static DEFAULT_EXPIRATION_HOURS = 6
+  static DEFAULT_TOKEN_LENGTH = 20
+
   get token() {
     return this.props.token
   }
@@ -28,22 +31,22 @@ export abstract class TokenValueObject<T> extends ValueObject<TokenValueObjectPr
     return this.props.expiresAt.getTime() > Date.now()
   }
 
-  constructor(
-    props: TokenValueObjectProps,
-    private modelConstructor: new (props: TokenValueObjectProps) => T,
-    private options: TokenValueObjectOptions
-  ) {
+  constructor(props: TokenValueObjectProps) {
     super(props)
   }
 
-  protected create(props: TokenValueObjectProps): ErrorOr<T> {
-    const { TOKEN_LENGTH, EXPIRATION_HOURS } = this.options
+  protected static createValueObject(
+    props?: TokenValueObjectProps,
+    options?: TokenValueObjectOptions
+  ): ErrorOr<TokenValueObjectProps> {
+    const TOKEN_LENGTH = options?.TOKEN_LENGTH || this.DEFAULT_TOKEN_LENGTH
+    const EXPIRATION_HOURS = options?.EXPIRATION_HOURS || this.DEFAULT_EXPIRATION_HOURS
 
     if (!props) {
       const token = TextUtils.generateRandomCharacters(TOKEN_LENGTH).toUpperCase()
       const expiresAt = new Date(Date.now() + EXPIRATION_HOURS * 60 * 60 * 1000)
 
-      return Result.ok(new this.modelConstructor({ token, expiresAt }))
+      return Result.ok({ token, expiresAt })
     }
 
     const guardResult = Guard.againstNullOrUndefinedBulk([
@@ -53,7 +56,7 @@ export abstract class TokenValueObject<T> extends ValueObject<TokenValueObjectPr
     if (!guardResult.isSuccess)
       return Result.fail(new MissingArgumentError(guardResult.message as string))
 
-    return Result.ok(new this.modelConstructor(props))
+    return Result.ok(props)
   }
 
   isCodeValid(code: string): boolean {

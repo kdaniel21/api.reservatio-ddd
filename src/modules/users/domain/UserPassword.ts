@@ -14,7 +14,7 @@ interface UserPasswordProps {
 export default class UserPassword extends ValueObject<UserPasswordProps> {
   static MIN_PASSWORD_LENGTH = 8
   static MAX_PASSWORD_LENGTH = 128
-  static PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*d)[A-Za-zd]{8,}$/
+  static PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
 
   get value() {
     return this.props.password
@@ -29,23 +29,17 @@ export default class UserPassword extends ValueObject<UserPasswordProps> {
   }
 
   static create({ password, isHashed }: UserPasswordProps): ErrorOr<UserPassword> {
+    if (isHashed) return Result.ok(new UserPassword({ password, isHashed }))
+
     const guardArgument = { argument: password, argumentName: 'password' }
 
-    const falsyResult = Guard.againstNullOrUndefined(guardArgument)
-    let combinedResults = [falsyResult]
-
-    if (!isHashed) {
-      combinedResults = [
-        ...combinedResults,
-        Guard.againstShorterThan(this.MIN_PASSWORD_LENGTH, guardArgument),
-        Guard.againstLongerThan(this.MAX_PASSWORD_LENGTH, guardArgument),
-      ]
-    }
-
-    const combinedResult = Guard.combine(combinedResults)
-    if (!combinedResult.isSuccess) {
-      return Result.fail(new InvalidUserPasswordError(combinedResult.message as string))
-    }
+    const combinedResult = Guard.combine([
+      Guard.againstNullOrUndefined(guardArgument),
+      Guard.againstShorterThan(this.MIN_PASSWORD_LENGTH, guardArgument),
+      Guard.againstLongerThan(this.MAX_PASSWORD_LENGTH, guardArgument),
+    ])
+    if (!combinedResult.isSuccess)
+      return Result.fail(new InvalidPasswordError(combinedResult.message as string))
 
     if (!this.PASSWORD_REGEX.test(password)) {
       const message = 'The password must contain a mix of characters and numbers.'
