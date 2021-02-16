@@ -66,7 +66,7 @@ export abstract class TokenValueObject extends ValueObject<TokenValueObjectProps
     return Result.ok(props)
   }
 
-  isCodeValid(code: string): boolean {
+  isTokenValid(code: string): boolean {
     return !this.isExpired && code.toUpperCase() === this.token.toUpperCase()
   }
 

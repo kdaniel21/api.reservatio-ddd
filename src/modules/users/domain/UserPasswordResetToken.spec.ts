@@ -23,7 +23,7 @@ describe('UserPasswordResetToken Value Object', () => {
     expect(passwordResetTokenOrError.isSuccess()).toBe(true)
     expect(passwordResetTokenOrError.isFailure()).toBe(false)
     expect(passwordResetTokenOrError.value?.isExpired).toBe(false)
-    expect(passwordResetTokenOrError.value?.isCodeValid(existingToken.token)).toBe(true)
+    expect(passwordResetTokenOrError.value?.isTokenValid(existingToken.token)).toBe(true)
   })
 
   it('should create an expired UserPasswordResetToken from existing data', () => {
@@ -37,7 +37,7 @@ describe('UserPasswordResetToken Value Object', () => {
     expect(passwordResetTokenOrError.isSuccess()).toBe(true)
     expect(passwordResetTokenOrError.isFailure()).toBe(false)
     expect(passwordResetTokenOrError.value?.isExpired).toBe(true)
-    expect(passwordResetTokenOrError.value?.isCodeValid(existingToken.token)).toBe(false)
+    expect(passwordResetTokenOrError.value?.isTokenValid(existingToken.token)).toBe(false)
   })
 
   it('should fail when using a token that is less than the minimum length', () => {
