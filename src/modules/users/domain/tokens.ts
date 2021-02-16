@@ -3,5 +3,3 @@ export interface JwtPayload {
   email: string
   isAdmin: boolean
 }
-
-export type RefreshToken = string
