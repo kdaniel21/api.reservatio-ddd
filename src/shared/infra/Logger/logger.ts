@@ -9,7 +9,7 @@ export interface Logger {
   fatal(errorMessage: string): void
 }
 
-export default class PinoLogger implements Logger {
+class PinoLogger implements Logger {
   private pinoLogger: pino.BaseLogger
 
   private defaultSettings: pino.LoggerOptions = {
@@ -40,3 +40,5 @@ export default class PinoLogger implements Logger {
     this.pinoLogger.fatal(errorMessage)
   }
 }
+
+export default new PinoLogger('debug')
