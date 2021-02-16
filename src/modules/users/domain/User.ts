@@ -1,7 +1,6 @@
 import UserEmail from './UserEmail'
 import UserName from './UserName'
 import UserPassword from './UserPassword'
-import { RefreshToken } from './tokens'
 import AggregateRoot from '@shared/domain/AggregateRoot'
 import UniqueID from '@shared/domain/UniqueID'
 import { ErrorOr } from '@shared/core/DomainError'
@@ -9,15 +8,16 @@ import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import UserPasswordResetToken from './UserPasswordResetToken'
 import { AppError } from '@shared/core/AppError'
+import UserRefreshToken from './UserRefreshToken'
 
 interface UserProps {
   email: UserEmail
   name: UserName
   password: UserPassword
-  refreshTokens?: RefreshToken[]
-  isAdmin: boolean
+  refreshTokens?: UserRefreshToken[]
+  passwordResetToken?: UserPasswordResetToken
+  isAdmin?: boolean
   isEmailConfirmed?: boolean
-  passwordResetToken?: UserPasswordResetToken | undefined
   isDeleted?: boolean
 }
 
@@ -38,12 +38,8 @@ export default class User extends AggregateRoot<UserProps> {
     return this.props.password
   }
 
-  get refreshTokens(): RefreshToken[] {
-    return this.props.refreshTokens as RefreshToken[]
-  }
-
   get isAdmin(): boolean {
-    return this.props.isAdmin
+    return this.props.isAdmin || false
   }
 
   get isEmailConfirmed(): boolean {
@@ -56,6 +52,12 @@ export default class User extends AggregateRoot<UserProps> {
 
   get isDeleted(): boolean {
     return this.props.isDeleted as boolean
+  }
+
+  public isRefreshTokenValid(token: string): boolean {
+    if (!this.props.refreshTokens) return false;
+
+    return this.props.refreshTokens?.some(refreshToken => refreshToken.isTokenValid(token))
   }
 
   private constructor(props: UserProps, id?: UniqueID) {
