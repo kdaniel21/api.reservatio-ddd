@@ -7,4 +7,4 @@ interface DomainErrorDto {
 
 export type ErrorOr<S> = Either<DomainError, S>
 
-export abstract class DomainError extends Failure<DomainErrorDto, any> {}
+export abstract class DomainError extends Failure<DomainErrorDto, void> {}

@@ -6,7 +6,7 @@ export class Failure<E, S = any> {
   }
 
   isFailure(): this is Failure<E, S> {
-    return true
+    return false
   }
 
   isSuccess(): this is Success<E, S> {
@@ -15,10 +15,12 @@ export class Failure<E, S = any> {
 }
 
 export class Success<E, S> {
-  constructor(public readonly value?: S) {}
+  constructor(public readonly payload?: S) {}
 
-  get error(): E {
-    throw new Error('Cannot retrieve error from successful result.')
+  get value(): S {
+    if (!this.payload) throw new Error('This result does not have a value')
+
+    return this.payload
   }
 
   isFailure(): this is Failure<E, S> {
@@ -39,11 +41,12 @@ export namespace Result {
     return new Success<E, S>(value)
   }
 
-  export function combine<E, S>(results: Either<E, S>[]): Either<E, S> {
+  export function combine<E>(results: Either<E, any>[]): Either<E, any> {
     const firstFailure = results.find(result => result.isFailure)
 
     return firstFailure || Result.ok()
   }
 }
 
+// export type Either<E, S> = Failure<E, S> | Success<E, S>
 export type Either<E, S> = Failure<E, S> | Success<E, S>
