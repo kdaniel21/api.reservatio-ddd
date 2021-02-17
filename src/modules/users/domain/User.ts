@@ -54,8 +54,8 @@ export default class User extends AggregateRoot<UserProps> {
     return this.props.isDeleted as boolean
   }
 
-  public isRefreshTokenValid(token: string): boolean {
-    if (!this.props.refreshTokens) return false;
+  isRefreshTokenValid(token: string): boolean {
+    if (!this.props.refreshTokens) return false
 
     return this.props.refreshTokens?.some(refreshToken => refreshToken.isTokenValid(token))
   }

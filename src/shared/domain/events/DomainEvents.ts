@@ -6,14 +6,14 @@ export default class DomainEvents {
   private static handlersMap: { [eventClassName: string]: any } = {}
   private static markedAggregatesList: AggregateRoot<any>[] = []
 
-  public static markAggregateForDispatch(aggreate: AggregateRoot<any>): void {
+  static markAggregateForDispatch(aggreate: AggregateRoot<any>): void {
     const isAggregateAlreadyMarked = !!this.findMarkedAggregateById(aggreate.id)
     if (isAggregateAlreadyMarked) return
 
     this.markedAggregatesList.push(aggreate)
   }
 
-  public static dispatchEventsForAggregate(id: UniqueID): void {
+  static dispatchEventsForAggregate(id: UniqueID): void {
     const aggregate = this.findMarkedAggregateById(id)
     if (!aggregate) return
 
@@ -22,7 +22,7 @@ export default class DomainEvents {
     this.removeAggregateFromDispatchList(aggregate)
   }
 
-  public static registerHandler(
+  static registerHandler(
     handler: (event: DomainEvent) => any,
     eventClassName: string
   ): void {

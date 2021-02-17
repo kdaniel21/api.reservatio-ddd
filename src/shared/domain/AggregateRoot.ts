@@ -15,8 +15,8 @@ export default abstract class AggregateRoot<T> extends Entity<T> {
     return this.events
   }
 
-  public clearEvents() {
-    this.events = [];
+  clearEvents() {
+    this.events = []
   }
 
   protected addDomainEvent(domainEvent: DomainEvent): void {
