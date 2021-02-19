@@ -1,5 +1,6 @@
 import logger from '@shared/infra/Logger/logger'
 import Koa from 'koa'
+import { createTextChangeRange } from 'typescript'
 
 export default abstract class BaseController {
   protected abstract executeImpl(ctx: Koa.Context): Promise<any> | any
@@ -11,15 +12,25 @@ export default abstract class BaseController {
       await this.executeImpl(ctx)
     } catch (err) {
       logger.error(`[Koa API - BaseController]: Uncaught controller error - ${err}`)
-      this.fail()
+      this.fail(ctx)
     }
   }
 
   protected ok<T>(ctx: Koa.Context, dto?: T): void {
-    ctx.body = { ...dto }
+    ctx.body = {
+      status: 'success',
+      data: { ...dto },
+    }
+    ctx.status = 200
   }
 
-  protected fail() {}
+  protected fail(ctx: Koa.Context, message?: string): void {
+    ctx.status = 400
+    ctx.body = { status: 'fail', message }
+  }
 
-  protected error() {}
+  protected error(ctx: Koa.Context): void {
+    ctx.status = 500
+    ctx.body = { status: 'error' }
+  }
 }

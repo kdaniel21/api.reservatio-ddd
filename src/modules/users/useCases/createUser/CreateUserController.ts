@@ -13,25 +13,19 @@ export default class CreateUserController extends BaseController {
   async executeImpl(ctx: Koa.Context) {
     let dto: CreateUserDto = ctx.request.body as CreateUserDto
 
-    dto = {
-      email: TextUtils.sanitize(dto.email),
-      name: TextUtils.sanitize(dto.name),
-      password: dto.password,
-    }
-
     try {
       const result = await this.useCase.execute(dto)
 
-      if (!result.error) return this.ok(ctx)
+      if (!result.isFailure()) return this.ok(ctx)
 
       switch (result.error.constructor) {
         case CreateUserError.EmailAlreadyExistsError:
-          return this.fail()
+          return this.fail(ctx, result.error.error.message)
         default:
-          return this.error()
+          return this.fail(ctx, result.error.error.message)
       }
     } catch (err) {
-      this.error()
+      this.error(ctx)
     }
   }
 }
