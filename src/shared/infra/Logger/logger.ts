@@ -3,10 +3,10 @@ import pino from 'pino'
 import pinoColada from 'pino-colada'
 
 export interface Logger {
-  info(errorMessage: string): void
-  warn(errorMessage: string): void
-  error(errorMessage: string): void
-  fatal(errorMessage: string): void
+  info(message: string, ...args: any[]): void
+  warn(message: string, ...args: any[]): void
+  error(message: string, ...args: any[]): void
+  fatal(message: string, ...args: any[]): void
 }
 
 class PinoLogger implements Logger {
@@ -24,20 +24,20 @@ class PinoLogger implements Logger {
     })
   }
 
-  info(errorMessage: string) {
-    this.pinoLogger.info(errorMessage)
+  info(message: string, ...args: any[]) {
+    this.pinoLogger.info(message, ...args)
   }
 
-  warn(errorMessage: string) {
-    this.pinoLogger.warn(errorMessage)
+  warn(message: string, ...args: any[]) {
+    this.pinoLogger.warn(message, ...args)
   }
 
-  error(errorMessage: string) {
-    this.pinoLogger.error(errorMessage)
+  error(message: string, ...args: any[]) {
+    this.pinoLogger.error(message, ...args)
   }
 
-  fatal(errorMessage: string) {
-    this.pinoLogger.fatal(errorMessage)
+  fatal(message: string, ...args: any[]) {
+    this.pinoLogger.fatal(message, ...args)
   }
 }
 
