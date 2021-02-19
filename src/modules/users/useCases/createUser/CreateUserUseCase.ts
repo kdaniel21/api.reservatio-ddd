@@ -38,7 +38,7 @@ export default class CreateUserUseCase implements UseCase<CreateUserDto, ErrorOr
 
       return Result.ok()
     } catch (err) {
-      return fail(new AppError.UnexpectedError())
+      return Result.fail(new AppError.UnexpectedError())
     }
   }
 }
