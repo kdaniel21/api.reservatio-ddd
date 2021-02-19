@@ -1,16 +1,15 @@
 import { EntityManager, EntityRepository, Repository } from '@mikro-orm/core'
 import User from '@modules/users/domain/User'
+import MikroRefreshTokenEntity from '@modules/users/infra/database/MikroORM/entities/MikroRefreshToken'
 import MikroUserEntity from '@modules/users/infra/database/MikroORM/entities/MikroUserEntity'
-import UserMapper from '@modules/users/mappers/UserMapper'
 import UserRepository from '../UserRepository'
 
-// TODO: Add entity
 @Repository(MikroUserEntity)
 export default class MikroUserRepository
   extends EntityRepository<MikroUserEntity>
   implements UserRepository {
-  constructor(em: EntityManager) {
-    super(em, 'MikroUserEntity')
+  constructor(entityManager: EntityManager) {
+    super(entityManager, 'MikroUserEntity')
   }
 
   async existsByEmail(email: string): Promise<boolean> {
@@ -20,9 +19,37 @@ export default class MikroUserRepository
   }
 
   async save(user: User): Promise<User> {
-    const mikroUser = await UserMapper.toMikroEntity(user, this.em)
+    const mikroUser = await this.toOrmEntity(user)
     await this.em.persistAndFlush(mikroUser)
 
     return user
+  }
+
+  async toOrmEntity(user: User): Promise<MikroUserEntity> {
+    const { isAdmin, isDeleted, isEmailConfirmed } = user
+    const password = user.password.isHashed
+      ? user.password.value
+      : await user.password.getHashedValue()
+
+    const refreshTokens = user.refreshTokens.map(refreshToken =>
+      this.em.create<MikroRefreshTokenEntity>('MikroRefreshToken', {
+        token: refreshToken.token,
+        expiresAt: refreshToken.expiresAt,
+        userId: user.userId,
+      })
+    )
+
+    return this.em.create<MikroUserEntity>('MikroUserEntity', {
+      id: user.userId,
+      name: user.name.value,
+      email: user.email.value,
+      isAdmin,
+      isDeleted,
+      isEmailConfirmed,
+      password,
+      passwordResetToken: user.passwordResetToken.token,
+      passwordResetTokenExpiresAt: user.passwordResetToken.expiresAt,
+      refreshTokens,
+    })
   }
 }
