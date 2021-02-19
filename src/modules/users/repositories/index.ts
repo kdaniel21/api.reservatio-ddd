@@ -1,4 +1,4 @@
-import { em } from '@shared/infra/database/MikroORM/config/initDatabaseConnection'
+import { entityManager } from '@shared/infra/database/MikroORM/config/initDatabaseConnection'
 import MikroUserRepository from './implementations/MikroUserRepository'
 
-export const userRepository = new MikroUserRepository(em)
+export const userRepository = new MikroUserRepository(entityManager)
