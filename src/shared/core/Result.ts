@@ -40,7 +40,7 @@ export namespace Result {
   }
 
   export function combine<E>(results: Either<E, any>[]): Either<E, any> {
-    const firstFailure = results.find(result => result.isFailure)
+    const firstFailure = results.find(result => result.isFailure())
 
     return firstFailure || Result.ok()
   }
