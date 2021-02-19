@@ -13,7 +13,7 @@ export default class MikroUserRepository
   }
 
   async existsByEmail(email: string): Promise<boolean> {
-    const count = await this.findAndCount({ email })
+    const count = await this.count({ email })
 
     return !!count
   }
