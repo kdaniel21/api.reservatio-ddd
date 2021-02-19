@@ -70,6 +70,6 @@ export default class UserPassword extends ValueObject<UserPasswordProps> {
   }
 
   private async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, config.bcryptSaltRounds)
+    return bcrypt.hash(password, config.auth.bcryptSaltRounds)
   }
 }

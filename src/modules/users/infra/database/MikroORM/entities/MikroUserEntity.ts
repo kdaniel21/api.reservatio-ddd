@@ -1,9 +1,9 @@
 import { Collection, Entity, OneToMany, Property } from '@mikro-orm/core'
-import BaseEntity from './BaseEntity'
-import RefreshTokenEntity from './RefreshToken'
+import MikroBaseEntity from '@shared/infra/database/MikroORM/entities/MikroBaseEntity'
+import MikroRefreshTokenEntity from './MikroRefreshToken'
 
 @Entity()
-export default class UserEntity extends BaseEntity {
+export default class MikroUserEntity extends MikroBaseEntity {
   @Property()
   name!: string
 
@@ -13,8 +13,8 @@ export default class UserEntity extends BaseEntity {
   @Property()
   password!: string
 
-  @OneToMany(() => RefreshTokenEntity, refreshToken => refreshToken.userId)
-  refreshTokens = new Collection<RefreshTokenEntity>(this)
+  @OneToMany(() => MikroRefreshTokenEntity, refreshToken => refreshToken.userId)
+  refreshTokens = new Collection<MikroRefreshTokenEntity>(this)
 
   @Property()
   passwordResetToken!: string

@@ -71,7 +71,7 @@ describe('UserPassword Value Object', () => {
 
   it('should validate hashed password successfully against plain-text password', async () => {
     const password = validPassword
-    const hashedPassword = await bcrypt.hash(password, config.bcryptSaltRounds)
+    const hashedPassword = await bcrypt.hash(password, config.auth.bcryptSaltRounds)
     const userPassword = UserPassword.create({ password: hashedPassword, isHashed: true })
 
     const isPasswordMatching = await userPassword.value?.comparePassword(password)
@@ -90,7 +90,7 @@ describe('UserPassword Value Object', () => {
 
   it('should fail validation of hashed password against wrong plain-text password', async () => {
     const wrongPassword = faker.internet.password(20)
-    const hashedPassword = await bcrypt.hash(validPassword, config.bcryptSaltRounds)
+    const hashedPassword = await bcrypt.hash(validPassword, config.auth.bcryptSaltRounds)
     const userPassword = UserPassword.create({ password: hashedPassword, isHashed: true })
 
     const isPasswordMatching = await userPassword.value?.comparePassword(wrongPassword)

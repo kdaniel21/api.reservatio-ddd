@@ -22,7 +22,7 @@ export default class CreateUserController extends BaseController {
     try {
       const result = await this.useCase.execute(dto)
 
-      if (result.isSuccess()) return this.ok(ctx)
+      if (!result.error) return this.ok(ctx)
 
       switch (result.error.constructor) {
         case CreateUserError.EmailAlreadyExistsError:

@@ -1,4 +1,5 @@
 import authConfig from './auth'
+import database from './database'
 
 const config = {
   production: process.env.NODE_ENV === 'production',
@@ -7,5 +8,6 @@ const config = {
 
 export default {
   ...config,
-  ...authConfig,
+  auth: { ...authConfig },
+  database: { ...database },
 }

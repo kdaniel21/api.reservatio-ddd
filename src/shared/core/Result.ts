@@ -6,7 +6,7 @@ export class Failure<E, S = any> {
   }
 
   isFailure(): this is Failure<E, S> {
-    return false
+    return true
   }
 
   isSuccess(): this is Success<E, S> {
@@ -15,12 +15,10 @@ export class Failure<E, S = any> {
 }
 
 export class Success<E, S> {
-  constructor(public readonly payload?: S) {}
+  constructor(public readonly value?: S) {}
 
-  get value(): S {
-    if (!this.payload) throw new Error('This result does not have a value')
-
-    return this.payload
+  get error(): E {
+    throw new Error('Cannot retrieve error from successful result.')
   }
 
   isFailure(): this is Failure<E, S> {

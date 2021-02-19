@@ -38,6 +38,10 @@ export default class User extends AggregateRoot<UserProps> {
     return this.props.password
   }
 
+  get refreshTokens(): UserRefreshToken[] {
+    return this.props.refreshTokens
+  }
+
   get isAdmin(): boolean {
     return this.props.isAdmin || false
   }
