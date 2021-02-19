@@ -11,7 +11,7 @@ export default class CreateUserController extends BaseController {
   }
 
   async executeImpl(ctx: Koa.Context) {
-    let dto: CreateUserDto = ctx.body
+    let dto: CreateUserDto = ctx.request.body as CreateUserDto
 
     dto = {
       email: TextUtils.sanitize(dto.email),
