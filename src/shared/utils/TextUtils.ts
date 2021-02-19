@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import domPurify from 'dompurify'
+import stringSanitizer from 'string-sanitizer'
 
 export default class TextUtils {
   static generateRandomCharacters(numOfCharacters: number = 10): string {
@@ -7,6 +7,6 @@ export default class TextUtils {
   }
 
   static sanitize(text: string): string {
-    return domPurify.sanitize(text)
+    return stringSanitizer.sanitize(text)
   }
 }
