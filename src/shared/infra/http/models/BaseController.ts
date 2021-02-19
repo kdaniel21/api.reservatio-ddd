@@ -10,7 +10,7 @@ export default abstract class BaseController {
     try {
       await this.executeImpl(ctx)
     } catch (err) {
-      logger.error(`[BaseController]: Uncaught controller error - ${err}`)
+      logger.error(`[Koa API - BaseController]: Uncaught controller error - ${err}`)
       this.fail()
     }
   }
