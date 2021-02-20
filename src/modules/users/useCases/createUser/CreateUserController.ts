@@ -9,7 +9,7 @@ export default class CreateUserController extends BaseController {
     super()
   }
 
-  async executeImpl(ctx: Koa.Context) {
+  async executeImpl(ctx: Koa.Context): Promise<void> {
     let dto: CreateUserDto = ctx.request.body as CreateUserDto
 
     try {
