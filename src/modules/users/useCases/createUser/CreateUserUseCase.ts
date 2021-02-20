@@ -2,6 +2,8 @@ import User from '@modules/users/domain/User'
 import UserEmail from '@modules/users/domain/UserEmail'
 import UserName from '@modules/users/domain/UserName'
 import UserPassword from '@modules/users/domain/UserPassword'
+import UserDto from '@modules/users/DTOs/UserDto'
+import UserMapper from '@modules/users/mappers/UserMapper'
 import UserRepository from '@modules/users/repositories/UserRepository'
 import { AppError } from '@shared/core/AppError'
 import { ErrorOr } from '@shared/core/DomainError'
@@ -10,10 +12,10 @@ import UseCase from '@shared/core/UseCase'
 import CreateUserDto from './CreateUserDto'
 import { CreateUserError } from './CreateUserErrors'
 
-export default class CreateUserUseCase implements UseCase<CreateUserDto, ErrorOr<void>> {
+export default class CreateUserUseCase implements UseCase<CreateUserDto, ErrorOr<UserDto>> {
   constructor(private userRepo: UserRepository) {}
 
-  async execute(request: CreateUserDto): Promise<ErrorOr<void>> {
+  async execute(request: CreateUserDto): Promise<ErrorOr<UserDto>> {
     const emailOrError = UserEmail.create(request.email)
     const nameOrError = UserName.create(request.name)
     const passwordOrError = UserPassword.create({ password: request.password })
@@ -36,7 +38,8 @@ export default class CreateUserUseCase implements UseCase<CreateUserDto, ErrorOr
       const createdUser = createdUserOrError.value
       await this.userRepo.save(createdUser)
 
-      return Result.ok()
+      const userDto = UserMapper.toDto(createdUser)
+      return Result.ok(userDto)
     } catch (err) {
       return Result.fail(new AppError.UnexpectedError())
     }
