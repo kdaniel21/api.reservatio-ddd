@@ -19,8 +19,13 @@ export default class MikroUserRepository
   }
 
   async save(user: User): Promise<User> {
-    const mikroUser = await this.toOrmEntity(user)
-    await this.em.persistAndFlush(mikroUser)
+    console.log('saving')
+    try {
+      const mikroUser = await this.toOrmEntity(user)
+    } catch (err) {
+      console.log(err)
+    }
+    // await this.em.persistAndFlush(mikroUser)
 
     return user
   }
@@ -30,6 +35,8 @@ export default class MikroUserRepository
     const password = user.password.isHashed
       ? user.password.value
       : await user.password.getHashedValue()
+
+    console.log(user.refreshTokens)
 
     const refreshTokens = user.refreshTokens.map(refreshToken =>
       this.em.create<MikroRefreshTokenEntity>('MikroRefreshToken', {
@@ -47,8 +54,8 @@ export default class MikroUserRepository
       isDeleted,
       isEmailConfirmed,
       password,
-      passwordResetToken: user.passwordResetToken.token,
-      passwordResetTokenExpiresAt: user.passwordResetToken.expiresAt,
+      passwordResetToken: user.passwordResetToken?.token,
+      passwordResetTokenExpiresAt: user.passwordResetToken?.expiresAt,
       refreshTokens,
     })
   }

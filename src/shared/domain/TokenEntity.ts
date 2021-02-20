@@ -2,28 +2,33 @@ import { ErrorOr } from '@shared/core/DomainError'
 import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import TextUtils from '@shared/utils/TextUtils'
-import ValueObject from './ValueObject'
 import { AppError } from '@shared/core/AppError'
+import UniqueID from './UniqueID'
+import Entity from './Entity'
 
-export interface TokenValueObjectProps {
+export interface TokenEntityProps {
   token: string
   expiresAt: Date
 }
 
-export interface TokenValueObjectOptions {
+export interface TokenEntityOptions {
   EXPIRATION_HOURS: number
   TOKEN_LENGTH: number
 }
 
-export abstract class TokenValueObject extends ValueObject<TokenValueObjectProps> {
+export abstract class TokenEntity extends Entity<TokenEntityProps> {
   static DEFAULT_EXPIRATION_HOURS = 6
   static DEFAULT_TOKEN_LENGTH = 20
 
-  get token() {
+  get tokenId(): string {
+    return this.id.toString()
+  }
+
+  get token(): string {
     return this.props.token
   }
 
-  get expiresAt() {
+  get expiresAt(): Date {
     return this.props.expiresAt
   }
 
@@ -31,18 +36,19 @@ export abstract class TokenValueObject extends ValueObject<TokenValueObjectProps
     return this.props.expiresAt.getTime() < Date.now()
   }
 
-  constructor(props: TokenValueObjectProps) {
-    super(props)
+  constructor(props: TokenEntityProps, id?: UniqueID) {
+    super(props, id)
   }
 
-  protected static createValueObject(
-    props?: TokenValueObjectProps,
-    options?: TokenValueObjectOptions
-  ): ErrorOr<TokenValueObjectProps> {
+  protected static createEntity(
+    props?: TokenEntityProps,
+    id?: UniqueID,
+    options?: TokenEntityOptions
+  ): ErrorOr<TokenEntityProps> {
     const TOKEN_LENGTH = options?.TOKEN_LENGTH || this.DEFAULT_TOKEN_LENGTH
     const EXPIRATION_HOURS = options?.EXPIRATION_HOURS || this.DEFAULT_EXPIRATION_HOURS
 
-    if (!props) {
+    if (!id) {
       const newToken = this.generateNewTokenObject(TOKEN_LENGTH, EXPIRATION_HOURS)
       return Result.ok(newToken)
     }
