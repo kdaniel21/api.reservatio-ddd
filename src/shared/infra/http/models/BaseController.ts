@@ -24,9 +24,12 @@ export default abstract class BaseController {
     ctx.status = 200
   }
 
-  protected fail(ctx: Koa.Context, message?: string): void {
+  protected fail(
+    ctx: Koa.Context,
+    errorDetails: { message?: string; code?: string } = {}
+  ): void {
     ctx.status = 400
-    ctx.body = { status: 'fail', message }
+    ctx.body = { status: 'fail', ...errorDetails }
   }
 
   protected error(ctx: Koa.Context): void {

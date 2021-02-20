@@ -5,7 +5,7 @@ export namespace CreateUserError {
   export class EmailAlreadyExistsError extends Failure<UseCaseError> {
     constructor(email: string) {
       super({
-        message: `This email address ${email} is already used by an existing user!`,
+        message: `The email address ${email} is already used by an existing user!`,
         code: 'EMAIL_ALREADY_EXISTS',
       })
     }

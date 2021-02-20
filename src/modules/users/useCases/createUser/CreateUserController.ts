@@ -17,11 +17,12 @@ export default class CreateUserController extends BaseController {
 
       if (!result.isFailure()) return this.ok(ctx, result.value)
 
-      switch (result.error.constructor) {
+      const error = result.error
+      switch (error.constructor) {
         case CreateUserError.EmailAlreadyExistsError:
-          return this.fail(ctx, result.error.error.message)
+          return this.fail(ctx, error.error)
         default:
-          return this.fail(ctx, result.error.error.message)
+          return this.fail(ctx, error.error)
       }
     } catch (err) {
       this.error(ctx)
