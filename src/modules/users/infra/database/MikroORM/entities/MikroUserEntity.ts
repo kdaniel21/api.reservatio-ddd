@@ -1,6 +1,6 @@
-import { Collection, Entity, OneToMany, Property } from '@mikro-orm/core'
+import { Collection, Entity, EntityData, OneToMany, Property } from '@mikro-orm/core'
 import MikroBaseEntity from '@shared/infra/database/MikroORM/entities/MikroBaseEntity'
-import MikroRefreshTokenEntity from './MikroRefreshToken'
+import MikroRefreshTokenEntity from './MikroRefreshTokenEntity'
 
 @Entity()
 export default class MikroUserEntity extends MikroBaseEntity {
@@ -13,14 +13,14 @@ export default class MikroUserEntity extends MikroBaseEntity {
   @Property()
   password!: string
 
-  @OneToMany(() => MikroRefreshTokenEntity, refreshToken => refreshToken.userId)
-  refreshTokens = new Collection<MikroRefreshTokenEntity>(this)
+  // @OneToMany(() => MikroRefreshTokenEntity, refreshToken => refreshToken.userId)
+  // refreshTokens = new Collection<MikroRefreshTokenEntity>(this)
 
   @Property()
-  passwordResetToken!: string
+  passwordResetToken?: string
 
   @Property()
-  passwordResetTokenExpiresAt!: Date
+  passwordResetTokenExpiresAt?: Date
 
   @Property()
   isAdmin: boolean = false
@@ -30,4 +30,9 @@ export default class MikroUserEntity extends MikroBaseEntity {
 
   @Property()
   isEmailConfirmed: boolean = false
+
+  constructor(userEntityProps: EntityData<MikroUserEntity>) {
+    super()
+    Object.assign(this, userEntityProps)
+  }
 }
