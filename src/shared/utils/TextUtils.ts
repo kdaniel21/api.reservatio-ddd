@@ -6,6 +6,10 @@ export default class TextUtils {
     return crypto.randomBytes(numOfCharacters).toString('hex')
   }
 
+  static hashText(text: string): string {
+    return crypto.createHash('sha256').update(text).digest('hex').toString()
+  }
+
   static sanitize(text: string): string {
     return stringSanitizer.sanitize(text)
   }

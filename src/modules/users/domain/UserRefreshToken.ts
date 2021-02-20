@@ -9,16 +9,12 @@ export default class UserRefreshToken extends TokenEntity {
     EXPIRATION_HOURS: 30 * 24,
   }
 
-  get tokenId(): string {
-    return 'foo'
-  }
-
   private constructor(props: TokenEntityProps) {
     super(props)
   }
 
   static create(props?: TokenEntityProps, id?: UniqueID): ErrorOr<UserRefreshToken> {
-    const validPropsOrError = TokenEntity.createEntity(props, id, this.tokenOptions)
+    const validPropsOrError = TokenEntity.validateProps(props, id, this.tokenOptions)
 
     if (validPropsOrError.isFailure()) return Result.fail(validPropsOrError.error)
 

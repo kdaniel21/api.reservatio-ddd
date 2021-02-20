@@ -7,10 +7,6 @@ import UniqueID from './UniqueID'
 export default abstract class AggregateRoot<T> extends Entity<T> {
   private events: DomainEvent[] = []
 
-  get id(): UniqueID {
-    return this._id
-  }
-
   get domainEvents(): DomainEvent[] {
     return this.events
   }

@@ -20,6 +20,8 @@ export abstract class TokenEntity extends Entity<TokenEntityProps> {
   static DEFAULT_EXPIRATION_HOURS = 6
   static DEFAULT_TOKEN_LENGTH = 20
 
+  readonly isHashed: boolean
+
   get tokenId(): string {
     return this.id.toString()
   }
@@ -38,9 +40,22 @@ export abstract class TokenEntity extends Entity<TokenEntityProps> {
 
   constructor(props: TokenEntityProps, id?: UniqueID) {
     super(props, id)
+
+    this.isHashed = !!id
+  }
+  
+  isTokenValid(code: string): boolean {
+    let token = this.isHashed ? TextUtils.hashText(this.token) : this.token
+    return !this.isExpired && code.toUpperCase() === token.toUpperCase()
   }
 
-  protected static createEntity(
+  getHashedValue(): string {
+    if (this.isHashed) return this.token
+
+    return TextUtils.hashText(this.token)
+  }
+
+  protected static validateProps(
     props?: TokenEntityProps,
     id?: UniqueID,
     options?: TokenEntityOptions
@@ -70,10 +85,6 @@ export abstract class TokenEntity extends Entity<TokenEntityProps> {
       return Result.fail(new AppError.InputShortError(guardResultLength.message as string))
 
     return Result.ok(props)
-  }
-
-  isTokenValid(code: string): boolean {
-    return !this.isExpired && code.toUpperCase() === this.token.toUpperCase()
   }
 
   private static generateNewTokenObject(length: number, expirationHours: number) {

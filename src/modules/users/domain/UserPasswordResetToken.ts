@@ -14,7 +14,7 @@ export default class UserPasswordResetToken extends TokenEntity {
   }
 
   static create(props?: TokenEntityProps, id?: UniqueID): ErrorOr<UserPasswordResetToken> {
-    const validPropsOrError = TokenEntity.createEntity(props, id, this.tokenOptions)
+    const validPropsOrError = TokenEntity.validateProps(props, id, this.tokenOptions)
 
     if (validPropsOrError.isFailure()) return Result.fail(validPropsOrError.error)
 
