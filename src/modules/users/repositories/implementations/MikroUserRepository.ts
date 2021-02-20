@@ -1,6 +1,6 @@
 import { EntityManager, EntityRepository, Repository } from '@mikro-orm/core'
 import User from '@modules/users/domain/User'
-import MikroRefreshTokenEntity from '@modules/users/infra/database/MikroORM/entities/MikroRefreshToken'
+import MikroRefreshTokenEntity from '@modules/users/infra/database/MikroORM/entities/MikroRefreshTokenEntity'
 import MikroUserEntity from '@modules/users/infra/database/MikroORM/entities/MikroUserEntity'
 import UserRepository from '../UserRepository'
 
@@ -9,7 +9,7 @@ export default class MikroUserRepository
   extends EntityRepository<MikroUserEntity>
   implements UserRepository {
   constructor(entityManager: EntityManager) {
-    super(entityManager, 'MikroUserEntity')
+    super(entityManager, MikroUserEntity)
   }
 
   async existsByEmail(email: string): Promise<boolean> {
@@ -18,16 +18,10 @@ export default class MikroUserRepository
     return !!count
   }
 
-  async save(user: User): Promise<User> {
-    console.log('saving')
-    try {
-      const mikroUser = await this.toOrmEntity(user)
-    } catch (err) {
-      console.log(err)
-    }
-    // await this.em.persistAndFlush(mikroUser)
+  async save(user: User): Promise<void> {
+    const mikroUser = await this.toOrmEntity(user)
 
-    return user
+    await this.em.persistAndFlush(mikroUser)
   }
 
   async toOrmEntity(user: User): Promise<MikroUserEntity> {
@@ -36,27 +30,32 @@ export default class MikroUserRepository
       ? user.password.value
       : await user.password.getHashedValue()
 
-    console.log(user.refreshTokens)
+    let passwordResetToken
+    if (user.passwordResetToken) {
+      passwordResetToken = user.passwordResetToken.isHashed
+        ? user.passwordResetToken.token
+        : user.passwordResetToken.getHashedValue()
+    }
 
-    const refreshTokens = user.refreshTokens.map(refreshToken =>
-      this.em.create<MikroRefreshTokenEntity>('MikroRefreshToken', {
-        token: refreshToken.token,
+    const refreshTokens = user.refreshTokens.map(refreshToken => {
+      return new MikroRefreshTokenEntity({
+        id: refreshToken.id.toString(),
+        token: refreshToken.isHashed ? refreshToken.token : refreshToken.getHashedValue(),
         expiresAt: refreshToken.expiresAt,
-        userId: user.userId,
+        userId: user.userId.toString(),
       })
-    )
+    })
 
-    return this.em.create<MikroUserEntity>('MikroUserEntity', {
-      id: user.userId,
+    return new MikroUserEntity({
+      id: user.userId.toString(),
       name: user.name.value,
       email: user.email.value,
       isAdmin,
       isDeleted,
       isEmailConfirmed,
       password,
-      passwordResetToken: user.passwordResetToken?.token,
+      passwordResetToken,
       passwordResetTokenExpiresAt: user.passwordResetToken?.expiresAt,
-      refreshTokens,
     })
   }
 }
