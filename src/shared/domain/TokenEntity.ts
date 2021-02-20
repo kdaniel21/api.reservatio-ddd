@@ -16,15 +16,13 @@ export interface TokenEntityOptions {
   TOKEN_LENGTH: number
 }
 
-export abstract class TokenEntity extends Entity<TokenEntityProps> {
+export abstract class TokenEntity<
+  T extends TokenEntityProps = TokenEntityProps
+> extends Entity<T> {
   static DEFAULT_EXPIRATION_HOURS = 6
   static DEFAULT_TOKEN_LENGTH = 20
 
   readonly isHashed: boolean
-
-  get tokenId(): string {
-    return this.id.toString()
-  }
 
   get token(): string {
     return this.props.token
@@ -38,12 +36,12 @@ export abstract class TokenEntity extends Entity<TokenEntityProps> {
     return this.props.expiresAt.getTime() < Date.now()
   }
 
-  constructor(props: TokenEntityProps, id?: UniqueID) {
+  constructor(props: T, id?: UniqueID) {
     super(props, id)
 
     this.isHashed = !!id
   }
-  
+
   isTokenValid(code: string): boolean {
     let hashedCode = this.isHashed ? TextUtils.hashText(code) : code
     return !this.isExpired && hashedCode === this.token
