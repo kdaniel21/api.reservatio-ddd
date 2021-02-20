@@ -1,4 +1,4 @@
-export default interface {
+export default interface UserDto {
   name: string
   email: string
   isEmailConfirmed: boolean
