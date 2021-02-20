@@ -22,8 +22,8 @@ interface UserProps {
 }
 
 export default class User extends AggregateRoot<UserProps> {
-  get userId(): string {
-    return this.id.toValue() as string
+  get userId(): UniqueID {
+    return this.id
   }
 
   get email(): UserEmail {
