@@ -2,7 +2,7 @@ import { Collection, Entity, EntityData, OneToMany, Property } from '@mikro-orm/
 import MikroBaseEntity from '@shared/infra/database/MikroORM/entities/MikroBaseEntity'
 import MikroRefreshTokenEntity from './MikroRefreshTokenEntity'
 
-@Entity()
+@Entity({ tableName: 'users' })
 export default class MikroUserEntity extends MikroBaseEntity {
   @Property()
   name!: string
