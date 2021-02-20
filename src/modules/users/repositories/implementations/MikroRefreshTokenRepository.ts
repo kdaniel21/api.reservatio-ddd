@@ -1,7 +1,7 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/core'
-import UserRefreshToken from '@modules/users/domain/UserRefreshToken'
 import MikroRefreshTokenEntity from '@modules/users/infra/database/MikroORM/entities/MikroRefreshTokenEntity'
 import RefreshTokenRepository from '../RefreshTokenRepository'
+import UserRefreshToken from '@modules/users/domain/UserRefreshToken'
 
 export default class MikroRefreshTokenRepository
   extends EntityRepository<MikroRefreshTokenEntity>

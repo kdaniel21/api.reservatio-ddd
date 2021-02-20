@@ -1,6 +1,6 @@
-import UserRepository from '@modules/users/repositories/UserRepository'
-import { ErrorOr } from '@shared/core/DomainError'
 import UseCase from '@shared/core/UseCase'
+import { ErrorOr } from '@shared/core/DomainError'
+import UserRepository from '@modules/users/repositories/UserRepository'
 import LoginDto from './LoginDto'
 import LoginResponseDto from './LoginResponseDto'
 

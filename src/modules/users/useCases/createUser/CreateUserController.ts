@@ -1,8 +1,8 @@
+import Koa from 'koa'
 import BaseController from '@shared/infra/http/models/BaseController'
 import CreateUserDto from './CreateUserDto'
 import { CreateUserError } from './CreateUserErrors'
 import CreateUserUseCase from './CreateUserUseCase'
-import Koa from 'koa'
 
 export default class CreateUserController extends BaseController {
   constructor(private useCase: CreateUserUseCase) {
