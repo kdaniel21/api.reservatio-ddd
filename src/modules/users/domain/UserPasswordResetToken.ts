@@ -9,8 +9,8 @@ export default class UserPasswordResetToken extends TokenEntity {
     EXPIRATION_HOURS: 12,
   }
 
-  private constructor(props: TokenEntityProps) {
-    super(props)
+  private constructor(props: TokenEntityProps, id?: UniqueID) {
+    super(props, id)
   }
 
   static create(props?: TokenEntityProps, id?: UniqueID): ErrorOr<UserPasswordResetToken> {
@@ -19,7 +19,7 @@ export default class UserPasswordResetToken extends TokenEntity {
     if (validPropsOrError.isFailure()) return Result.fail(validPropsOrError.error)
 
     const validProps = validPropsOrError.value as TokenEntityProps
-    const userPasswordResetToken = new UserPasswordResetToken(validProps)
+    const userPasswordResetToken = new UserPasswordResetToken(validProps, id)
     return Result.ok(userPasswordResetToken)
   }
 }

@@ -45,8 +45,8 @@ export abstract class TokenEntity extends Entity<TokenEntityProps> {
   }
   
   isTokenValid(code: string): boolean {
-    let token = this.isHashed ? TextUtils.hashText(this.token) : this.token
-    return !this.isExpired && code.toUpperCase() === token.toUpperCase()
+    let hashedCode = this.isHashed ? TextUtils.hashText(code) : code
+    return !this.isExpired && hashedCode === this.token
   }
 
   getHashedValue(): string {
@@ -73,16 +73,7 @@ export abstract class TokenEntity extends Entity<TokenEntityProps> {
       { argument: props.expiresAt, argumentName: 'expiration' },
     ])
     if (!guardResultUndefined.isSuccess)
-      return Result.fail(
-        new AppError.UndefinedArgumentError(guardResultUndefined.message as string)
-      )
-
-    const guardResultLength = Guard.againstShorterThan(TOKEN_LENGTH, {
-      argument: props.token,
-      argumentName: 'token',
-    })
-    if (!guardResultLength.isSuccess)
-      return Result.fail(new AppError.InputShortError(guardResultLength.message as string))
+      return Result.fail(new AppError.UndefinedArgumentError(guardResultUndefined.message))
 
     return Result.ok(props)
   }

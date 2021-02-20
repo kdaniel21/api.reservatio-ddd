@@ -1,4 +1,6 @@
 import { AppError } from '@shared/core/AppError'
+import UniqueID from '@shared/domain/UniqueID'
+import TextUtils from '@shared/utils/TextUtils'
 import faker from 'faker'
 import UserPasswordResetToken from './UserPasswordResetToken'
 
@@ -13,45 +15,38 @@ describe('UserPasswordResetToken Value Object', () => {
   })
 
   it('should create a UserPasswordResetToken from existing data', () => {
+    const id = new UniqueID()
+    const plainTextToken = faker.random.alpha({
+      count: UserPasswordResetToken.tokenOptions.TOKEN_LENGTH,
+    })
     const existingToken = {
-      token: faker.random.alpha({ count: UserPasswordResetToken.tokenOptions.TOKEN_LENGTH }),
+      token: TextUtils.hashText(plainTextToken),
       expiresAt: faker.date.future(),
     }
 
-    const passwordResetTokenOrError = UserPasswordResetToken.create(existingToken)
+    const passwordResetTokenOrError = UserPasswordResetToken.create(existingToken, id)
 
     expect(passwordResetTokenOrError.isSuccess()).toBe(true)
     expect(passwordResetTokenOrError.isFailure()).toBe(false)
     expect(passwordResetTokenOrError.value?.isExpired).toBe(false)
-    expect(passwordResetTokenOrError.value?.isTokenValid(existingToken.token)).toBe(true)
+    expect(passwordResetTokenOrError.value?.isTokenValid(plainTextToken)).toBe(true)
   })
 
   it('should create an expired UserPasswordResetToken from existing data', () => {
+    const id = new UniqueID()
+    const plainTextToken = faker.random.alpha({
+      count: UserPasswordResetToken.tokenOptions.TOKEN_LENGTH,
+    })
     const existingToken = {
-      token: faker.random.alpha({ count: UserPasswordResetToken.tokenOptions.TOKEN_LENGTH }),
+      token: TextUtils.hashText(plainTextToken),
       expiresAt: faker.date.past(),
     }
 
-    const passwordResetTokenOrError = UserPasswordResetToken.create(existingToken)
+    const passwordResetTokenOrError = UserPasswordResetToken.create(existingToken, id)
 
     expect(passwordResetTokenOrError.isSuccess()).toBe(true)
     expect(passwordResetTokenOrError.isFailure()).toBe(false)
     expect(passwordResetTokenOrError.value?.isExpired).toBe(true)
-    expect(passwordResetTokenOrError.value?.isTokenValid(existingToken.token)).toBe(false)
-  })
-
-  it('should fail when using a token that is less than the minimum length', () => {
-    const existingToken = {
-      token: faker.random.alpha({
-        count: UserPasswordResetToken.tokenOptions.TOKEN_LENGTH - 2,
-      }),
-      expiresAt: faker.date.future(),
-    }
-
-    const passwordResetTokenOrError = UserPasswordResetToken.create(existingToken)
-
-    expect(passwordResetTokenOrError.isSuccess()).toBe(false)
-    expect(passwordResetTokenOrError.isFailure()).toBe(true)
-    expect(passwordResetTokenOrError.error).toBeInstanceOf(AppError.InputShortError)
+    expect(passwordResetTokenOrError.value?.isTokenValid(plainTextToken)).toBe(false)
   })
 })
