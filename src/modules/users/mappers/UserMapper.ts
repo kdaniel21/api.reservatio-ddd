@@ -1,11 +1,11 @@
 import UniqueID from '@shared/domain/UniqueID'
-import logger from '@shared/infra/Logger/logger'
+import BaseMapper from '@shared/infra/BaseMapper'
 import User from '../domain/User'
 import UserEmail from '../domain/UserEmail'
 import UserName from '../domain/UserName'
 import UserPassword from '../domain/UserPassword'
 import UserDto from '../DTOs/UserDto'
-import BaseMapper from '@shared/infra/BaseMapper'
+import logger from '@shared/infra/Logger/logger'
 
 export default class UserMapper implements BaseMapper<User> {
   static toDto(user: User): UserDto {
