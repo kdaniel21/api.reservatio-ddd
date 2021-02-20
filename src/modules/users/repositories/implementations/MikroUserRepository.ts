@@ -20,7 +20,7 @@ export default class MikroUserRepository
 
   async save(user: User): Promise<void> {
     const mikroUser = await this.toOrmEntity(user)
-
+    
     await this.em.persistAndFlush(mikroUser)
   }
 
@@ -56,6 +56,7 @@ export default class MikroUserRepository
       password,
       passwordResetToken,
       passwordResetTokenExpiresAt: user.passwordResetToken?.expiresAt,
+      refreshTokens,
     })
   }
 }

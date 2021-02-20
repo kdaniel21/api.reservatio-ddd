@@ -13,8 +13,8 @@ export default class MikroUserEntity extends MikroBaseEntity {
   @Property()
   password!: string
 
-  // @OneToMany(() => MikroRefreshTokenEntity, refreshToken => refreshToken.userId)
-  // refreshTokens = new Collection<MikroRefreshTokenEntity>(this)
+  @OneToMany(() => MikroRefreshTokenEntity, refreshToken => refreshToken.userId)
+  refreshTokens = new Collection<MikroRefreshTokenEntity>(this)
 
   @Property()
   passwordResetToken?: string
