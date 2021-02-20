@@ -12,7 +12,7 @@ import UseCase from '@shared/core/UseCase'
 import CreateUserDto from './CreateUserDto'
 import { CreateUserError } from './CreateUserErrors'
 
-export default class CreateUserUseCase implements UseCase<CreateUserDto, ErrorOr<UserDto>> {
+export default class CreateUserUseCase implements UseCase<CreateUserDto, UserDto> {
   constructor(private userRepo: UserRepository) {}
 
   async execute(request: CreateUserDto): Promise<ErrorOr<UserDto>> {
