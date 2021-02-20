@@ -1,6 +1,5 @@
-import User from '../domain/User'
+import BaseRepository from '@shared/infra/BaseRepository'
 
-export default interface UserRepository {
+export default interface UserRepository extends BaseRepository {
   existsByEmail(email: string): Promise<boolean>
-  save(user: User): Promise<User>
 }
