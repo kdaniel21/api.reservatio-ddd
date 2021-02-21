@@ -1,5 +1,5 @@
 import AggregateRoot from '../AggregateRoot'
-import { DomainEvent } from '../DomainEvent'
+import { DomainEvent } from './DomainEvent'
 import UniqueID from '../UniqueID'
 
 export default class DomainEvents {

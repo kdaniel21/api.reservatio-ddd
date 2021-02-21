@@ -1,5 +1,5 @@
 import logger from '@shared/infra/Logger/logger'
-import { DomainEvent } from './DomainEvent'
+import { DomainEvent } from './events/DomainEvent'
 import Entity from './Entity'
 import DomainEvents from './events/DomainEvents';
 import UniqueID from './UniqueID'
