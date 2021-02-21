@@ -4,7 +4,7 @@ import UniqueID from '../UniqueID'
 import logger from '@shared/infra/Logger/logger'
 
 export default class DomainEvents {
-  private static handlersMap: { [eventClassName: string]: any } = {}
+  private static handlersMap: { [eventClassName: string] any } = {}
   private static markedAggregatesList: AggregateRoot<any>[] = []
 
   static markAggregateForDispatch(aggregate: AggregateRoot<any>): void {
@@ -13,7 +13,7 @@ export default class DomainEvents {
 
     this.markedAggregatesList.push(aggregate)
     logger.info(
-      `[EVENTS]: Aggregate ${aggregate.id} has been marked for dispatch. Waiting for ORM to complete transaction...`
+      `[EVENTS] Aggregate ${aggregate.id} has been marked for dispatch. Waiting for ORM to complete transaction...`
     )
   }
 
@@ -33,7 +33,7 @@ export default class DomainEvents {
 
     this.handlersMap[eventClassName].push(handler)
     logger.info(
-      `[EVENTS]: Handler ${handler.name} for ${eventClassName} event has been registered.`
+      `[EVENTS] Handler ${handler.name} for ${eventClassName} event has been registered.`
     )
   }
 
@@ -53,7 +53,7 @@ export default class DomainEvents {
     if (!handlers) return
 
     logger.info(
-      `[EVENTS]: ${handlers.length} handlers have been dispatched for event ${eventClassName}.`
+      `[EVENTS] ${handlers.length} handlers have been dispatched for event ${eventClassName}.`
     )
     handlers.forEach(handler => {
       handler(domainEvent)
@@ -66,6 +66,6 @@ export default class DomainEvents {
     )
 
     this.markedAggregatesList.splice(aggregateIndex, 1)
-    logger.info(`[EVENTS]: Aggregate ${aggregate.id} has been removed from dispatch list.`)
+    logger.info(`[EVENTS] Aggregate ${aggregate.id} has been removed from dispatch list.`)
   }
 }

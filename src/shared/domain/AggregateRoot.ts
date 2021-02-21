@@ -26,7 +26,7 @@ export default abstract class AggregateRoot<T> extends Entity<T> {
     const thisClass = Reflect.getPrototypeOf(this)
     const domainEventClass = Reflect.getPrototypeOf(domainEvent)
     logger.info(
-      `[EVENTS]: ${thisClass.constructor.name} => ${domainEventClass.constructor.name}`
+      `[EVENTS] ${thisClass.constructor.name} => ${domainEventClass.constructor.name}`
     )
   }
 }

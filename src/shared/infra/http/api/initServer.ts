@@ -20,12 +20,12 @@ export default (orm: MikroORM): Koa => {
     .use(v1Router.routes())
     .use(v1Router.allowedMethods())
 
-  logger.info('[Koa API]: Initializing server...')
+  logger.info('[Koa API] Initializing server...')
 
   // TODO: Use environment variables - JSON vs POJO vs .env
   const port = 3000
   app.listen(port).on('listening', () => {
-    logger.info(`[Koa API]: Server is listening on port ${port}`)
+    logger.info(`[Koa API] Server is listening on port ${port}`)
   })
 
   initErrorListener(app)

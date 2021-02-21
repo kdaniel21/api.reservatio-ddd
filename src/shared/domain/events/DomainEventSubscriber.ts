@@ -8,7 +8,7 @@ export default abstract class DomainEventSubscriber {
   }
 
   initSubscriber(eventClassName: string): void {
-    logger.info(`[EVENTS]: Initializing subscriber ${this.constructor.name}...`)
+    logger.info(`[EVENTS] Initializing subscriber ${this.constructor.name}...`)
     DomainEvents.registerHandler(this.handleEvent.bind(this), eventClassName)
   }
 

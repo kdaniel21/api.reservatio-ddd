@@ -1,5 +1,5 @@
 interface ValueObjectProps {
-  [key: string]: any
+  [key: string] any
 }
 
 export default abstract class ValueObject<T extends ValueObjectProps> {
