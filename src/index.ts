@@ -10,8 +10,8 @@ const initApplication = async () => {
   const initServer = require('./shared/infra/http/api/initServer').default
   initServer(orm)
 
-  // Load subscribers
-  require('@modules/users/subscribers/index')
+  // Load modules
+  require('@modules/users')
 }
 
 initApplication()
