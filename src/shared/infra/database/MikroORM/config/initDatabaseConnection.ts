@@ -6,6 +6,8 @@ export let entityManager: EntityManager
 
 export const initDatabaseConnection = async (): Promise<MikroORM> => {
   try {
+    logger.info('[MikroORM] Initializing DB connection...')
+
     mikroOrmInstance = await MikroORM.init()
     const isConnected = await mikroOrmInstance.isConnected()
     if (!isConnected) throw new Error()
