@@ -4,7 +4,7 @@ import UniqueID from '../UniqueID'
 import logger from '@shared/infra/Logger/logger'
 
 export default class DomainEvents {
-  private static handlersMap: { [eventClassName: string] any } = {}
+  private static handlersMap: { [eventClassName: string]: any } = {}
   private static markedAggregatesList: AggregateRoot<any>[] = []
 
   static markAggregateForDispatch(aggregate: AggregateRoot<any>): void {
