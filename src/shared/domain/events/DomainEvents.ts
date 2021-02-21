@@ -32,9 +32,7 @@ export default class DomainEvents {
     }
 
     this.handlersMap[eventClassName].push(handler)
-    logger.info(
-      `[EVENTS] Handler ${handler.name} for ${eventClassName} event has been registered.`
-    )
+    logger.info(`[EVENTS] Handler for ${eventClassName} event has been registered.`)
   }
 
   private static findMarkedAggregateById(id: UniqueID): AggregateRoot<any> | undefined {
