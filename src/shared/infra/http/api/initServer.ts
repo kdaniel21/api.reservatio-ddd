@@ -23,7 +23,7 @@ export default (orm: MikroORM): Koa => {
   // TODO: Use environment variables - JSON vs POJO vs .env
   const port = 3000
   app.listen(port).on('listening', () => {
-    logger.info(`Server is listening on port ${port}`)
+    logger.info(`[KOA API]: Server is listening on port ${port}`)
   })
 
   initErrorListener(app)
