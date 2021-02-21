@@ -7,13 +7,15 @@ export let entityManager: EntityManager
 export const initDatabaseConnection = async (): Promise<MikroORM> => {
   try {
     mikroOrmInstance = await MikroORM.init()
-    entityManager = mikroOrmInstance.em
+    const isConnected = await mikroOrmInstance.isConnected()
+    if (!isConnected) throw new Error()
 
     logger.info('[MikroORM] Successfully connected to the DB!')
-
+        
+    entityManager = mikroOrmInstance.em
     return mikroOrmInstance
   } catch (err) {
-    logger.fatal(`[MikroORM]: Fatal Error - Could not connect to the database!`, err)
+    logger.fatal(`[MikroORM] Fatal error while connecting to the DB!`)
     logger.fatal('Terminating application...')
     process.exit()
   }
