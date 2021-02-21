@@ -6,6 +6,9 @@ const initApplication = async () => {
   // Delay loading of modules that depend on the ORM
   const initServer = require('./shared/infra/http/api/initServer').default
   initServer(orm)
+
+  // Load subscribers
+  require('@modules/users/subscribers/index')
 }
 
 initApplication()
