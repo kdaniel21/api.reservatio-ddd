@@ -6,11 +6,11 @@ export default class DomainEvents {
   private static handlersMap: { [eventClassName: string]: any } = {}
   private static markedAggregatesList: AggregateRoot<any>[] = []
 
-  static markAggregateForDispatch(aggreate: AggregateRoot<any>): void {
-    const isAggregateAlreadyMarked = !!this.findMarkedAggregateById(aggreate.id)
+  static markAggregateForDispatch(aggregate: AggregateRoot<any>): void {
+    const isAggregateAlreadyMarked = !!this.findMarkedAggregateById(aggregate.id)
     if (isAggregateAlreadyMarked) return
 
-    this.markedAggregatesList.push(aggreate)
+    this.markedAggregatesList.push(aggregate)
   }
 
   static dispatchEventsForAggregate(id: UniqueID): void {
@@ -22,10 +22,7 @@ export default class DomainEvents {
     this.removeAggregateFromDispatchList(aggregate)
   }
 
-  static registerHandler(
-    handler: (event: DomainEvent) => any,
-    eventClassName: string
-  ): void {
+  static registerHandler(handler: (event: DomainEvent) => any, eventClassName: string): void {
     if (!this.handlersMap[eventClassName]) {
       this.handlersMap[eventClassName] = []
     }
