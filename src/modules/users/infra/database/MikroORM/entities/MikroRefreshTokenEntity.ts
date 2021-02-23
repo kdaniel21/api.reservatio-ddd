@@ -1,4 +1,4 @@
-import { Entity, EntityData, Property } from '@mikro-orm/core'
+import { Entity, ManyToOne, Property } from '@mikro-orm/core'
 import MikroBaseEntity from '@shared/infra/database/MikroORM/entities/MikroBaseEntity'
 import MikroUserEntity from './MikroUserEntity'
 
@@ -10,11 +10,6 @@ export default class MikroRefreshTokenEntity extends MikroBaseEntity {
   @Property()
   expiresAt!: Date
 
-  @Property()
+  @ManyToOne()
   userId!: MikroUserEntity
-
-  constructor(refreshTokenEntityProps: EntityData<MikroRefreshTokenEntity>) {
-    super()
-    Object.assign(this, refreshTokenEntityProps)
-  }
 }

@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/core'
+import { Collection, EntityManager, wrap } from '@mikro-orm/core'
 import User from '@modules/users/domain/User'
 import MikroRefreshTokenEntity from '@modules/users/infra/database/MikroORM/entities/MikroRefreshTokenEntity'
 import MikroUserEntity from '@modules/users/infra/database/MikroORM/entities/MikroUserEntity'
@@ -45,27 +45,34 @@ export default class MikroUserRepository implements UserRepository<MikroUserEnti
     const { isAdmin, isDeleted, isEmailConfirmed } = user
 
     let passwordResetToken
-    if (user.passwordResetToken) {
+    if (user.passwordResetToken)
       passwordResetToken = user.passwordResetToken.isHashed
         ? user.passwordResetToken.token
         : user.passwordResetToken.getHashedValue()
-    }
 
     const refreshTokens = user.refreshTokens.map(refreshToken =>
       this.refreshTokenRepo.toOrmEntity(refreshToken)
     )
 
-    return new MikroUserEntity({
-      id: user.userId.toString(),
-      name: user.name.value,
-      email: user.email.value,
-      isAdmin,
-      isDeleted,
-      isEmailConfirmed,
-      password: await user.password.getHashedValue(),
-      passwordResetToken,
-      passwordResetTokenExpiresAt: user.passwordResetToken?.expiresAt,
-      refreshTokens,
-    })
+    return this.em.create(
+      MikroUserEntity,
+      {
+        id: user.userId.toString(),
+        name: user.name.value,
+        email: user.email.value,
+        isAdmin: true,
+        isDeleted,
+        isEmailConfirmed,
+        password: await user.password.getHashedValue(),
+        passwordResetToken: 'foobar',
+        passwordResetTokenExpiresAt: user.passwordResetToken?.expiresAt,
+        refreshTokens,
+      },
+      { managed: false }
+    )
+
+    // refreshTokens.forEach(token => mikroUser.refreshTokens.add(token))
+
+    // return mikroUser
   }
 }

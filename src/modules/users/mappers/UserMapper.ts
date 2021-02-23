@@ -23,6 +23,8 @@ export default class UserMapper implements BaseMapper<User> {
     const nameOrError = UserName.create(raw.name)
     const passwordOrError = UserPassword.create({ password: raw.password, isHashed: true })
 
+    const id = raw.id ? new UniqueID(raw.id) : null
+
     const userOrError = User.create(
       {
         email: emailOrError.value,
@@ -32,7 +34,7 @@ export default class UserMapper implements BaseMapper<User> {
         isDeleted: raw.isDeleted,
         isAdmin: raw.isAdmin,
       },
-      new UniqueID(raw.id)
+      id
     )
 
     if (userOrError.isFailure()) logger.error(userOrError.error.error.message)

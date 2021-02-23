@@ -30,9 +30,4 @@ export default class MikroUserEntity extends MikroBaseEntity {
 
   @Property()
   isEmailConfirmed: boolean = false
-
-  constructor(userEntityProps: EntityData<MikroUserEntity>) {
-    super()
-    Object.assign(this, userEntityProps)
-  }
 }
