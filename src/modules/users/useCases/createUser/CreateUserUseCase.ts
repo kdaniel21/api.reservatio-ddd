@@ -12,10 +12,12 @@ import UserRepository from '@modules/users/repositories/UserRepository'
 import CreateUserDto from './CreateUserDto'
 import { CreateUserError } from './CreateUserErrors'
 
-export default class CreateUserUseCase implements UseCase<CreateUserDto, UserDto> {
-  constructor(private userRepo: UserRepository) {}
+export default class CreateUserUseCase extends UseCase<CreateUserDto, UserDto> {
+  constructor(private userRepo: UserRepository) {
+    super()
+  }
 
-  async execute(request: CreateUserDto): Promise<ErrorOr<UserDto>> {
+  async executeImpl(request: CreateUserDto): Promise<ErrorOr<UserDto>> {
     const emailOrError = UserEmail.create(request.email)
     const nameOrError = UserName.create(request.name)
     const passwordOrError = UserPassword.create({ password: request.password })
@@ -27,21 +29,17 @@ export default class CreateUserUseCase implements UseCase<CreateUserDto, UserDto
     const name = nameOrError.value
     const password = passwordOrError.value
 
-    try {
-      const isEmailAlreadyRegistered = await this.userRepo.existsByEmail(email.value)
-      if (isEmailAlreadyRegistered)
-        return Result.fail(new CreateUserError.EmailAlreadyExistsError(email.value))
+    const isEmailAlreadyRegistered = await this.userRepo.existsByEmail(email.value)
+    if (isEmailAlreadyRegistered)
+      return Result.fail(new CreateUserError.EmailAlreadyExistsError(email.value))
 
-      const createdUserOrError = User.create({ email, name, password })
-      if (createdUserOrError.isFailure()) return Result.fail(createdUserOrError.error)
+    const createdUserOrError = User.create({ email, name, password })
+    if (createdUserOrError.isFailure()) return Result.fail(createdUserOrError.error)
 
-      const createdUser = createdUserOrError.value
-      await this.userRepo.save(createdUser)
+    const createdUser = createdUserOrError.value
+    await this.userRepo.save(createdUser)
 
-      const userDto = UserMapper.toDto(createdUser)
-      return Result.ok(userDto)
-    } catch (err) {
-      return Result.fail(new AppError.UnexpectedError())
-    }
+    const userDto = UserMapper.toDto(createdUser)
+    return Result.ok(userDto)
   }
 }

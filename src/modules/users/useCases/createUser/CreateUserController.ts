@@ -9,23 +9,19 @@ export default class CreateUserController extends BaseController {
     super()
   }
 
-  async executeImpl(ctx: Koa.Context): Promise<void> {
+  protected async executeImpl(ctx: Koa.Context): Promise<void> {
     let dto: CreateUserDto = ctx.request.body as CreateUserDto
 
-    try {
-      const result = await this.useCase.execute(dto)
+    const result = await this.useCase.execute(dto)
 
-      if (!result.isFailure()) return this.ok(ctx, result.value)
+    if (!result.isFailure()) return this.ok(ctx, result.value)
 
-      const error = result.error
-      switch (error.constructor) {
-        case CreateUserError.EmailAlreadyExistsError:
-          return this.fail(ctx, error.error)
-        default:
-          return this.fail(ctx, error.error)
-      }
-    } catch (err) {
-      this.error(ctx)
+    const error = result.error
+    switch (error.constructor) {
+      case CreateUserError.EmailAlreadyExistsError:
+        return this.fail(ctx, error.error)
+      default:
+        return this.fail(ctx, error.error)
     }
   }
 }

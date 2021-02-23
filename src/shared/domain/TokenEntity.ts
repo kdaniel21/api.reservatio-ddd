@@ -7,8 +7,8 @@ import UniqueID from './UniqueID'
 import Entity from './Entity'
 
 export interface TokenEntityProps {
-  token: string
-  expiresAt: Date
+  token?: string
+  expiresAt?: Date
 }
 
 export interface TokenEntityOptions {
