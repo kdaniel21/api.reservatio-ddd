@@ -88,4 +88,25 @@ describe('CreateUserUseCase', () => {
     expect(result.isFailure()).toBe(true)
     expect(result.error).toBeInstanceOf(AppError.UnexpectedError)
   })
+
+  it('should not allow to create a user with isAdmin: true', async () => {
+    const request = {
+      email: faker.internet.email().toLowerCase(),
+      name: faker.name.findName(),
+      password: 'Th1sIsAG00dP4ssw0rd',
+      isAdmin: true,
+    } as CreateUserDto
+    mocked(userRepo).existsByEmail.mockResolvedValueOnce(false)
+
+    const result = await useCase.execute(request)
+
+    expect(result.isSuccess()).toBe(true)
+    expect(result.isFailure()).toBe(false)
+    expect(result.value.email).toBe(request.email)
+    expect(result.value.name).toBe(request.name)
+    expect(result.value.isAdmin).toBe(false)
+    expect(result.value.isDeleted).toBe(false)
+    expect(result.value.isEmailConfirmed).toBe(false)
+    expect(userRepo.save).toBeCalled()
+  })
 })
