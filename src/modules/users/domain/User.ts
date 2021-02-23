@@ -90,13 +90,16 @@ export default class User extends AggregateRoot<UserProps> {
       return Result.fail(new AppError.UndefinedArgumentError(guardResult.message as string))
 
     const isNewUser = !!id
-    const user = new User({
-      ...props,
-      refreshTokens: props.refreshTokens || [],
-      isEmailConfirmed: props.isEmailConfirmed || false,
-      isAdmin: props.isAdmin || false,
-      isDeleted: props.isDeleted || false,
-    })
+    const user = new User(
+      {
+        ...props,
+        refreshTokens: props.refreshTokens || [],
+        isEmailConfirmed: props.isEmailConfirmed || false,
+        isAdmin: props.isAdmin || false,
+        isDeleted: props.isDeleted || false,
+      },
+      id
+    )
 
     // TODO: Emit new user event
     // if (isNewUser)
