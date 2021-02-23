@@ -1,4 +1,4 @@
-import { DomainEvent } from '@shared/domain/DomainEvent'
+import { DomainEvent } from '@shared/domain/events/DomainEvent'
 import UniqueID from '@shared/domain/UniqueID'
 import User from '../User'
 

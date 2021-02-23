@@ -1,4 +1,4 @@
-import UniqueID from './UniqueID'
+import UniqueID from '../UniqueID'
 
 export interface DomainEvent {
   dateTime: Date

@@ -1,8 +1,7 @@
 import logger from '@shared/infra/Logger/logger'
-import { DomainEvent } from './DomainEvent'
+import { DomainEvent } from './events/DomainEvent'
 import Entity from './Entity'
-import DomainEvents from './events/DomainEvents';
-import UniqueID from './UniqueID'
+import DomainEvents from './events/DomainEvents'
 
 export default abstract class AggregateRoot<T> extends Entity<T> {
   private events: DomainEvent[] = []
@@ -18,7 +17,6 @@ export default abstract class AggregateRoot<T> extends Entity<T> {
   protected addDomainEvent(domainEvent: DomainEvent): void {
     this.events.push(domainEvent)
 
-    // TODO: mark aggregate for dispatch
     DomainEvents.markAggregateForDispatch(this)
 
     this.logDomainEventAdded(domainEvent)
@@ -28,7 +26,7 @@ export default abstract class AggregateRoot<T> extends Entity<T> {
     const thisClass = Reflect.getPrototypeOf(this)
     const domainEventClass = Reflect.getPrototypeOf(domainEvent)
     logger.info(
-      `[Domain Event Created]: ${thisClass.constructor.name} => ${domainEventClass.constructor.name}`
+      `[EVENTS]: ${thisClass.constructor.name} => ${domainEventClass.constructor.name}`
     )
   }
 }
