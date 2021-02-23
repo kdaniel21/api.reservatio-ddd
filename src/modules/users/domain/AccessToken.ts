@@ -4,4 +4,4 @@ export interface JwtPayload {
   isAdmin: boolean
 }
 
-export type JwtToken = String
+export type JwtToken = string
