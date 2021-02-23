@@ -1,6 +1,4 @@
-import { entityManager } from '@shared/infra/database/MikroORM/config/initDatabaseConnection'
 import prisma from '@shared/infra/database/prisma/prisma'
-import MikroRefreshTokenRepository from './implementations/MikroRefreshTokenRepository'
 import PrismaRefreshTokenRepository from './implementations/PrismaRefreshTokenRepository';
 import PrismaUserRepository from './implementations/PrismaUserRepository'
 
