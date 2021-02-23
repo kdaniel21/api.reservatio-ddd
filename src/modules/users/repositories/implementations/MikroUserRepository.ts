@@ -3,10 +3,14 @@ import User from '@modules/users/domain/User'
 import MikroRefreshTokenEntity from '@modules/users/infra/database/MikroORM/entities/MikroRefreshTokenEntity'
 import MikroUserEntity from '@modules/users/infra/database/MikroORM/entities/MikroUserEntity'
 import UserMapper from '@modules/users/mappers/UserMapper'
+import RefreshTokenRepository from '../RefreshTokenRepository'
 import UserRepository from '../UserRepository'
 
 export default class MikroUserRepository implements UserRepository<MikroUserEntity> {
-  constructor(private em: EntityManager) {}
+  constructor(
+    private em: EntityManager,
+    private refreshTokenRepo: RefreshTokenRepository<MikroRefreshTokenEntity>
+  ) {}
 
   async findByEmail(email: string): Promise<User | null> {
     return this.findOne({ email })
@@ -39,9 +43,6 @@ export default class MikroUserRepository implements UserRepository<MikroUserEnti
 
   async toOrmEntity(user: User): Promise<MikroUserEntity> {
     const { isAdmin, isDeleted, isEmailConfirmed } = user
-    const password = user.password.isHashed
-      ? user.password.value
-      : await user.password.getHashedValue()
 
     let passwordResetToken
     if (user.passwordResetToken) {
@@ -50,14 +51,9 @@ export default class MikroUserRepository implements UserRepository<MikroUserEnti
         : user.passwordResetToken.getHashedValue()
     }
 
-    const refreshTokens = user.refreshTokens.map(refreshToken => {
-      return new MikroRefreshTokenEntity({
-        id: refreshToken.id.toString(),
-        token: refreshToken.isHashed ? refreshToken.token : refreshToken.getHashedValue(),
-        expiresAt: refreshToken.expiresAt,
-        userId: user.userId.toString(),
-      })
-    })
+    const refreshTokens = user.refreshTokens.map(refreshToken =>
+      this.refreshTokenRepo.toOrmEntity(refreshToken)
+    )
 
     return new MikroUserEntity({
       id: user.userId.toString(),
@@ -66,7 +62,7 @@ export default class MikroUserRepository implements UserRepository<MikroUserEnti
       isAdmin,
       isDeleted,
       isEmailConfirmed,
-      password,
+      password: await user.password.getHashedValue(),
       passwordResetToken,
       passwordResetTokenExpiresAt: user.passwordResetToken?.expiresAt,
       refreshTokens,

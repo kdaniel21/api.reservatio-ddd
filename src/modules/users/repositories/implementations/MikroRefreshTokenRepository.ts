@@ -1,16 +1,17 @@
-import { EntityManager, EntityRepository } from '@mikro-orm/core'
+import { EntityManager } from '@mikro-orm/core'
 import MikroRefreshTokenEntity from '@modules/users/infra/database/MikroORM/entities/MikroRefreshTokenEntity'
 import RefreshTokenRepository from '../RefreshTokenRepository'
 import UserRefreshToken from '@modules/users/domain/UserRefreshToken'
 
 export default class MikroRefreshTokenRepository
-  extends EntityRepository<MikroRefreshTokenEntity>
-  implements RefreshTokenRepository {
-  constructor(entityManager: EntityManager) {
-    super(entityManager, MikroRefreshTokenEntity)
-  }
+  implements RefreshTokenRepository<MikroRefreshTokenEntity> {
+  constructor(private em: EntityManager) {}
 
-  async save() {}
+  async save(): Promise<any> {}
+
+  async findOne(): Promise<any> {}
+
+  async findMany(): Promise<any> {}
 
   toOrmEntity(refreshToken: UserRefreshToken): MikroRefreshTokenEntity {
     return new MikroRefreshTokenEntity({
