@@ -40,9 +40,5 @@ export default class PrismaUserRepository implements UserRepository<PrismaUser> 
       update: userObject,
       where: { id: user.id.toString() },
     })
-
-    for (const refreshToken of user.refreshTokens) {
-      await this.refreshTokenRepo.save(refreshToken)
-    }
   }
 }

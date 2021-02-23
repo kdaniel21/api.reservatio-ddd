@@ -9,10 +9,12 @@ import UserMapper from '@modules/users/mappers/UserMapper'
 import RefreshTokenMapper from '@modules/users/mappers/RefreshTokenMapper'
 import AuthService from '@modules/users/services/AuthService'
 import { JwtPayload, JwtToken } from '@modules/users/domain/AccessToken'
+import RefreshTokenRepository from '@modules/users/repositories/RefreshTokenRepository'
 
 export default class LoginUseCase extends UseCase<LoginDto, LoginResponseDto> {
   constructor(
     private userRepo: UserRepository,
+    private refreshTokenRepo: RefreshTokenRepository,
     private authService: AuthService<JwtToken, JwtPayload>
   ) {
     super()
@@ -31,13 +33,16 @@ export default class LoginUseCase extends UseCase<LoginDto, LoginResponseDto> {
     const refreshTokenOrError = user.createRefreshToken()
     if (refreshTokenOrError.isFailure()) return Result.fail(refreshTokenOrError.error)
 
+    const refreshToken = refreshTokenOrError.value
     const accessToken = this.authService.createAccessToken(user)
 
     await this.userRepo.save(user)
 
+    await this.refreshTokenRepo.save(refreshToken)
+
     return Result.ok({
       user: UserMapper.toDto(user),
-      refreshToken: RefreshTokenMapper.toDto(refreshTokenOrError.value),
+      refreshToken: RefreshTokenMapper.toDto(refreshToken),
       accessToken,
     })
   }
