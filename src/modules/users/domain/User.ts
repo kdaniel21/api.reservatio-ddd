@@ -8,7 +8,7 @@ import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import UserPasswordResetToken from './UserPasswordResetToken'
 import { AppError } from '@shared/core/AppError'
-import UserRefreshToken from './UserRefreshToken'
+import UserRefreshToken, { UserRefreshTokenProps } from './UserRefreshToken'
 
 interface UserProps {
   email: UserEmail
@@ -62,6 +62,17 @@ export default class User extends AggregateRoot<UserProps> {
     if (!this.props.refreshTokens) return false
 
     return this.props.refreshTokens?.some(refreshToken => refreshToken.isTokenValid(token))
+  }
+
+  createRefreshToken(): ErrorOr<UserRefreshToken> {
+    const { userId } = this
+    const newRefreshTokenOrError = UserRefreshToken.create({ userId })
+    if (newRefreshTokenOrError.isFailure()) return Result.fail(newRefreshTokenOrError.error)
+
+    const newRefreshToken = newRefreshTokenOrError.value
+    this.refreshTokens.push(newRefreshToken)
+
+    return Result.ok(newRefreshToken)
   }
 
   private constructor(props: UserProps, id?: UniqueID) {
