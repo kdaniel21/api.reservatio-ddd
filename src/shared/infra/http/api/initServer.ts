@@ -3,12 +3,11 @@ import bodyParser from 'koa-bodyparser'
 import helmet from 'koa-helmet'
 import cors from '@koa/cors'
 import morgan from 'koa-morgan'
-import { MikroORM, RequestContext } from '@mikro-orm/core'
 import logger from '@shared/infra/Logger/logger'
 import initErrorListener from './initErrorListener'
 import v1Router from './v1Router'
 
-export default (orm: MikroORM): Koa => {
+export default (): Koa => {
   const app = new Koa()
 
   app
@@ -16,7 +15,6 @@ export default (orm: MikroORM): Koa => {
     .use(helmet())
     .use(cors())
     .use(morgan('dev'))
-    .use((ctx: Koa.Context, next: Koa.Next) => RequestContext.createAsync(orm.em, next))
     .use(v1Router.routes())
     .use(v1Router.allowedMethods())
 

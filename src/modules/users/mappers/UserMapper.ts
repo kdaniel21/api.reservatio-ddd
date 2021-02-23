@@ -6,6 +6,7 @@ import UserName from '../domain/UserName'
 import UserPassword from '../domain/UserPassword'
 import UserDto from '../DTOs/UserDto'
 import logger from '@shared/infra/Logger/logger'
+import RefreshTokenMapper from './RefreshTokenMapper'
 
 export default class UserMapper implements BaseMapper<User> {
   static toDto(user: User): UserDto {
@@ -40,5 +41,26 @@ export default class UserMapper implements BaseMapper<User> {
     if (userOrError.isFailure()) logger.error(userOrError.error.error.message)
 
     return userOrError.value
+  }
+
+  static async toObject(user: User) {
+    const { isAdmin, isDeleted, isEmailConfirmed } = user
+
+    const refreshTokens = user.refreshTokens.map(refreshToken =>
+      RefreshTokenMapper.toObject(refreshToken)
+    )
+
+    return {
+      id: user.userId.toString(),
+      name: user.name.value,
+      email: user.email.value,
+      isAdmin,
+      isDeleted,
+      isEmailConfirmed,
+      password: await user.password.getHashedValue(),
+      passwordResetToken: user.passwordResetToken?.token,
+      passwordResetTokenExpiresAt: user.passwordResetToken?.expiresAt,
+      refreshTokens,
+    }
   }
 }
