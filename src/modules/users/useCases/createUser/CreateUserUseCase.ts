@@ -1,23 +1,21 @@
 import UseCase from '@shared/core/UseCase'
 import { Result } from '@shared/core/Result'
-import { AppError } from '@shared/core/AppError'
 import { ErrorOr } from '@shared/core/DomainError'
 import User from '@modules/users/domain/User'
 import UserEmail from '@modules/users/domain/UserEmail'
 import UserName from '@modules/users/domain/UserName'
 import UserPassword from '@modules/users/domain/UserPassword'
-import UserDto from '@modules/users/DTOs/UserDto'
-import UserMapper from '@modules/users/mappers/UserMapper'
 import UserRepository from '@modules/users/repositories/UserRepository'
-import CreateUserDto from './CreateUserDto'
+import CreateUserDto from './DTOs/CreateUserDto'
 import { CreateUserError } from './CreateUserErrors'
+import CreateUserResponseDto from './DTOs/CreateUserResponseDto'
 
-export default class CreateUserUseCase extends UseCase<CreateUserDto, UserDto> {
+export default class CreateUserUseCase extends UseCase<CreateUserDto, CreateUserResponseDto> {
   constructor(private userRepo: UserRepository) {
     super()
   }
 
-  async executeImpl(request: CreateUserDto): Promise<ErrorOr<UserDto>> {
+  async executeImpl(request: CreateUserDto): Promise<ErrorOr<CreateUserResponseDto>> {
     const emailOrError = UserEmail.create(request.email)
     const nameOrError = UserName.create(request.name)
     const passwordOrError = UserPassword.create({ password: request.password })
@@ -39,7 +37,6 @@ export default class CreateUserUseCase extends UseCase<CreateUserDto, UserDto> {
     const createdUser = createdUserOrError.value
     await this.userRepo.save(createdUser)
 
-    const userDto = UserMapper.toDto(createdUser)
-    return Result.ok(userDto)
+    return Result.ok({ user: createdUser })
   }
 }

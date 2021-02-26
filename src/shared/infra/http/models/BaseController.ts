@@ -1,7 +1,7 @@
 import Koa from 'koa'
 import logger from '@shared/infra/Logger/logger'
 
-export default abstract class BaseController {
+export default abstract class BaseController<ResponseDto = any> {
   protected abstract executeImpl(ctx: Koa.Context): Promise<any> | any
 
   constructor() {}
@@ -15,7 +15,7 @@ export default abstract class BaseController {
     }
   }
 
-  protected ok<T>(ctx: Koa.Context, dto?: T): void {
+  protected ok(ctx: Koa.Context, dto?: ResponseDto): void {
     ctx.body = {
       status: 'success',
       data: { ...dto },
