@@ -4,6 +4,6 @@ import UserRefreshToken from '../domain/UserRefreshToken'
 
 export default interface AuthService<Token, Payload> {
   createAccessToken(user: User): Token
-  decodeAccessToken(token: Token, user: User): ErrorOr<Payload>
+  decodeAccessToken(token: Token): ErrorOr<Payload>
   createRefreshToken(user: User): Promise<ErrorOr<UserRefreshToken>>
 }

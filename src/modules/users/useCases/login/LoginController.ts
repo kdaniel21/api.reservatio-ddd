@@ -1,5 +1,5 @@
 import Koa from 'koa'
-import BaseController from '@shared/infra/http/models/BaseController'
+import BaseController from '@shared/infra/http/BaseController'
 import LoginUseCase from './LoginUseCase'
 import LoginDto from './DTOs/LoginDto'
 import RefreshTokenMapper from '@modules/users/mappers/RefreshTokenMapper'

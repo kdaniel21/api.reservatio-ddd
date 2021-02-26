@@ -1,5 +1,5 @@
 import Koa from 'koa'
-import BaseController from '@shared/infra/http/models/BaseController'
+import BaseController from '@shared/infra/http/BaseController'
 import RegisterControllerDto from './DTOs/RegisterControllerDto'
 import RegisterUseCase from './RegisterUseCase'
 import UserMapper from '@modules/users/mappers/UserMapper'

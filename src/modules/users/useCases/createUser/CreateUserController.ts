@@ -1,5 +1,5 @@
 import Koa from 'koa'
-import BaseController from '@shared/infra/http/models/BaseController'
+import BaseController from '@shared/infra/http/BaseController'
 import CreateUserDto from './DTOs/CreateUserDto'
 import { CreateUserError } from './CreateUserErrors'
 import CreateUserUseCase from './CreateUserUseCase'

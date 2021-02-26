@@ -1,5 +1,5 @@
 export class Failure<E, S = any> {
-  constructor(public readonly error: E) {}
+  constructor(public readonly error?: E) {}
 
   get value(): S {
     throw new Error('Cannot retrieve value from failed result.')
@@ -31,7 +31,7 @@ export class Success<E, S> {
 }
 
 export namespace Result {
-  export function fail<E, S = any>(error: E): Either<E, S> {
+  export function fail<E, S = any>(error?: E): Either<E, S> {
     return new Failure<E, S>(error)
   }
 
