@@ -6,8 +6,12 @@ import config from '@config'
 import { Result } from '@shared/core/Result'
 import InvalidAccessTokenError from '@modules/users/domain/errors/InvalidAccessTokenError'
 import { ErrorOr } from '@shared/core/DomainError'
+import RefreshTokenRepository from '@modules/users/repositories/RefreshTokenRepository'
+import UserRefreshToken from '@modules/users/domain/UserRefreshToken'
 
 export default class JwtAuthService implements AuthService<JwtToken, JwtPayload> {
+  constructor(private refreshTokenRepo: RefreshTokenRepository) {}
+
   createAccessToken(user: User): JwtToken {
     const payload: JwtPayload = {
       email: user.email.value,
@@ -24,5 +28,15 @@ export default class JwtAuthService implements AuthService<JwtToken, JwtPayload>
     const payload: JwtPayload = jwt.verify(token, config.auth.jwtSecretKey) as JwtPayload
 
     return payload ? Result.ok(payload) : Result.fail(new InvalidAccessTokenError())
+  }
+
+  async createRefreshToken(user: User): Promise<ErrorOr<UserRefreshToken>> {
+    const refreshTokenOrError = user.createRefreshToken()
+    if (refreshTokenOrError.isFailure()) return Result.fail(refreshTokenOrError.error)
+
+    const refreshToken = refreshTokenOrError.value
+    await this.refreshTokenRepo.save(refreshToken)
+
+    return Result.ok(refreshToken)
   }
 }
