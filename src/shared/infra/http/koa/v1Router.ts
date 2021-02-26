@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import usersRouter from '@modules/users/infra/http/api/routes'
+import usersRouter from '@modules/users/infra/http/koa/routes'
 
 const router = new Router()
 
