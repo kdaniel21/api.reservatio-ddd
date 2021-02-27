@@ -13,14 +13,14 @@ class PinoLogger implements Logger {
   private pinoLogger: pino.BaseLogger
 
   private defaultSettings: pino.LoggerOptions = {
-    prettyPrint: !config.production,
-    prettifier: !config.production ? pinoColada : null,
+    prettyPrint: config.isDevelopment,
+    prettifier: config.isDevelopment ? pinoColada : null,
   }
 
   constructor(level: string) {
     this.pinoLogger = pino({
       ...this.defaultSettings,
-      level: config.testing ? 'silent' : level,
+      level: config.isTesting ? 'silent' : level,
     })
   }
 

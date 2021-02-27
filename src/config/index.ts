@@ -1,13 +1,12 @@
 import authConfig from './auth'
-import database from './database'
 
 const config = {
-  production: process.env.NODE_ENV === 'production',
-  testing: process.env.NODE_ENV === 'test',
+  isProduction: process.env.NODE_ENV === 'prod' || process.env.NODE_ENV === 'production',
+  isTesting: process.env.NODE_ENV === 'test',
+  isDevelopment: process.env.NODE_ENV === 'development',
 }
 
 export default {
   ...config,
   auth: { ...authConfig },
-  database: { ...database },
 }
