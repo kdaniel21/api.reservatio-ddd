@@ -1,3 +1,4 @@
+import Joi from 'joi'
 import BaseController from '@shared/infra/http/BaseController'
 import CreateUserDto from './DTOs/CreateUserDto'
 import { CreateUserError } from './CreateUserErrors'
@@ -10,6 +11,13 @@ export default class CreateUserController extends BaseController<CreateUserContr
   constructor(private useCase: CreateUserUseCase) {
     super()
   }
+
+  protected validationSchema = Joi.object({
+    name: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).required(),
+    passwordConfirm: Joi.ref('password'),
+  })
 
   protected async executeImpl(ctx: KoaContext): Promise<void> {
     let dto: CreateUserDto = ctx.request.body as CreateUserDto

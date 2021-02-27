@@ -1,3 +1,4 @@
+import Joi from 'joi'
 import BaseController from '@shared/infra/http/BaseController'
 import KoaContext from '@shared/infra/http/koa/KoaContext'
 import RefreshAccessTokenDto from './DTOs/RefreshAccessTokenDto'
@@ -8,6 +9,11 @@ export default class RefreshAccessTokenController extends BaseController<Refresh
   constructor(private useCase: RefreshAccessTokenUseCase) {
     super()
   }
+
+  protected validationSchema = Joi.object({
+    refreshToken: Joi.string().token().optional(),
+    accessToken: Joi.string().token().optional(),
+  })
 
   async executeImpl(ctx: KoaContext): Promise<void> {
     const requestDto: RefreshAccessTokenDto = {

@@ -1,3 +1,4 @@
+import Joi from 'joi'
 import BaseController from '@shared/infra/http/BaseController'
 import LoginUseCase from './LoginUseCase'
 import LoginDto from './DTOs/LoginDto'
@@ -10,6 +11,11 @@ export default class LoginController extends BaseController<LoginControllerDto> 
   constructor(private useCase: LoginUseCase) {
     super()
   }
+
+  protected validationSchema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+  })
 
   protected async executeImpl(ctx: KoaContext): Promise<void> {
     const loginDto: LoginDto = ctx.request.body
