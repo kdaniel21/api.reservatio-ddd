@@ -48,8 +48,9 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
     }
   }
 
-  validateJwtAndFetchUser() {
-    return compose([this.validateJwt.bind, this.fetchUser])
+  async validateJwtAndFetchUser(ctx: KoaContext, next: Koa.Next) {
+    await this.validateJwt(ctx, next)
+    await this.fetchUser(ctx, next)
   }
 
   async fetchUser(ctx: KoaContext, next: Koa.Next): Promise<void> {
@@ -74,7 +75,6 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
     if (!bearerToken) return Result.fail()
 
     const token = bearerToken.replace('Bearer ', '')
-    console.log(token)
     return Result.ok(token)
   }
 }

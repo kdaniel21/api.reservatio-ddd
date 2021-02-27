@@ -7,6 +7,7 @@ import UserPassword from '../domain/UserPassword'
 import UserDto from '../DTOs/UserDto'
 import logger from '@shared/infra/Logger/logger'
 import RefreshTokenMapper from './RefreshTokenMapper'
+import UserRefreshToken from '../domain/UserRefreshToken'
 
 export default class UserMapper implements BaseMapper<User> {
   static toDto(user: User): UserDto {
@@ -26,6 +27,13 @@ export default class UserMapper implements BaseMapper<User> {
 
     const id = raw.id ? new UniqueID(raw.id) : null
 
+    let refreshTokens: UserRefreshToken[] = []
+    if (raw.refreshTokens) {
+      refreshTokens = raw.refreshTokens.map((rawRefreshToken: any) =>
+        RefreshTokenMapper.toDomain(rawRefreshToken)
+      )
+    }
+
     const userOrError = User.create(
       {
         email: emailOrError.value,
@@ -34,6 +42,7 @@ export default class UserMapper implements BaseMapper<User> {
         isEmailConfirmed: raw.isEmailConfirmed,
         isDeleted: raw.isDeleted,
         isAdmin: raw.isAdmin,
+        refreshTokens,
       },
       id
     )

@@ -1,6 +1,7 @@
 import User from '@modules/users/domain/User'
 import UserMapper from '@modules/users/mappers/UserMapper'
 import { PrismaClient, PrismaUser, Prisma } from '@prisma/client'
+import TextUtils from '@shared/utils/TextUtils'
 import RefreshTokenRepository from '../RefreshTokenRepository'
 import UserRepository from '../UserRepository'
 
@@ -20,6 +21,12 @@ export default class PrismaUserRepository implements UserRepository<PrismaUser> 
     return this.findOne({ email })
   }
 
+  async findByRefreshToken(token: string): Promise<User | null> {
+    const hashedToken = TextUtils.hashText(token)
+
+    return this.findOne({ refreshTokens: { some: { token: hashedToken } } })
+  }
+
   async findMany(where: Prisma.PrismaUserWhereInput): Promise<User[]> {
     const prismaUsers = await this.prisma.prismaUser.findMany({ where })
 
@@ -27,9 +34,12 @@ export default class PrismaUserRepository implements UserRepository<PrismaUser> 
   }
 
   async findOne(where: Prisma.PrismaUserWhereInput): Promise<User | null> {
-    const prismaUser = await this.prisma.prismaUser.findFirst({ where })
+    const prismaUser = await this.prisma.prismaUser.findFirst({
+      where,
+      include: { refreshTokens: true },
+    })
 
-    return UserMapper.toDomain(prismaUser)
+    return prismaUser ? UserMapper.toDomain(prismaUser) : null
   }
 
   async save(user: User): Promise<void> {
@@ -38,7 +48,7 @@ export default class PrismaUserRepository implements UserRepository<PrismaUser> 
     await this.prisma.prismaUser.upsert({
       create: userObject,
       update: userObject,
-      where: { id: user.id.toString() },
+      where: { id: user.userId.toString() },
     })
   }
 }

@@ -25,9 +25,13 @@ export default class JwtAuthService implements AuthService<JwtToken, JwtPayload>
   }
 
   decodeAccessToken(token: JwtToken): ErrorOr<JwtPayload> {
-    const payload: JwtPayload = jwt.verify(token, config.auth.jwtSecretKey) as JwtPayload
+    try {
+      const payload: JwtPayload = jwt.verify(token, config.auth.jwtSecretKey) as JwtPayload
 
-    return payload ? Result.ok(payload) : Result.fail(new InvalidAccessTokenError())
+      return Result.ok(payload)
+    } catch {
+      return Result.fail(new InvalidAccessTokenError())
+    }
   }
 
   async createRefreshToken(user: User): Promise<ErrorOr<UserRefreshToken>> {

@@ -6,17 +6,13 @@ import LoginResponseDto from './DTOs/LoginResponseDto'
 import { Result } from '@shared/core/Result'
 import { LoginErrors } from './LoginErrors'
 import AuthService from '@modules/users/services/AuthService'
-import { JwtPayload, JwtToken } from '@modules/users/domain/AccessToken'
 
 export default class LoginUseCase extends UseCase<LoginDto, LoginResponseDto> {
-  constructor(
-    private userRepo: UserRepository,
-    private authService: AuthService<JwtToken, JwtPayload>
-  ) {
+  constructor(private userRepo: UserRepository, private authService: AuthService) {
     super()
   }
 
-  async executeImpl(request: LoginDto): Promise<ErrorOr<LoginResponseDto>> {
+  protected async executeImpl(request: LoginDto): Promise<ErrorOr<LoginResponseDto>> {
     const { email, password } = request
     const user = await this.userRepo.findByEmail(email)
 

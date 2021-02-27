@@ -5,9 +5,10 @@ export default abstract class BaseMiddleware {
 
   protected fail(
     ctx: KoaContext,
-    errorDetails: { message?: string; code?: string } = {}
+    errorDetails: { message?: string; code?: string; statusCode?: number } = {}
   ): void {
-    ctx.status = 400
-    ctx.body = { status: 'fail', ...errorDetails }
+    const { statusCode, ...errorMessage } = errorDetails
+    ctx.status = statusCode || 400
+    ctx.body = { status: 'fail', ...errorMessage }
   }
 }

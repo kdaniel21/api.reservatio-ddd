@@ -15,7 +15,9 @@ export default class CreateUserUseCase extends UseCase<CreateUserDto, CreateUser
     super()
   }
 
-  async executeImpl(request: CreateUserDto): Promise<ErrorOr<CreateUserResponseDto>> {
+  protected async executeImpl(
+    request: CreateUserDto
+  ): Promise<ErrorOr<CreateUserResponseDto>> {
     const emailOrError = UserEmail.create(request.email)
     const nameOrError = UserName.create(request.name)
     const passwordOrError = UserPassword.create({ password: request.password })
