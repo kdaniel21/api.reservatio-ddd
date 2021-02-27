@@ -8,6 +8,7 @@ import logger from '@shared/infra/Logger/logger'
 import KoaContext from '../KoaContext'
 import UserRepository from '@modules/users/repositories/UserRepository'
 import BaseMiddleware from './BaseMiddleware'
+import InvalidOrMissingAccessTokenError from './errors/InvalidOrMissingAccessTokenError'
 
 export default class KoaAuthenticationMiddleware extends BaseMiddleware {
   constructor(
@@ -21,19 +22,13 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
     const jwtTokenOrError = this.getAccessJwtFromRequest(ctx.request)
     if (jwtTokenOrError.isFailure()) {
       // throw error
-      return this.fail(ctx, {
-        code: 'INVALID_ACCESS_TOKEN',
-        message: 'Invalid or missing access token!',
-      })
+      return this.fail(ctx, new InvalidOrMissingAccessTokenError())
     }
 
     const jwtToken = jwtTokenOrError.value
     const jwtPayloadOrError = this.authService.decodeAccessToken(jwtToken)
     if (jwtPayloadOrError.isFailure()) {
-      return this.fail(ctx, {
-        code: 'INVALID_ACCESS_TOKEN',
-        message: 'Invalid or missing access token!',
-      })
+      return this.fail(ctx, new InvalidOrMissingAccessTokenError())
     }
 
     const jwtPayload = jwtPayloadOrError.value
@@ -60,20 +55,14 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
   async fetchUser(ctx: KoaContext, next: Koa.Next): Promise<void> {
     if (!ctx.state.auth) {
       // TODO: Throw error
-      return this.fail(ctx, {
-        code: 'INVALID_ACCESS_TOKEN',
-        message: 'Invalid or missing access token!',
-      })
+      return this.fail(ctx, new InvalidOrMissingAccessTokenError())
     }
 
     const { userId: id } = ctx.state.auth
     const user = await this.userRepo.findOne({ id })
     if (!user) {
-      // TODO: Throw error
-      return this.fail(ctx, {
-        code: 'INVALID_ACCESS_TOKEN',
-        message: 'Invalid or missing access token!',
-      })
+      // TODO: Encapsulate error
+      return this.fail(ctx, new InvalidOrMissingAccessTokenError())
     }
 
     ctx.state.auth = user
