@@ -15,7 +15,11 @@ export default class RegisterController extends BaseController<RegisterControlle
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
-    passwordConfirm: Joi.ref('password'),
+    passwordConfirm: Joi.string()
+      .equal(Joi.ref('password'))
+      .required()
+      .label('Password confirmation')
+      .options({ messages: { 'any.only': '{{#label}} does not match!' } }),
   })
 
   async executeImpl(ctx: KoaContext): Promise<void> {
