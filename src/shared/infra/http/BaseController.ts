@@ -11,6 +11,7 @@ export default abstract class BaseController<ResponseDto = any> {
       await this.executeImpl(ctx)
     } catch (err) {
       logger.error(`[KOA API - BaseController]: Uncaught controller error - ${err}`)
+      logger.error(err.stack)
       this.error(ctx)
     }
   }
