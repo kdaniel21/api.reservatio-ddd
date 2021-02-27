@@ -1,4 +1,5 @@
 import Koa from 'koa'
+import compose from 'koa-compose'
 import { JwtPayload, JwtToken } from '@modules/users/domain/AccessToken'
 import AuthService from '@modules/users/services/AuthService'
 import { ErrorOr } from '@shared/core/DomainError'
@@ -42,6 +43,10 @@ export default class KoaAuthenticationMiddleware {
       logger.info('[Koa API] Request is not authenticated.')
       await next()
     }
+  }
+
+  async authenticateAndFetchUser(): Promise<void> {
+    await compose([this.authenticate, this.fetchUser])
   }
 
   async fetchUser(ctx: KoaContext, next: Koa.Next): Promise<void> {
