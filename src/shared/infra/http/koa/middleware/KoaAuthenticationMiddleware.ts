@@ -20,16 +20,13 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
 
   async validateJwt(ctx: KoaContext, next: Koa.Next): Promise<void> {
     const jwtTokenOrError = this.getAccessJwtFromRequest(ctx.request)
-    if (jwtTokenOrError.isFailure()) {
-      // throw error
+    if (jwtTokenOrError.isFailure())
       return this.fail(ctx, new InvalidOrMissingAccessTokenError())
-    }
 
     const jwtToken = jwtTokenOrError.value
     const jwtPayloadOrError = this.authService.decodeAccessToken(jwtToken)
-    if (jwtPayloadOrError.isFailure()) {
+    if (jwtPayloadOrError.isFailure())
       return this.fail(ctx, new InvalidOrMissingAccessTokenError())
-    }
 
     const jwtPayload = jwtPayloadOrError.value
 
@@ -48,9 +45,8 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
     }
   }
 
-  async validateJwtAndFetchUser(ctx: KoaContext, next: Koa.Next) {
-    await this.validateJwt(ctx, next)
-    await this.fetchUser(ctx, next)
+  validateJwtAndFetchUser() {
+    return compose([this.validateJwt.bind(this), this.fetchUser.bind(this)])
   }
 
   async fetchUser(ctx: KoaContext, next: Koa.Next): Promise<void> {
