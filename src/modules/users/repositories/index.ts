@@ -4,4 +4,4 @@ import PrismaUserRepository from './implementations/PrismaUserRepository'
 
 export const refreshTokenRepository = new PrismaRefreshTokenRepository(prisma)
 
-export const userRepository = new PrismaUserRepository(prisma, refreshTokenRepository)
+export const userRepository = new PrismaUserRepository(prisma)

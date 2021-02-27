@@ -2,14 +2,10 @@ import User from '@modules/users/domain/User'
 import UserMapper from '@modules/users/mappers/UserMapper'
 import { PrismaClient, PrismaUser, Prisma } from '@prisma/client'
 import TextUtils from '@shared/utils/TextUtils'
-import RefreshTokenRepository from '../RefreshTokenRepository'
 import UserRepository from '../UserRepository'
 
 export default class PrismaUserRepository implements UserRepository<PrismaUser> {
-  constructor(
-    private prisma: PrismaClient,
-    private refreshTokenRepo: RefreshTokenRepository
-  ) {}
+  constructor(private prisma: PrismaClient) {}
 
   async existsByEmail(email: string): Promise<boolean> {
     const count = await this.prisma.prismaUser.count({ where: { email } })
@@ -24,7 +20,10 @@ export default class PrismaUserRepository implements UserRepository<PrismaUser> 
   async findByRefreshToken(token: string): Promise<User | null> {
     const hashedToken = TextUtils.hashText(token)
 
-    return this.findOne({ refreshTokens: { some: { token: hashedToken } } })
+    return this.findOne(
+      { refreshTokens: { some: { token: hashedToken } } },
+      { refreshTokens: true }
+    )
   }
 
   async findMany(where: Prisma.PrismaUserWhereInput): Promise<User[]> {
@@ -33,10 +32,13 @@ export default class PrismaUserRepository implements UserRepository<PrismaUser> 
     return prismaUsers.map(prismaUser => UserMapper.toDomain(prismaUser))
   }
 
-  async findOne(where: Prisma.PrismaUserWhereInput): Promise<User | null> {
+  async findOne(
+    where: Prisma.PrismaUserWhereInput,
+    include?: Prisma.PrismaUserInclude
+  ): Promise<User | null> {
     const prismaUser = await this.prisma.prismaUser.findFirst({
       where,
-      include: { refreshTokens: true },
+      include,
     })
 
     return prismaUser ? UserMapper.toDomain(prismaUser) : null
