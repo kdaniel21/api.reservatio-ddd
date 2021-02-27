@@ -51,7 +51,7 @@ export default class DomainEvents {
     if (!handlers) return
 
     logger.info(
-      `[EVENTS] ${handlers.length} handlers have been dispatched for event ${eventClassName}.`
+      `[EVENTS] ${handlers.length} handler(s) have been dispatched for event ${eventClassName}.`
     )
     handlers.forEach(handler => {
       handler(domainEvent)
