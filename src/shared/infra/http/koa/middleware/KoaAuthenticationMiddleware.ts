@@ -7,25 +7,33 @@ import { Result } from '@shared/core/Result'
 import logger from '@shared/infra/Logger/logger'
 import KoaContext from '../KoaContext'
 import UserRepository from '@modules/users/repositories/UserRepository'
+import BaseMiddleware from './BaseMiddleware'
 
-export default class KoaAuthenticationMiddleware {
+export default class KoaAuthenticationMiddleware extends BaseMiddleware {
   constructor(
     private authService: AuthService<JwtToken, JwtPayload>,
     private userRepo: UserRepository
-  ) {}
+  ) {
+    super()
+  }
 
-  async authenticate(ctx: KoaContext, next: Koa.Next): Promise<void> {
+  async validateJwt(ctx: KoaContext, next: Koa.Next): Promise<void> {
     const jwtTokenOrError = this.getAccessJwtFromRequest(ctx.request)
     if (jwtTokenOrError.isFailure()) {
       // throw error
-      return
+      return this.fail(ctx, {
+        code: 'INVALID_ACCESS_TOKEN',
+        message: 'Invalid or missing access token!',
+      })
     }
 
     const jwtToken = jwtTokenOrError.value
     const jwtPayloadOrError = this.authService.decodeAccessToken(jwtToken)
     if (jwtPayloadOrError.isFailure()) {
-      // TODO: throw error
-      return
+      return this.fail(ctx, {
+        code: 'INVALID_ACCESS_TOKEN',
+        message: 'Invalid or missing access token!',
+      })
     }
 
     const jwtPayload = jwtPayloadOrError.value
@@ -36,30 +44,36 @@ export default class KoaAuthenticationMiddleware {
     await next()
   }
 
-  async optionalAuthenticate(ctx: KoaContext, next: Koa.Next): Promise<void> {
+  async optionalValidateJwt(ctx: KoaContext, next: Koa.Next): Promise<void> {
     try {
-      await this.authenticate(ctx, next)
+      await this.validateJwt(ctx, next)
     } catch {
       logger.info('[Koa API] Request is not authenticated.')
       await next()
     }
   }
 
-  async authenticateAndFetchUser(): Promise<void> {
-    await compose([this.authenticate, this.fetchUser])
+  validateJwtAndFetchUser() {
+    return compose([this.validateJwt.bind, this.fetchUser])
   }
 
   async fetchUser(ctx: KoaContext, next: Koa.Next): Promise<void> {
     if (!ctx.state.auth) {
       // TODO: Throw error
-      return
+      return this.fail(ctx, {
+        code: 'INVALID_ACCESS_TOKEN',
+        message: 'Invalid or missing access token!',
+      })
     }
 
     const { userId: id } = ctx.state.auth
     const user = await this.userRepo.findOne({ id })
     if (!user) {
       // TODO: Throw error
-      return
+      return this.fail(ctx, {
+        code: 'INVALID_ACCESS_TOKEN',
+        message: 'Invalid or missing access token!',
+      })
     }
 
     ctx.state.auth = user
@@ -70,7 +84,8 @@ export default class KoaAuthenticationMiddleware {
     const bearerToken: string = request.headers.authorization || request.body.accessToken
     if (!bearerToken) return Result.fail()
 
-    const token = bearerToken.replace('Bearer', '')
+    const token = bearerToken.replace('Bearer ', '')
+    console.log(token)
     return Result.ok(token)
   }
 }
