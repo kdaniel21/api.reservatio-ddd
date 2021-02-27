@@ -1,7 +1,7 @@
-import { entityManager } from '@shared/infra/database/MikroORM/config/initDatabaseConnection'
-import MikroRefreshTokenRepository from './implementations/MikroRefreshTokenRepository'
-import MikroUserRepository from './implementations/MikroUserRepository'
+import prisma from '@shared/infra/database/prisma/prisma'
+import PrismaRefreshTokenRepository from './implementations/PrismaRefreshTokenRepository';
+import PrismaUserRepository from './implementations/PrismaUserRepository'
 
-export const userRepository = new MikroUserRepository(entityManager)
+export const refreshTokenRepository = new PrismaRefreshTokenRepository(prisma)
 
-export const refreshTokenRepository = new MikroRefreshTokenRepository(entityManager)
+export const userRepository = new PrismaUserRepository(prisma, refreshTokenRepository)

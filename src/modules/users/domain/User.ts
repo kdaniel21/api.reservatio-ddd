@@ -8,7 +8,9 @@ import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import UserPasswordResetToken from './UserPasswordResetToken'
 import { AppError } from '@shared/core/AppError'
-import UserRefreshToken from './UserRefreshToken'
+import UserRefreshToken, { UserRefreshTokenProps } from './UserRefreshToken'
+import DomainEvents from '@shared/domain/events/DomainEvents'
+import UserCreatedEvent from './events/UserCreatedEvent'
 
 interface UserProps {
   email: UserEmail
@@ -64,6 +66,17 @@ export default class User extends AggregateRoot<UserProps> {
     return this.props.refreshTokens?.some(refreshToken => refreshToken.isTokenValid(token))
   }
 
+  createRefreshToken(): ErrorOr<UserRefreshToken> {
+    const { userId } = this
+    const newRefreshTokenOrError = UserRefreshToken.create({ userId })
+    if (newRefreshTokenOrError.isFailure()) return Result.fail(newRefreshTokenOrError.error)
+
+    const newRefreshToken = newRefreshTokenOrError.value
+    this.refreshTokens.push(newRefreshToken)
+
+    return Result.ok(newRefreshToken)
+  }
+
   private constructor(props: UserProps, id?: UniqueID) {
     super(props, id)
   }
@@ -78,17 +91,19 @@ export default class User extends AggregateRoot<UserProps> {
     if (!guardResult.isSuccess)
       return Result.fail(new AppError.UndefinedArgumentError(guardResult.message as string))
 
-    const isNewUser = !!id
-    const user = new User({
-      ...props,
-      refreshTokens: props.refreshTokens || [],
-      isEmailConfirmed: props.isEmailConfirmed || false,
-      isAdmin: props.isAdmin || false,
-      isDeleted: props.isDeleted || false,
-    })
+    const user = new User(
+      {
+        ...props,
+        refreshTokens: props.refreshTokens || [],
+        isEmailConfirmed: props.isEmailConfirmed || false,
+        isAdmin: props.isAdmin || false,
+        isDeleted: props.isDeleted || false,
+      },
+      id
+    )
 
-    // TODO: Emit new user event
-    // if (isNewUser)
+    const isNewUser = !id
+    if (isNewUser) user.addDomainEvent(new UserCreatedEvent(user))
 
     return Result.ok(user)
   }

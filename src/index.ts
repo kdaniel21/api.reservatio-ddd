@@ -1,14 +1,10 @@
 import logger from '@shared/infra/Logger/logger'
-import { initDatabaseConnection } from './shared/infra/database/MikroORM/config/initDatabaseConnection'
+import initServer from '@shared/infra/http/koa/initServer'
 
 const initApplication = async () => {
   logger.info('Starting application...')
 
-  const orm = await initDatabaseConnection()
-
-  // Delay loading of modules that depend on the ORM
-  const initServer = require('./shared/infra/http/api/initServer').default
-  initServer(orm)
+  initServer()
 
   // Load modules
   require('@modules/users')

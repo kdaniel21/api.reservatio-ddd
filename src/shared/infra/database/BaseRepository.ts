@@ -1,6 +1,6 @@
-import Entity from '@shared/domain/Entity'
-
-export default interface BaseRepository {
-  save(entity: Entity<any>): Promise<void>
-  toOrmEntity(entity: Entity<any>): Promise<any> | any
+export default interface BaseRepository<E, OrmE> {
+  findMany?(condition?: Partial<OrmE>): Promise<E[]>
+  findOne?(condition?: Partial<OrmE>): Promise<E | null>
+  save?(entity: E): Promise<void>
+  toOrmEntity?(entity: E): Promise<OrmE> | OrmE
 }

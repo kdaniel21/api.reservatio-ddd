@@ -7,5 +7,7 @@ export default class AfterUserCreated extends DomainEventSubscriber {
     super(UserCreatedEvent.name)
   }
 
-  async handleEvent(event: DomainEvent): Promise<void> {}
+  async handleEvent(event: DomainEvent): Promise<void> {
+    console.log('A NEW USER HAS BEEN CREATED!!')
+  }
 }
