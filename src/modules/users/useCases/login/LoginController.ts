@@ -1,17 +1,17 @@
-import Koa from 'koa'
 import BaseController from '@shared/infra/http/BaseController'
 import LoginUseCase from './LoginUseCase'
 import LoginDto from './DTOs/LoginDto'
 import RefreshTokenMapper from '@modules/users/mappers/RefreshTokenMapper'
 import UserMapper from '@modules/users/mappers/UserMapper'
 import LoginControllerDto from './DTOs/LoginControllerDto'
+import KoaContext from '@shared/infra/http/koa/KoaContext'
 
 export default class LoginController extends BaseController<LoginControllerDto> {
   constructor(private useCase: LoginUseCase) {
     super()
   }
 
-  protected async executeImpl(ctx: Koa.Context): Promise<void> {
+  protected async executeImpl(ctx: KoaContext): Promise<void> {
     const loginDto: LoginDto = ctx.request.body
 
     const result = await this.useCase.execute(loginDto)
