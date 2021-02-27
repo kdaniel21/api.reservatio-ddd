@@ -54,17 +54,11 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
   }
 
   async fetchUser(ctx: KoaContext, next: Koa.Next): Promise<void> {
-    if (!ctx.state.auth) {
-      // TODO: Throw error
-      return this.fail(ctx, new InvalidOrMissingAccessTokenError())
-    }
+    if (!ctx.state.auth) return this.fail(ctx, new InvalidOrMissingAccessTokenError())
 
     const { userId: id } = ctx.state.auth
     const user = await this.userRepo.findOne({ id })
-    if (!user) {
-      // TODO: Encapsulate error
-      return this.fail(ctx, new InvalidOrMissingAccessTokenError())
-    }
+    if (!user) return this.fail(ctx, new InvalidOrMissingAccessTokenError())
 
     ctx.state.auth = user
     await next()
