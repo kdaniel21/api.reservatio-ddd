@@ -33,7 +33,7 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
 
     const jwtPayload = jwtPayloadOrError.value
 
-    logger.info('[Koa API] Request is authenticated.')
+    logger.info('[Koa API] Request JWT token is authenticated.')
     ctx.state.auth = { ...jwtPayload }
 
     await next()
@@ -60,6 +60,7 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
     const user = await this.userRepo.findOne({ id })
     if (!user) return this.fail(ctx, new InvalidOrMissingAccessTokenError())
 
+    logger.info('[Koa API] User fetched for request.')
     ctx.state.auth = user
     await next()
   }
