@@ -1,3 +1,4 @@
+import Joi from 'joi'
 import BaseController from '@shared/infra/http/BaseController'
 import RegisterControllerDto from './DTOs/RegisterControllerDto'
 import RegisterUseCase from './RegisterUseCase'
@@ -9,6 +10,13 @@ export default class RegisterController extends BaseController<RegisterControlle
   constructor(private useCase: RegisterUseCase) {
     super()
   }
+
+  protected validationSchema = Joi.object({
+    name: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).required(),
+    passwordConfirm: Joi.ref('password'),
+  })
 
   async executeImpl(ctx: KoaContext): Promise<void> {
     const result = await this.useCase.execute(ctx.request.body)

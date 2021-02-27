@@ -1,4 +1,3 @@
-import Joi from 'joi'
 import { JwtPayload, JwtToken } from '@modules/users/domain/AccessToken'
 import AuthService from '@modules/users/services/AuthService'
 import { ErrorOr } from '@shared/core/DomainError'
@@ -15,13 +14,6 @@ export default class RegisterUseCase extends UseCase<RegisterDto, RegisterRespon
   ) {
     super()
   }
-
-  protected validationSchema = Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().min(8).required(),
-    passwordConfirm: Joi.ref('password'),
-  })
 
   protected async executeImpl(request: RegisterDto): Promise<ErrorOr<RegisterResponseDto>> {
     const newUserOrError = await this.createUserUseCase.execute(request)
