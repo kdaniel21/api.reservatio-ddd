@@ -23,7 +23,7 @@ export default class LoginController extends BaseController<LoginControllerDto> 
         user: UserMapper.toDto(result.value.user),
       }
 
-      this.ok(ctx, resultDto)
+      return this.ok(ctx, resultDto)
     }
 
     this.fail(ctx, result.error.error)
