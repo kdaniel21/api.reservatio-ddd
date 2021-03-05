@@ -12,7 +12,6 @@ export default class LogoutController extends BaseController<void> {
 
   async executeImpl(ctx: KoaContext): Promise<void> {
     const refreshToken = ctx.request.body.refreshToken || ctx.cookies.get('refreshToken')
-    console.log(ctx.request.body)
     if (!refreshToken) return this.fail(ctx, new LogoutErrors.InvalidRefreshTokenError().error)
 
     const requestDto: LogoutDto = {

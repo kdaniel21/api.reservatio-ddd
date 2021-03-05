@@ -18,10 +18,9 @@ export default class LogoutUseCase extends UseCase<LogoutDto, void> {
       { refreshTokens: true }
     )
 
-    const refreshToken = user.refreshTokens.find(refreshToken => {
-      console.log(refreshToken.getHashedValue())
-      return refreshToken.isTokenValid(request.token)
-    })
+    const refreshToken = user.refreshTokens.find(refreshToken =>
+      refreshToken.isTokenValid(request.token)
+    )
     if (!refreshToken) return Result.fail(new LogoutErrors.InvalidRefreshTokenError())
 
     const removeResult = await this.authService.removeRefreshToken(refreshToken, user)
