@@ -4,6 +4,7 @@ import KoaContext from '@shared/infra/http/koa/KoaContext'
 import RefreshAccessTokenDto from './DTOs/RefreshAccessTokenDto'
 import RefreshAccessTokenResponseDto from './DTOs/RefreshAccessTokenResponseDto'
 import RefreshAccessTokenUseCase from './RefreshAccessTokenUseCase'
+import { Guard } from '@shared/core/Guard'
 
 export default class RefreshAccessTokenController extends BaseController<RefreshAccessTokenResponseDto> {
   constructor(private useCase: RefreshAccessTokenUseCase) {
@@ -16,8 +17,15 @@ export default class RefreshAccessTokenController extends BaseController<Refresh
   })
 
   async executeImpl(ctx: KoaContext): Promise<void> {
+    const refreshToken = ctx.request.body.refreshToken || ctx.cookies.get('refreshToken')
+    const guardResult = Guard.againstNullOrUndefined({
+      argument: refreshToken,
+      argumentName: 'refresh token',
+    })
+    if (!guardResult.isSuccess) return this.fail(ctx, guardResult)
+
     const requestDto: RefreshAccessTokenDto = {
-      refreshToken: ctx.request.body.refreshToken || ctx.cookies.get('refreshToken'),
+      refreshToken,
       accessToken: ctx.request.body.accessToken,
     }
 
