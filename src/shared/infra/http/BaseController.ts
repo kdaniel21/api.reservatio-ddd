@@ -30,7 +30,7 @@ export default abstract class BaseController<ResponseDto = any> {
   protected ok(ctx: KoaContext, dto?: ResponseDto): void {
     ctx.body = {
       status: 'success',
-      data: { ...dto },
+      data: dto ? { ...dto } : undefined,
     }
     ctx.status = 200
   }
