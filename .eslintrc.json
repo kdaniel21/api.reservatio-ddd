@@ -1,8 +1,8 @@
 {
   "extends": [
     "airbnb-typescript/base", 
-    "plugin:prettier/recommended"
-    // "plugin:jest/recommended"
+    "plugin:prettier/recommended",
+    "plugin:jest/recommended"
   ],
   "parserOptions": {
     "project": "./tsconfig.json"
