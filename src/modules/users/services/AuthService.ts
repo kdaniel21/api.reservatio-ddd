@@ -7,4 +7,5 @@ export default interface AuthService<Token = JwtToken, Payload = JwtPayload> {
   createAccessToken(user: User): Token
   decodeAccessToken(token: Token): ErrorOr<Payload>
   createRefreshToken(user: User): Promise<ErrorOr<UserRefreshToken>>
+  removeRefreshToken(refreshToken: UserRefreshToken, User: User): Promise<ErrorOr<void>>
 }

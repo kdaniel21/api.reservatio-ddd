@@ -3,8 +3,7 @@ import RefreshTokenMapper from '@modules/users/mappers/RefreshTokenMapper'
 import { PrismaClient, PrismaRefreshToken } from '@prisma/client'
 import RefreshTokenRepository from '../RefreshTokenRepository'
 
-export default class PrismaRefreshTokenRepository
-  implements RefreshTokenRepository<PrismaRefreshToken> {
+export default class PrismaRefreshTokenRepository implements RefreshTokenRepository<PrismaRefreshToken> {
   constructor(private prisma: PrismaClient) {}
 
   async save(refreshToken: UserRefreshToken): Promise<void> {
@@ -15,5 +14,9 @@ export default class PrismaRefreshTokenRepository
       update: refreshTokenObject,
       where: { id: refreshToken.id.toString() },
     })
+  }
+
+  async deleteOne(refreshToken: UserRefreshToken): Promise<void> {
+    await this.prisma.prismaRefreshToken.delete({ where: { id: refreshToken.id.toString() } })
   }
 }

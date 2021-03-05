@@ -11,6 +11,7 @@ import { AppError } from '@shared/core/AppError'
 import UserRefreshToken, { UserRefreshTokenProps } from './UserRefreshToken'
 import DomainEvents from '@shared/domain/events/DomainEvents'
 import UserCreatedEvent from './events/UserCreatedEvent'
+import { RefreshTokenDto } from '../DTOs/RefreshTokenDto'
 
 interface UserProps {
   email: UserEmail
@@ -75,6 +76,16 @@ export default class User extends AggregateRoot<UserProps> {
     this.refreshTokens.push(newRefreshToken)
 
     return Result.ok(newRefreshToken)
+  }
+
+  removeRefreshToken(tokenToRemove: RefreshTokenDto): ErrorOr<void> {
+    const index = this.refreshTokens.findIndex(
+      refreshToken => refreshToken.token === tokenToRemove
+    )
+    if (index === -1) return Result.fail()
+
+    this.refreshTokens.splice(index, 1)
+    return Result.ok()
   }
 
   private constructor(props: UserProps, id?: UniqueID) {
