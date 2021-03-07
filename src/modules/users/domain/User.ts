@@ -12,6 +12,7 @@ import UserRefreshToken from './UserRefreshToken'
 import UserCreatedEvent from './events/UserCreatedEvent'
 import { RefreshTokenDto } from '../DTOs/RefreshTokenDto'
 import PasswordResetTokenCreatedEvent from './events/PasswordResetTokenCreatedEvent'
+import PasswordChangedEvent from './events/PasswordChangedEvent'
 
 interface UserProps {
   email: UserEmail
@@ -106,6 +107,8 @@ export default class User extends AggregateRoot<UserProps> {
     if (newPasswordOrError.isFailure()) return Result.fail(newPasswordOrError.error)
 
     this.props.password = newPasswordOrError.value
+
+    this.addDomainEvent(new PasswordChangedEvent(this))
 
     return Result.ok()
   }
