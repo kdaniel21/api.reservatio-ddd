@@ -28,8 +28,15 @@ export default abstract class BaseController<ResponseDto = any> {
   }
 
   protected ok(ctx: KoaContext, dto?: ResponseDto | { message?: string }): void {
+    let message
+    if ('message' in dto) {
+      message = dto.message
+      dto = undefined
+    }
+
     ctx.body = {
       status: 'success',
+      message,
       data: dto ? { ...dto } : undefined,
     }
     ctx.status = 200
