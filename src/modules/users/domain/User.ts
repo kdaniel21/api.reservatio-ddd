@@ -102,6 +102,10 @@ export default class User extends AggregateRoot<UserProps> {
     return Result.ok(passwordResetToken)
   }
 
+  destroyPasswordResetToken(): void {
+    this.props.passwordResetToken = undefined
+  }
+
   setPassword(password: string): ErrorOr<void> {
     const newPasswordOrError = UserPassword.create({ password })
     if (newPasswordOrError.isFailure()) return Result.fail(newPasswordOrError.error)

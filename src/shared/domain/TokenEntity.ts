@@ -46,9 +46,9 @@ export abstract class TokenEntity<T extends TokenEntityProps = TokenEntityProps>
     this.isHashed = !!id
   }
 
-  isTokenValid(code: string): boolean {
-    let hashedCode = this.isHashed ? TextUtils.hashText(code) : code
-    return !this.isExpired && hashedCode === this.token
+  isTokenValid(tokenToValidate: string): boolean {
+    const hashedTokenToValidate = TextUtils.hashText(tokenToValidate)
+    return !this.isExpired && hashedTokenToValidate === this.hashedToken
   }
 
   protected static validateProps(

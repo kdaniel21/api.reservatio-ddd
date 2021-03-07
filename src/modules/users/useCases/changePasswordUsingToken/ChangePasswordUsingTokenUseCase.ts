@@ -29,6 +29,9 @@ export default class ChangePasswordUsingTokenUseCase extends UseCase<
     const result = user.setPassword(request.newPassword)
     if (result.isFailure()) return Result.fail(result.error)
 
+    user.destroyPasswordResetToken()
+
+    console.log('save', user.passwordResetToken)
     await this.userRepo.save(user)
 
     return Result.ok()

@@ -28,7 +28,7 @@ authRouter.post('/logout', authMiddleware.validateJwtAndFetchUser(), (ctx: KoaCo
 
 authRouter.post('/forgot-password', (ctx: KoaContext) => resetPasswordController.execute(ctx))
 
-authRouter.post('/change-password', (ctx: KoaContext) =>
+authRouter.post('/set-password/:passwordResetToken', (ctx: KoaContext) =>
   changePasswordUsingTokenController.execute(ctx)
 )
 

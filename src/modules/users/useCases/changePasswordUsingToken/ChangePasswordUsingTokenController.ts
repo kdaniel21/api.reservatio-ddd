@@ -10,7 +10,6 @@ export default class ChangePasswordUsingTokenController extends BaseController<v
   }
 
   protected validationSchema = Joi.object({
-    passwordResetToken: Joi.string().alphanum().required(),
     password: Joi.string().min(8).required(),
     passwordConfirm: Joi.string()
       .equal(Joi.ref('password'))
@@ -21,7 +20,7 @@ export default class ChangePasswordUsingTokenController extends BaseController<v
 
   async executeImpl(ctx: KoaContext): Promise<void> {
     const request: ChangePasswordUsingTokenDto = {
-      passwordResetToken: ctx.request.body.passwordResetToken,
+      passwordResetToken: ctx.params.passwordResetToken,
       newPassword: ctx.request.body.password,
     }
 

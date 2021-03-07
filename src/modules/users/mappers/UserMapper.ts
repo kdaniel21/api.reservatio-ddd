@@ -8,6 +8,8 @@ import UserDto from '../DTOs/UserDto'
 import logger from '@shared/infra/Logger/logger'
 import RefreshTokenMapper from './RefreshTokenMapper'
 import UserRefreshToken from '../domain/UserRefreshToken'
+import UserPasswordResetToken from '../domain/UserPasswordResetToken'
+import { Result } from '@shared/core/Result'
 
 export default class UserMapper implements BaseMapper<User> {
   static toDto(user: User): UserDto {
@@ -24,6 +26,21 @@ export default class UserMapper implements BaseMapper<User> {
     const emailOrError = UserEmail.create(raw.email)
     const nameOrError = UserName.create(raw.name)
     const passwordOrError = UserPassword.create({ password: raw.password, isHashed: true })
+    const passwordResetTokenOrError = UserPasswordResetToken.create(
+      {
+        token: raw.passwordResetToken,
+        expiresAt: raw.passwordResetTokenExpiresAt,
+      },
+      new UniqueID()
+    )
+
+    const combinedResult = Result.combine([
+      emailOrError,
+      nameOrError,
+      passwordResetTokenOrError,
+      passwordOrError,
+    ])
+    if (combinedResult.isFailure()) logger.error(combinedResult.error.error.message)
 
     const id = raw.id ? new UniqueID(raw.id) : null
 
@@ -43,6 +60,7 @@ export default class UserMapper implements BaseMapper<User> {
         isDeleted: raw.isDeleted,
         isAdmin: raw.isAdmin,
         refreshTokens,
+        passwordResetToken: passwordResetTokenOrError.value,
       },
       id
     )
@@ -67,8 +85,8 @@ export default class UserMapper implements BaseMapper<User> {
       isDeleted,
       isEmailConfirmed,
       password: await user.password.getHashedValue(),
-      passwordResetToken: user.passwordResetToken?.token,
-      passwordResetTokenExpiresAt: user.passwordResetToken?.expiresAt,
+      passwordResetToken: user.passwordResetToken?.hashedToken || null,
+      passwordResetTokenExpiresAt: user.passwordResetToken?.expiresAt || null,
       refreshTokens,
     }
   }
