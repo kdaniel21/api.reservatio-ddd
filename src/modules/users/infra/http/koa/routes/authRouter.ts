@@ -7,6 +7,7 @@ import { authMiddleware } from '@shared/infra/http/koa/middleware'
 import { refreshAccessTokenController } from '@modules/users/useCases/refreshAccessToken'
 import { logoutController } from '@modules/users/useCases/logout'
 import { resetPasswordController } from '@modules/users/useCases/resetPassword'
+import { changePasswordUsingTokenController } from '@modules/users/useCases/changePasswordUsingToken'
 
 const authRouter = new Router()
 authRouter.prefix('/auth')
@@ -25,6 +26,10 @@ authRouter.post('/logout', authMiddleware.validateJwtAndFetchUser(), (ctx: KoaCo
   logoutController.execute(ctx)
 )
 
-authRouter.post('/reset-password', (ctx: KoaContext) => resetPasswordController.execute(ctx))
+authRouter.post('/forgot-password', (ctx: KoaContext) => resetPasswordController.execute(ctx))
+
+authRouter.post('/change-password', (ctx: KoaContext) =>
+  changePasswordUsingTokenController.execute(ctx)
+)
 
 export default authRouter
