@@ -1,15 +1,15 @@
 {
-  "name": "vo2jog-api-v3",
+  "name": "api.reservatio",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "start": "tsc NODE_ENV=production ./src/index.ts",
     "dev": "NODE_ENV=development npx ts-node-dev --files --exit-child -r tsconfig-paths/register ./src/index.ts",
     "test": "jest --watchAll"
   },
   "keywords": [],
-  "author": "",
+  "author": "Daniel Kiss <kdaniel21@protonmail.com>",
   "license": "ISC",
   "prisma": {
     "schema": "./src/shared/infra/database/prisma/schema.prisma"
