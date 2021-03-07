@@ -2,7 +2,7 @@ import logger from '@shared/infra/Logger/logger'
 import { DomainEvent } from './DomainEvent'
 import DomainEvents from './DomainEvents'
 
-export default abstract class DomainEventSubscriber {
+export default abstract class DomainEventSubscriber<Event = DomainEvent> {
   constructor(eventClassName: string) {
     this.initSubscriber(eventClassName)
   }
@@ -12,5 +12,5 @@ export default abstract class DomainEventSubscriber {
     DomainEvents.registerHandler(this.handleEvent.bind(this), eventClassName)
   }
 
-  abstract handleEvent(event: DomainEvent): Promise<void> | void
+  abstract handleEvent(event: Event): Promise<void> | void
 }
