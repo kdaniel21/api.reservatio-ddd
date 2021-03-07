@@ -27,7 +27,7 @@ export default abstract class BaseController<ResponseDto = any> {
     }
   }
 
-  protected ok(ctx: KoaContext, dto?: ResponseDto): void {
+  protected ok(ctx: KoaContext, dto?: ResponseDto | { message?: string }): void {
     ctx.body = {
       status: 'success',
       data: dto ? { ...dto } : undefined,
@@ -37,10 +37,10 @@ export default abstract class BaseController<ResponseDto = any> {
 
   protected fail(
     ctx: KoaContext,
-    errorDetails: { message?: string; code?: string } = {}
+    { message, code }: { message?: string; code?: string } = {}
   ): void {
     ctx.status = 400
-    ctx.body = { status: 'fail', ...errorDetails }
+    ctx.body = { status: 'fail', message, code }
   }
 
   protected error(ctx: KoaContext): void {

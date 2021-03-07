@@ -8,10 +8,10 @@ import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import UserPasswordResetToken from './UserPasswordResetToken'
 import { AppError } from '@shared/core/AppError'
-import UserRefreshToken, { UserRefreshTokenProps } from './UserRefreshToken'
-import DomainEvents from '@shared/domain/events/DomainEvents'
+import UserRefreshToken from './UserRefreshToken'
 import UserCreatedEvent from './events/UserCreatedEvent'
 import { RefreshTokenDto } from '../DTOs/RefreshTokenDto'
+import PasswordResetTokenCreatedEvent from './events/PasswordResetTokenCreatedEvent'
 
 interface UserProps {
   email: UserEmail
@@ -86,6 +86,19 @@ export default class User extends AggregateRoot<UserProps> {
 
     this.refreshTokens.splice(index, 1)
     return Result.ok()
+  }
+
+  generatePasswordResetToken(): ErrorOr<UserPasswordResetToken> {
+    const passwordResetTokenOrError = UserPasswordResetToken.create()
+    if (passwordResetTokenOrError.isFailure())
+      return Result.fail(passwordResetTokenOrError.error)
+
+    const passwordResetToken = passwordResetTokenOrError.value
+    this.props.passwordResetToken = passwordResetToken
+
+    this.addDomainEvent(new PasswordResetTokenCreatedEvent(this))
+
+    return Result.ok(passwordResetToken)
   }
 
   private constructor(props: UserProps, id?: UniqueID) {
