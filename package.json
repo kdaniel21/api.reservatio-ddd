@@ -6,6 +6,7 @@
   "scripts": {
     "start": "tsc NODE_ENV=production ./src/index.ts",
     "dev": "NODE_ENV=development npx ts-node-dev --files --exit-child -r tsconfig-paths/register ./src/index.ts",
+    "dev:debug": "NODE_ENV=development npx ts-node-dev --inspect=4321 --files --exit-child -r tsconfig-paths/register ./src/index.ts",
     "test": "jest --watchAll"
   },
   "keywords": [],
