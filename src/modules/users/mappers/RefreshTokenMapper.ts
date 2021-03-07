@@ -12,7 +12,7 @@ export default class RefreshTokenMapper implements BaseMapper<UserRefreshToken> 
   static toObject(refreshToken: UserRefreshToken) {
     return {
       id: refreshToken.id.toString(),
-      token: refreshToken.getHashedValue(),
+      token: refreshToken.hashedToken,
       expiresAt: refreshToken.expiresAt,
       userId: refreshToken.userId.toString(),
     }

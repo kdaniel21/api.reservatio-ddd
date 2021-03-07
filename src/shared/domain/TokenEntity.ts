@@ -16,16 +16,20 @@ export interface TokenEntityOptions {
   TOKEN_LENGTH: number
 }
 
-export abstract class TokenEntity<
-  T extends TokenEntityProps = TokenEntityProps
-> extends Entity<T> {
+export abstract class TokenEntity<T extends TokenEntityProps = TokenEntityProps> extends Entity<T> {
   static DEFAULT_EXPIRATION_HOURS = 6
   static DEFAULT_TOKEN_LENGTH = 20
 
   readonly isHashed: boolean
 
   get token(): string {
-    return this.props.token
+    if (this.isHashed) throw new Error()
+
+    return this.token
+  }
+
+  get hashedToken(): string {
+    return this.isHashed ? this.token : TextUtils.hashText(this.token)
   }
 
   get expiresAt(): Date {
@@ -45,12 +49,6 @@ export abstract class TokenEntity<
   isTokenValid(code: string): boolean {
     let hashedCode = this.isHashed ? TextUtils.hashText(code) : code
     return !this.isExpired && hashedCode === this.token
-  }
-
-  getHashedValue(): string {
-    if (this.isHashed) return this.token
-
-    return TextUtils.hashText(this.token)
   }
 
   protected static validateProps(

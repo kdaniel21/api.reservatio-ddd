@@ -9,6 +9,6 @@ export default class AfterPasswordResetTokenCreated extends DomainEventSubscribe
 
   async handleEvent(event: PasswordResetTokenCreatedEvent): Promise<void> {
     console.log('password reset token created!!!')
-    console.log(event)
+    console.log(event.user.passwordResetToken.token)
   }
 }
