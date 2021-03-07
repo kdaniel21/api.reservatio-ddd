@@ -60,7 +60,9 @@ export default class UserMapper implements BaseMapper<User> {
         isDeleted: raw.isDeleted,
         isAdmin: raw.isAdmin,
         refreshTokens,
-        passwordResetToken: passwordResetTokenOrError.value,
+        passwordResetToken: passwordResetTokenOrError.isFailure()
+          ? undefined
+          : passwordResetTokenOrError.value,
       },
       id
     )
