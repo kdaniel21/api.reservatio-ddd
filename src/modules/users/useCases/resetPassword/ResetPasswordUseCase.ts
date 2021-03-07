@@ -22,6 +22,8 @@ export default class ResetPasswordUseCase extends UseCase<
     if (passwordResetTokenOrError.isFailure())
       return Result.fail(passwordResetTokenOrError.error)
 
+    await this.userRepo.save(user)
+
     return Result.ok()
   }
 }
