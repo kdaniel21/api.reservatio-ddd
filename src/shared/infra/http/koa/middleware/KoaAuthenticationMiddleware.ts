@@ -9,6 +9,7 @@ import KoaContext from '../KoaContext'
 import UserRepository from '@modules/users/repositories/UserRepository'
 import BaseMiddleware from './BaseMiddleware'
 import InvalidOrMissingAccessTokenError from './errors/InvalidOrMissingAccessTokenError'
+import NotAuthorizedError from './errors/NotAuthorized'
 
 export default class KoaAuthenticationMiddleware extends BaseMiddleware {
   constructor(
@@ -16,6 +17,18 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
     private userRepo: UserRepository
   ) {
     super()
+  }
+
+  validateJwtAndFetchUser() {
+    return compose([this.validateJwt.bind(this), this.fetchUser.bind(this)])
+  }
+
+  validateJwtAndAdminOnly() {
+    return compose([this.validateJwt.bind(this), this.adminOnly.bind(this)])
+  }
+
+  validateJwtFetchUserAndAdminOnly() {
+    return compose([this.validateJwtAndFetchUser(), this.adminOnly.bind(this)])
   }
 
   async validateJwt(ctx: KoaContext, next: Koa.Next): Promise<void> {
@@ -45,10 +58,6 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
     }
   }
 
-  validateJwtAndFetchUser() {
-    return compose([this.validateJwt.bind(this), this.fetchUser.bind(this)])
-  }
-
   async fetchUser(ctx: KoaContext, next: Koa.Next): Promise<void> {
     if (!ctx.state.auth) return this.fail(ctx, new InvalidOrMissingAccessTokenError())
 
@@ -58,6 +67,12 @@ export default class KoaAuthenticationMiddleware extends BaseMiddleware {
 
     logger.info('[Koa API] User fetched for request.')
     ctx.state.auth = user
+    await next()
+  }
+
+  async adminOnly(ctx: KoaContext, next: Koa.Next): Promise<void> {
+    if (!ctx.state.auth.isAdmin) return this.fail(ctx, new NotAuthorizedError())
+
     await next()
   }
 
