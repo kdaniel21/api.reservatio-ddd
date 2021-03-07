@@ -25,11 +25,11 @@ export abstract class TokenEntity<T extends TokenEntityProps = TokenEntityProps>
   get token(): string {
     if (this.isHashed) throw new Error()
 
-    return this.token
+    return this.props.token
   }
 
   get hashedToken(): string {
-    return this.isHashed ? this.token : TextUtils.hashText(this.token)
+    return this.isHashed ? this.props.token : TextUtils.hashText(this.props.token)
   }
 
   get expiresAt(): Date {
