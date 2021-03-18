@@ -1,3 +1,5 @@
-import LoginUseCaseResultDto from '../../login/DTOs/LoginUseCaseResultDto'
+import { ObjectType } from 'type-graphql'
+import LoginResponseDto from '../../login/DTOs/LoginResponseDto'
 
-export default interface RegisterResponseDto extends LoginUseCaseResultDto {}
+@ObjectType()
+export default class RegisterResponseDto extends LoginResponseDto {}
