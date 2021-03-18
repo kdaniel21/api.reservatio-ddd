@@ -3,18 +3,18 @@ import UserRepository from '@modules/users/repositories/UserRepository'
 import { ErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import UseCase from '@shared/core/UseCase'
-import ResetPasswordDto from './DTOs/ResetPasswordDto'
+import ResetPasswordUseCaseDto from './DTOs/ResetPasswordUseCaseDto'
 import { ResetPasswordErrors } from './ResetPasswordErrors'
 
 export default class ResetPasswordUseCase extends UseCase<
-  ResetPasswordDto,
+  ResetPasswordUseCaseDto,
   UserPasswordResetToken
 > {
   constructor(private userRepo: UserRepository) {
     super()
   }
 
-  async executeImpl(request: ResetPasswordDto): Promise<ErrorOr<UserPasswordResetToken>> {
+  async executeImpl(request: ResetPasswordUseCaseDto): Promise<ErrorOr<UserPasswordResetToken>> {
     const user = await this.userRepo.findByEmail(request.email)
     if (!user) return Result.fail(new ResetPasswordErrors.NonExistentEmailAddress())
 
