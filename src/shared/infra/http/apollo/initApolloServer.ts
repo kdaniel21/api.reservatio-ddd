@@ -5,6 +5,8 @@ import { buildSchema } from 'type-graphql'
 import container from 'typedi'
 import config from '@config'
 import logger from '@shared/infra/Logger/logger'
+import authChecker from './auth/authChecker'
+import optionalValidateJwt from './auth/optionalValidateJwt'
 
 export default async () => {
   logger.info(`[Apollo] Initializing Apollo GraphQL server...`)
@@ -16,10 +18,16 @@ export default async () => {
       `${srcDir}/modules/**/useCases/**/*Resolver.ts`,
     ],
     container,
+    authChecker,
   })
 
   const server = new ApolloServer({
     schema,
+    context: res => {
+      const jwtPayload = optionalValidateJwt(res)
+
+      return { user: jwtPayload }
+    },
   })
 
   const { apolloPort: port } = config
