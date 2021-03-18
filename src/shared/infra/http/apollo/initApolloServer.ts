@@ -23,8 +23,9 @@ export default async () => {
 
   const server = new ApolloServer({
     schema,
-    context: res => {
-      const jwtPayload = optionalValidateJwt(res)
+    context: ({ req }) => {
+      const jwtPayload = optionalValidateJwt(req)
+      console.log(jwtPayload)
 
       return { user: jwtPayload }
     },

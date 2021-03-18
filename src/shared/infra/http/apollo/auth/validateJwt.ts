@@ -1,11 +1,12 @@
+import express from 'express'
 import { JwtPayload } from '@modules/users/domain/AccessToken'
 import { authService } from '@modules/users/services'
 import logger from '@shared/infra/Logger/logger'
 import InvalidOrMissingAccessTokenError from '../../koa/middleware/errors/InvalidOrMissingAccessTokenError'
 import getJwtTokenFromRequest from './getJwtTokenFromRequest'
 
-export default (req: any): JwtPayload => {
-  const jwtTokenOrError = getJwtTokenFromRequest(req)
+export default (request: express.Request): JwtPayload => {
+  const jwtTokenOrError = getJwtTokenFromRequest(request)
   if (jwtTokenOrError.isFailure()) throw new InvalidOrMissingAccessTokenError()
 
   const jwtToken = jwtTokenOrError.value

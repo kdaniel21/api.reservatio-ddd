@@ -83,7 +83,7 @@ export default class UserMapper implements BaseMapper<User> {
       id: user.userId.toString(),
       name: user.name.value,
       email: user.email.value,
-      role: user.role.toString(),
+      role: user.role,
       isDeleted,
       isEmailConfirmed,
       password: await user.password.getHashedValue(),

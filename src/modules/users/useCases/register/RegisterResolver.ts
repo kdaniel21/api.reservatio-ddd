@@ -13,7 +13,7 @@ export default class RegisterResolver {
   async register(@Arg('params') params: RegisterInputDto): Promise<RegisterResponseDto> {
     const result = await this.useCase.execute(params)
 
-    if (!result.isFailure()) {
+    if (result.isFailure()) {
       throw result.error.error
     }
 
