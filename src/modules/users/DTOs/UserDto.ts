@@ -3,5 +3,4 @@ export default interface UserDto {
   email: string
   isEmailConfirmed: boolean
   isAdmin: boolean
-  isDeleted: boolean
 }

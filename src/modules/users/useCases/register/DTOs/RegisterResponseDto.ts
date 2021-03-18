@@ -1,3 +1,3 @@
-import LoginResponseDto from '../../login/DTOs/LoginResponseDto'
+import LoginUseCaseResultDto from '../../login/DTOs/LoginUseCaseResultDto'
 
-export default interface RegisterResponseDto extends LoginResponseDto {}
+export default interface RegisterResponseDto extends LoginUseCaseResultDto {}

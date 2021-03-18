@@ -1,9 +1,14 @@
-import { JwtToken } from '@modules/users/domain/AccessToken'
-import User from '@modules/users/domain/User'
-import UserRefreshToken from '@modules/users/domain/UserRefreshToken'
+import GraphQLUser from '@modules/users/infra/http/TypeGraphQL/types/GraphQLUser'
+import { Field, ObjectType } from 'type-graphql'
 
-export default interface LoginResponseDto {
-  user: User
-  accessToken: JwtToken
-  refreshToken: UserRefreshToken
+@ObjectType({ description: 'Login mutation result.' })
+export default class LoginResponseDto {
+  @Field()
+  user: GraphQLUser
+
+  @Field()
+  accessToken: string
+
+  @Field()
+  refreshToken: string
 }

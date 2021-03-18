@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2018",
     "module": "CommonJS",
-    "lib": ["es6"],
+    "lib": ["es2018", "esnext.asynciterable"],
     "rootDir": "src",
     "pretty": true,
     "outDir": "dist",
@@ -22,6 +22,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "noImplicitAny": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }

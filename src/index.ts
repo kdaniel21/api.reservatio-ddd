@@ -1,10 +1,11 @@
 import logger from '@shared/infra/Logger/logger'
-import initServer from '@shared/infra/http/koa/initServer'
+import initApolloServer from '@shared/infra/http/apollo/initApolloServer'
 
 const initApplication = async () => {
   logger.info('Starting application...')
 
-  initServer()
+  // initServer()
+  await initApolloServer()
 
   // Load modules
   require('@modules/users')

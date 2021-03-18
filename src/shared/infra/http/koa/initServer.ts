@@ -20,7 +20,6 @@ export default (): Koa => {
 
   logger.info('[Koa API] Initializing server...')
 
-  // TODO: Use environment variables - JSON vs POJO vs .env
   const port = 3000
   app.listen(port).on('listening', () => {
     logger.info(`[Koa API] Server is listening on port ${port}`)

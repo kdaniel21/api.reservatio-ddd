@@ -18,7 +18,6 @@ export default class UserMapper implements BaseMapper<User> {
       email: user.email.value,
       isEmailConfirmed: user.isEmailConfirmed,
       isAdmin: user.isAdmin,
-      isDeleted: user.isDeleted,
     }
   }
 
