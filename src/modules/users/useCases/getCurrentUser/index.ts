@@ -1,3 +1,4 @@
-import GetCurrentUserController from './GetCurrentUserController'
+import { userRepository } from '@modules/users/repositories'
+import GetCurrentUserResolver from './GetCurrentUserResolver'
 
-export const getCurrentUserController = new GetCurrentUserController()
+export const getCurrentUserResolver = new GetCurrentUserResolver(userRepository)
