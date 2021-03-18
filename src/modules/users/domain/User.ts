@@ -13,6 +13,7 @@ import UserCreatedEvent from './events/UserCreatedEvent'
 import { RefreshTokenDto } from '../DTOs/RefreshTokenDto'
 import PasswordResetTokenCreatedEvent from './events/PasswordResetTokenCreatedEvent'
 import PasswordChangedEvent from './events/PasswordChangedEvent'
+import UserRole from './UserRole'
 
 interface UserProps {
   email: UserEmail
@@ -20,7 +21,7 @@ interface UserProps {
   password: UserPassword
   refreshTokens?: UserRefreshToken[]
   passwordResetToken?: UserPasswordResetToken
-  isAdmin?: boolean
+  role?: UserRole
   isEmailConfirmed?: boolean
   isDeleted?: boolean
 }
@@ -46,8 +47,8 @@ export default class User extends AggregateRoot<UserProps> {
     return this.props.refreshTokens
   }
 
-  get isAdmin(): boolean {
-    return this.props.isAdmin || false
+  get role(): UserRole {
+    return this.props.role
   }
 
   get isEmailConfirmed(): boolean {
@@ -136,7 +137,7 @@ export default class User extends AggregateRoot<UserProps> {
         ...props,
         refreshTokens: props.refreshTokens || [],
         isEmailConfirmed: props.isEmailConfirmed || false,
-        isAdmin: props.isAdmin || false,
+        role: props.role || UserRole.User,
         isDeleted: props.isDeleted || false,
       },
       id

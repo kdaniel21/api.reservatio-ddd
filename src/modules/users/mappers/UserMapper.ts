@@ -10,6 +10,7 @@ import RefreshTokenMapper from './RefreshTokenMapper'
 import UserRefreshToken from '../domain/UserRefreshToken'
 import UserPasswordResetToken from '../domain/UserPasswordResetToken'
 import { Result } from '@shared/core/Result'
+import UserRole from '../domain/UserRole'
 
 export default class UserMapper implements BaseMapper<User> {
   static toDto(user: User): UserDto {
@@ -17,7 +18,7 @@ export default class UserMapper implements BaseMapper<User> {
       name: user.name.value,
       email: user.email.value,
       isEmailConfirmed: user.isEmailConfirmed,
-      isAdmin: user.isAdmin,
+      role: user.role,
     }
   }
 
@@ -57,7 +58,7 @@ export default class UserMapper implements BaseMapper<User> {
         password: passwordOrError.value,
         isEmailConfirmed: raw.isEmailConfirmed,
         isDeleted: raw.isDeleted,
-        isAdmin: raw.isAdmin,
+        role: raw.role as UserRole,
         refreshTokens,
         passwordResetToken: passwordResetTokenOrError.isFailure()
           ? undefined
@@ -72,7 +73,7 @@ export default class UserMapper implements BaseMapper<User> {
   }
 
   static async toObject(user: User) {
-    const { isAdmin, isDeleted, isEmailConfirmed } = user
+    const { isDeleted, isEmailConfirmed } = user
 
     const refreshTokens = user.refreshTokens.map(refreshToken =>
       RefreshTokenMapper.toObject(refreshToken)
@@ -82,7 +83,7 @@ export default class UserMapper implements BaseMapper<User> {
       id: user.userId.toString(),
       name: user.name.value,
       email: user.email.value,
-      isAdmin,
+      role: user.role.toString(),
       isDeleted,
       isEmailConfirmed,
       password: await user.password.getHashedValue(),

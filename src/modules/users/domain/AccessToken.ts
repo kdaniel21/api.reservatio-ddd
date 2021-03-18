@@ -1,7 +1,9 @@
+import UserRole from './UserRole'
+
 export interface JwtPayload {
   userId: string
   email: string
-  isAdmin: boolean
+  role: UserRole
 }
 
 export type JwtToken = string

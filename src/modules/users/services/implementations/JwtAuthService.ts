@@ -16,7 +16,7 @@ export default class JwtAuthService implements AuthService<JwtToken, JwtPayload>
   createAccessToken(user: User): JwtToken {
     const payload: JwtPayload = {
       email: user.email.value,
-      isAdmin: user.isAdmin,
+      role: user.role,
       userId: user.userId.toString(),
     }
 
