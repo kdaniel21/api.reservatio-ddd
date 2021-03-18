@@ -10,6 +10,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model PrismaUser {
   id                          String               @id
   name                        String
@@ -17,20 +22,20 @@ model PrismaUser {
   password                    String
   passwordResetToken          String?              @map("password_reset_token")
   passwordResetTokenExpiresAt DateTime?            @map("password_reset_token_expires_at")
-  isAdmin                     Boolean              @default(false) @map("is_admin")
+  role                        Role                 @default(USER)
   isDeleted                   Boolean              @default(false) @map("is_deleted")
   isEmailConfirmed            Boolean              @default(false) @map("is_email_confirmed")
-  refreshTokens                PrismaRefreshToken[]
+  refreshTokens               PrismaRefreshToken[]
 
   @@map("users")
 }
 
 model PrismaRefreshToken {
-  id        String   @id
+  id        String     @id
   token     String
-  expiresAt DateTime @map("expires_at")
-  user      PrismaUser     @relation(fields: [userId], references: [id])
-  userId    String   @map("user_id")
+  expiresAt DateTime   @map("expires_at")
+  user      PrismaUser @relation(fields: [userId], references: [id])
+  userId    String     @map("user_id")
 
   @@map("refresh_tokens")
 }
