@@ -7,6 +7,7 @@ import config from '@config'
 import logger from '@shared/infra/Logger/logger'
 import authChecker from './auth/authChecker'
 import optionalValidateJwt from './auth/optionalValidateJwt'
+import ApolloContext from './types/ApolloContext'
 
 export default async () => {
   logger.info(`[Apollo] Initializing Apollo GraphQL server...`)
@@ -23,11 +24,10 @@ export default async () => {
 
   const server = new ApolloServer({
     schema,
-    context: ({ req }) => {
+    context: ({ req }): ApolloContext => {
       const jwtPayload = optionalValidateJwt(req)
-      console.log(jwtPayload)
 
-      return { user: jwtPayload }
+      return { user: jwtPayload, req }
     },
   })
 

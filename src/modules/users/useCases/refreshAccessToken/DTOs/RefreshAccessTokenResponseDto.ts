@@ -1,5 +1,8 @@
 import { JwtToken } from '@modules/users/domain/AccessToken'
+import { Field, ObjectType } from 'type-graphql'
 
-export default interface RefreshAccessTokenResponseDto {
+@ObjectType()
+export default class RefreshAccessTokenResponseDto {
+  @Field()
   accessToken: JwtToken
 }
