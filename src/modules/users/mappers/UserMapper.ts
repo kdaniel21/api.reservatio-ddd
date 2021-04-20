@@ -40,7 +40,7 @@ export default class UserMapper implements BaseMapper<User> {
       passwordResetTokenOrError,
       passwordOrError,
     ])
-    if (combinedResult.isFailure()) logger.error(combinedResult.error.error.message)
+    if (combinedResult.isFailure()) logger.error(combinedResult.error.message)
 
     const id = raw.id ? new UniqueID(raw.id) : null
 
@@ -67,7 +67,7 @@ export default class UserMapper implements BaseMapper<User> {
       id
     )
 
-    if (userOrError.isFailure()) logger.error(userOrError.error.error.message)
+    if (userOrError.isFailure()) logger.error(userOrError.error.message)
 
     return userOrError.value
   }

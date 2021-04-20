@@ -1,8 +1,8 @@
+import { DomainError } from '@shared/core/DomainError'
 import { Failure } from '@shared/core/Result'
-import UseCaseError from '@shared/core/UseCaseError'
 
 export namespace ResetPasswordErrors {
-  export class NonExistentEmailAddress extends Failure<UseCaseError> {
+  export class NonExistentEmailAddress extends DomainError {
     constructor() {
       super({ message: 'Email address is not registered.', code: 'NON_EXISTENT_EMAIL' })
     }

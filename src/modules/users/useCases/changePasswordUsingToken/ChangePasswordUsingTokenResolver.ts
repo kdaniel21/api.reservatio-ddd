@@ -1,5 +1,4 @@
 import MessageResponseDto from '@shared/infra/http/apollo/types/MessageResponseDto'
-import { ApolloError } from 'apollo-server'
 import { Arg, Mutation, Resolver } from 'type-graphql'
 import ChangePasswordUsingTokenUseCase from './ChangePasswordUsingTokenUseCase'
 import ChangePasswordUsingTokenUseCaseDto from './DTOs/ChangePasswordUsingTokenUseCaseDto'
@@ -24,6 +23,6 @@ export default class ChangePasswordUsingTokenResolver {
       return { message: 'Password has been changed successfully!' }
     }
 
-    throw new ApolloError(result.error.error.message)
+    throw result.error
   }
 }

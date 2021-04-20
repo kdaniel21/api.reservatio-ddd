@@ -68,8 +68,9 @@ export abstract class TokenEntity<T extends TokenEntityProps = TokenEntityProps>
       { argument: props.token, argumentName: 'token' },
       { argument: props.expiresAt, argumentName: 'expiration' },
     ])
-    if (!guardResultUndefined.isSuccess)
-      return Result.fail(new AppError.UndefinedArgumentError(guardResultUndefined.message))
+    if (!guardResultUndefined.isSuccess) {
+      return new AppError.UndefinedArgumentError(guardResultUndefined.message)
+    }
 
     return Result.ok(props)
   }

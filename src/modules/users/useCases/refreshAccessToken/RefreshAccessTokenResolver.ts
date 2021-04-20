@@ -32,7 +32,7 @@ export default class RefreshAccessTokenResolver {
     const result = await this.useCase.execute(requestDto)
 
     if (result.isFailure()) {
-      throw new ApolloError(result.error.error.message)
+      throw result.error
     }
 
     return { accessToken: result.value.accessToken }

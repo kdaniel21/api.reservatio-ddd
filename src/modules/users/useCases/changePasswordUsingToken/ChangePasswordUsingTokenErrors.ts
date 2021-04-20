@@ -1,8 +1,7 @@
-import { Failure } from '@shared/core/Result'
-import UseCaseError from '@shared/core/UseCaseError'
+import { DomainError } from '@shared/core/DomainError'
 
 export namespace ChangePasswordUsingTokenErrors {
-  export class InvalidTokenError extends Failure<UseCaseError> {
+  export class InvalidTokenError extends DomainError {
     constructor() {
       super({
         message: 'The provided token is either invalid or expired.',

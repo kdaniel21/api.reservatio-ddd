@@ -20,7 +20,7 @@ export default class UserEmail extends ValueObject<UserEmailProps> {
 
   static create(email: string): ErrorOr<UserEmail> {
     const isValid = this.isValidEmail(email)
-    if (!isValid) return Result.fail(new InvalidUserEmailError())
+    if (!isValid) new InvalidUserEmailError()
 
     const userEmail = new UserEmail({ email: this.format(email) })
 

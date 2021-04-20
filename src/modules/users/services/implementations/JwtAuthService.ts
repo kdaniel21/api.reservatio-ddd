@@ -31,7 +31,7 @@ export default class JwtAuthService implements AuthService<JwtToken, JwtPayload>
 
       return Result.ok(payload)
     } catch {
-      return Result.fail(new InvalidAccessTokenError())
+      return new InvalidAccessTokenError()
     }
   }
 

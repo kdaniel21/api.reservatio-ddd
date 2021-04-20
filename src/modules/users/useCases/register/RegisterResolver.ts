@@ -14,7 +14,7 @@ export default class RegisterResolver {
     const result = await this.useCase.execute(params)
 
     if (result.isFailure()) {
-      throw result.error.error
+      throw result.error
     }
 
     const { user, refreshToken, accessToken } = result.value

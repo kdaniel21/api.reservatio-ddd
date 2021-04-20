@@ -15,7 +15,7 @@ export default abstract class UseCase<Request, Response> {
       return this.executeImpl(request)
     } catch (err) {
       logger.error('[USE CASE]: Unexpected error!', err)
-      return Result.fail(new AppError.UnexpectedError())
+      return new AppError.UnexpectedError()
     }
   }
 }

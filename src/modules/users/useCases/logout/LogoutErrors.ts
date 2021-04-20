@@ -1,8 +1,7 @@
-import { Failure } from '@shared/core/Result'
-import UseCaseError from '@shared/core/UseCaseError'
+import { DomainError } from '@shared/core/DomainError'
 
 export namespace LogoutErrors {
-  export class InvalidRefreshTokenError extends Failure<UseCaseError> {
+  export class InvalidRefreshTokenError extends DomainError {
     constructor() {
       super({
         message: 'The provided refresh token does not exist on this user!',

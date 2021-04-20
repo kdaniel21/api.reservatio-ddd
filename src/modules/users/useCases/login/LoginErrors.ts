@@ -1,8 +1,7 @@
-import { Failure } from '@shared/core/Result'
-import UseCaseError from '@shared/core/UseCaseError'
+import { DomainError } from '@shared/core/DomainError'
 
 export namespace LoginErrors {
-  export class InvalidCredentialsError extends Failure<UseCaseError> {
+  export class InvalidCredentialsError extends DomainError {
     constructor() {
       super({
         message: 'Invalid email address or password. Please try again!',

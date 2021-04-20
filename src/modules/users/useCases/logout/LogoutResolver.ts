@@ -29,6 +29,6 @@ export default class LogoutResolver {
       return { message: 'You have been logged out' }
     }
 
-    throw new ApolloError(result.error.error.message)
+    throw result.error
   }
 }

@@ -19,10 +19,10 @@ export default class LoginUseCase extends UseCase<LoginUseCaseDto, LoginUseCaseR
     const user = await this.userRepo.findByEmail(email)
 
     const isUserFound = !!user
-    if (!isUserFound) return Result.fail(new LoginErrors.InvalidCredentialsError())
+    if (!isUserFound) return new LoginErrors.InvalidCredentialsError()
 
     const isPasswordCorrect = await user.password.comparePassword(password)
-    if (!isPasswordCorrect) return Result.fail(new LoginErrors.InvalidCredentialsError())
+    if (!isPasswordCorrect) new LoginErrors.InvalidCredentialsError()
 
     const refreshTokenOrError = await this.authService.createRefreshToken(user)
     if (refreshTokenOrError.isFailure()) return Result.fail(refreshTokenOrError.error)

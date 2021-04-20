@@ -18,11 +18,9 @@ export default class CreateUserResolver {
 
     const result = await this.useCase.execute(request)
 
-    if (result.isSuccess()) {
-      const userDto: GraphQLUser = UserMapper.toDto(result.value.user)
-      return { user: userDto }
-    }
+    if (result.isFailure()) throw result.error
 
-    throw new ApolloError(result.error.error.message)
+    const userDto: GraphQLUser = UserMapper.toDto(result.value.user)
+    return { user: userDto }
   }
 }

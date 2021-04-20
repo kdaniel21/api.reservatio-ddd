@@ -1,4 +1,6 @@
-export class Failure<E, S = any> {
+import { DomainError } from './DomainError'
+
+export class Failure<E, S> {
   constructor(public readonly error?: E) {}
 
   get value(): S {
@@ -31,7 +33,7 @@ export class Success<E, S> {
 }
 
 export namespace Result {
-  export function fail<E, S = any>(error?: E): Either<E, S> {
+  export function fail<E = DomainError, S = any>(error?: E): Either<E, S> {    
     return new Failure<E, S>(error)
   }
 
@@ -46,5 +48,4 @@ export namespace Result {
   }
 }
 
-// export type Either<E, S> = Failure<E, S> | Success<E, S>
 export type Either<E, S> = Failure<E, S> | Success<E, S>

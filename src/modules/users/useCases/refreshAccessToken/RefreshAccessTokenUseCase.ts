@@ -33,11 +33,11 @@ export default class RefreshAccessTokenUseCase extends UseCase<
 
     if (!user) user = await this.userRepo.findByRefreshToken(refreshToken)
 
-    if (!user) return Result.fail(new RefreshAccessTokenErrors.InvalidRefreshTokenError())
+    if (!user) return new RefreshAccessTokenErrors.InvalidRefreshTokenError()
 
     const isRefreshTokenValid = user.isRefreshTokenValid(refreshToken)
     if (!isRefreshTokenValid)
-      return Result.fail(new RefreshAccessTokenErrors.InvalidRefreshTokenError())
+      return new RefreshAccessTokenErrors.InvalidRefreshTokenError()
 
     const newAccessToken = this.authService.createAccessToken(user)
 

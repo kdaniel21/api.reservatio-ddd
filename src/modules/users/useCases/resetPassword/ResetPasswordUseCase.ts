@@ -16,7 +16,7 @@ export default class ResetPasswordUseCase extends UseCase<
 
   async executeImpl(request: ResetPasswordUseCaseDto): Promise<ErrorOr<UserPasswordResetToken>> {
     const user = await this.userRepo.findByEmail(request.email)
-    if (!user) return Result.fail(new ResetPasswordErrors.NonExistentEmailAddress())
+    if (!user) return new ResetPasswordErrors.NonExistentEmailAddress()
 
     const passwordResetTokenOrError = user.generatePasswordResetToken()
     if (passwordResetTokenOrError.isFailure())

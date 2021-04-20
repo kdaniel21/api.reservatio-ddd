@@ -1,8 +1,7 @@
-import { Failure } from '@shared/core/Result'
-import UseCaseError from '@shared/core/UseCaseError'
+import { DomainError } from '@shared/core/DomainError'
 
 export namespace RefreshAccessTokenErrors {
-  export class InvalidRefreshTokenError extends Failure<UseCaseError> {
+  export class InvalidRefreshTokenError extends DomainError {
     constructor() {
       super({ message: 'Invalid or expired refresh token.', code: 'INVALID_REFRESH_TOKEN' })
     }

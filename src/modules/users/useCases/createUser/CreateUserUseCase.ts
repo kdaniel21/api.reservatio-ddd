@@ -31,7 +31,7 @@ export default class CreateUserUseCase extends UseCase<CreateUserUseCaseDto, Cre
 
     const isEmailAlreadyRegistered = await this.userRepo.existsByEmail(email.value)
     if (isEmailAlreadyRegistered)
-      return Result.fail(new CreateUserError.EmailAlreadyExistsError(email.value))
+      return new CreateUserError.EmailAlreadyExistsError(email.value)
 
     const createdUserOrError = User.create({ email, name, password })
     if (createdUserOrError.isFailure()) return Result.fail(createdUserOrError.error)

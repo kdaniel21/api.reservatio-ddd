@@ -9,6 +9,6 @@ export default (request: express.Request ): JwtPayload => {
 
     return payload
   } catch {
-    logger.info('[Koa API] Request is not authenticated.')
+    logger.info('[Apollo] Request is not authenticated.')
   }
 }

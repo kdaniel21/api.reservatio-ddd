@@ -31,7 +31,7 @@ export default class UserName extends ValueObject<UserNameProps> {
     if (!combinedResult.isSuccess) {
       const message = combinedResult.message as string
 
-      return Result.fail(new InvalidUserNameError(message))
+      return new InvalidUserNameError(message)
     }
 
     const userName = new UserName({ name })

@@ -2,8 +2,8 @@ import express from 'express'
 import { JwtPayload } from '@modules/users/domain/AccessToken'
 import { authService } from '@modules/users/services'
 import logger from '@shared/infra/Logger/logger'
-import InvalidOrMissingAccessTokenError from '../../koa/middleware/errors/InvalidOrMissingAccessTokenError'
 import getJwtTokenFromRequest from './getJwtTokenFromRequest'
+import InvalidOrMissingAccessTokenError from './InvalidOrMissingAccessToken'
 
 export default (request: express.Request): JwtPayload => {
   const jwtTokenOrError = getJwtTokenFromRequest(request)
@@ -15,7 +15,7 @@ export default (request: express.Request): JwtPayload => {
 
   const jwtPayload = jwtPayloadOrError.value
 
-  logger.info('[Koa API] Request JWT token is authenticated.')
+  logger.info('[Apollo] Request JWT token is authenticated.')
 
   return jwtPayload
 }
