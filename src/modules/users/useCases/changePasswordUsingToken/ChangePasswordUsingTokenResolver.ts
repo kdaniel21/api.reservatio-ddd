@@ -6,7 +6,7 @@ import ChangePasswordUsingTokenUseCaseDto from './DTOs/ChangePasswordUsingTokenU
 import ChangePasswordUsingTokenInputDto from './DTOs/ChangePasswordUsingTokenInputDto'
 
 @Resolver()
-export default class ChangePasswordUsingResolver {
+export default class ChangePasswordUsingTokenResolver {
   constructor(private useCase: ChangePasswordUsingTokenUseCase) {}
 
   @Mutation(() => MessageResponseDto)
