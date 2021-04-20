@@ -1,7 +1,10 @@
+import Container from 'typedi'
 import { userRepository } from '@modules/users/repositories'
-import CreateUserController from './CreateUserController'
+import CreateUserResolver from './CreateUserResolver'
 import CreateUserUseCase from './CreateUserUseCase'
 
 export const createUserUseCase = new CreateUserUseCase(userRepository)
 
-export const createUserController = new CreateUserController(createUserUseCase)
+export const createUserResolver = new CreateUserResolver(createUserUseCase)
+
+Container.set(CreateUserResolver, createUserResolver)

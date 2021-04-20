@@ -1,6 +1,6 @@
-import User from '@modules/users/domain/User'
+import { JwtPayload } from '@modules/users/domain/AccessToken'
 
 export default interface LogoutDto {
-  user: User
+  user: JwtPayload
   token: string
 }

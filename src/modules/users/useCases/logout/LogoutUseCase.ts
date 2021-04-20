@@ -14,7 +14,7 @@ export default class LogoutUseCase extends UseCase<LogoutDto, void> {
 
   async executeImpl(request: LogoutDto): Promise<ErrorOr<void>> {
     const user = await this.userRepo.findOne(
-      { id: request.user.id.toString() },
+      { id: request.user.userId.toString() },
       { refreshTokens: true }
     )
 
