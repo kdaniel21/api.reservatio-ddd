@@ -10,6 +10,7 @@ interface UserNameProps {
 
 export default class UserName extends ValueObject<UserNameProps> {
   static MAX_NAME_LENGTH = 25
+
   static MIN_NAME_LENGTH = 5
 
   get value() {

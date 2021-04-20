@@ -1,10 +1,10 @@
 import { mocked } from 'ts-jest/utils'
 import faker from 'faker'
 import UserRepository from '@modules/users/repositories/UserRepository'
+import { AppError } from '@shared/core/AppError'
 import CreateUserDto from './DTOs/CreateUserUseCaseDto'
 import CreateUserUseCase from './CreateUserUseCase'
 import { CreateUserError } from './CreateUserErrors'
-import { AppError } from '@shared/core/AppError'
 
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase

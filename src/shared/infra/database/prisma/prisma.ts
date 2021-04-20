@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 
-export default new PrismaClient()
-
 import './hooks'
+
+export default new PrismaClient()

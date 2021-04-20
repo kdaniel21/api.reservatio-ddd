@@ -14,7 +14,7 @@ export default class RefreshAccessTokenResolver {
   @Mutation(() => RefreshAccessTokenResponseDto)
   async refreshAccessToken(
     @Arg('params') params: RefreshAccessTokenInputDto,
-    @Ctx() { req}: ApolloContext,
+    @Ctx() { req }: ApolloContext
   ): Promise<RefreshAccessTokenResponseDto> {
     const refreshToken = params.refreshToken || req.cookies.refreshToken
     const guardResult = Guard.againstNullOrUndefined({

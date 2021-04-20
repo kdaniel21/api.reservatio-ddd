@@ -1,8 +1,8 @@
 import faker from 'faker'
 import bcrypt from 'bcrypt'
+import config from '@config'
 import { InvalidUserPasswordError } from './errors/InvalidUserPasswordError'
 import UserPassword from './UserPassword'
-import config from '@config'
 
 const validPassword = 'Th1sIsAG00dPassw0rd'
 

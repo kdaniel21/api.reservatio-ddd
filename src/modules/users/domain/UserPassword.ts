@@ -13,7 +13,9 @@ interface UserPasswordProps {
 
 export default class UserPassword extends ValueObject<UserPasswordProps> {
   static MIN_PASSWORD_LENGTH = 8
+
   static MAX_PASSWORD_LENGTH = 128
+
   static PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
 
   get value() {

@@ -1,15 +1,15 @@
 import UniqueID from '@shared/domain/UniqueID'
 import BaseMapper from '@shared/infra/BaseMapper'
+import logger from '@shared/infra/Logger/logger'
+import { Result } from '@shared/core/Result'
 import User from '../domain/User'
 import UserEmail from '../domain/UserEmail'
 import UserName from '../domain/UserName'
 import UserPassword from '../domain/UserPassword'
 import UserDto from '../DTOs/UserDto'
-import logger from '@shared/infra/Logger/logger'
 import RefreshTokenMapper from './RefreshTokenMapper'
 import UserRefreshToken from '../domain/UserRefreshToken'
 import UserPasswordResetToken from '../domain/UserPasswordResetToken'
-import { Result } from '@shared/core/Result'
 import UserRole from '../domain/UserRole'
 
 export default class UserMapper implements BaseMapper<User> {

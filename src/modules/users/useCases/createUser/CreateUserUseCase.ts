@@ -10,7 +10,10 @@ import CreateUserUseCaseDto from './DTOs/CreateUserUseCaseDto'
 import { CreateUserError } from './CreateUserErrors'
 import CreateUserUseCaseResultDto from './DTOs/CreateUserUseCaseResultDto'
 
-export default class CreateUserUseCase extends UseCase<CreateUserUseCaseDto, CreateUserUseCaseResultDto> {
+export default class CreateUserUseCase extends UseCase<
+CreateUserUseCaseDto,
+CreateUserUseCaseResultDto
+> {
   constructor(private userRepo: UserRepository) {
     super()
   }

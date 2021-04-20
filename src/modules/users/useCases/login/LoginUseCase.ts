@@ -1,11 +1,11 @@
 import UseCase from '@shared/core/UseCase'
 import { ErrorOr } from '@shared/core/DomainError'
 import UserRepository from '@modules/users/repositories/UserRepository'
+import { Result } from '@shared/core/Result'
+import AuthService from '@modules/users/services/AuthService'
 import LoginUseCaseDto from './DTOs/LoginUseCaseDto'
 import LoginUseCaseResultDto from './DTOs/LoginUseCaseResultDto'
-import { Result } from '@shared/core/Result'
 import { LoginErrors } from './LoginErrors'
-import AuthService from '@modules/users/services/AuthService'
 
 export default class LoginUseCase extends UseCase<LoginUseCaseDto, LoginUseCaseResultDto> {
   constructor(private userRepo: UserRepository, private authService: AuthService) {

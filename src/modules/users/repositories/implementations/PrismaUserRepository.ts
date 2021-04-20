@@ -1,6 +1,6 @@
 import User from '@modules/users/domain/User'
 import UserMapper from '@modules/users/mappers/UserMapper'
-import { PrismaClient, PrismaUser, Prisma } from '@prisma/client'
+import { Prisma, PrismaClient, PrismaUser } from '@prisma/client'
 import TextUtils from '@shared/utils/TextUtils'
 import UserRepository from '../UserRepository'
 

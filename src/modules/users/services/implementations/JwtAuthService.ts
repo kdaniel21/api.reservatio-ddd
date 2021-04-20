@@ -1,6 +1,5 @@
 import { JwtPayload, JwtToken } from '@modules/users/domain/AccessToken'
 import User from '@modules/users/domain/User'
-import AuthService from '../AuthService'
 import jwt from 'jsonwebtoken'
 import config from '@config'
 import { Result } from '@shared/core/Result'
@@ -8,6 +7,7 @@ import InvalidAccessTokenError from '@modules/users/domain/errors/InvalidAccessT
 import { ErrorOr } from '@shared/core/DomainError'
 import RefreshTokenRepository from '@modules/users/repositories/RefreshTokenRepository'
 import UserRefreshToken from '@modules/users/domain/UserRefreshToken'
+import AuthService from '../AuthService'
 
 export default class JwtAuthService implements AuthService<JwtToken, JwtPayload> {
   constructor(private refreshTokenRepo: RefreshTokenRepository) {}

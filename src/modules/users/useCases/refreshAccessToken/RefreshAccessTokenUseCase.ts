@@ -36,8 +36,7 @@ export default class RefreshAccessTokenUseCase extends UseCase<
     if (!user) return new RefreshAccessTokenErrors.InvalidRefreshTokenError()
 
     const isRefreshTokenValid = user.isRefreshTokenValid(refreshToken)
-    if (!isRefreshTokenValid)
-      return new RefreshAccessTokenErrors.InvalidRefreshTokenError()
+    if (!isRefreshTokenValid) return new RefreshAccessTokenErrors.InvalidRefreshTokenError()
 
     const newAccessToken = this.authService.createAccessToken(user)
 

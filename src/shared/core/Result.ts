@@ -33,7 +33,7 @@ export class Success<E, S> {
 }
 
 export namespace Result {
-  export function fail<E = DomainError, S = any>(error?: E): Either<E, S> {    
+  export function fail<E = DomainError, S = any>(error?: E): Either<E, S> {
     return new Failure<E, S>(error)
   }
 

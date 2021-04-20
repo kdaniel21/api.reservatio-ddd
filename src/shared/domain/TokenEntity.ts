@@ -16,8 +16,11 @@ export interface TokenEntityOptions {
   TOKEN_LENGTH: number
 }
 
-export abstract class TokenEntity<T extends TokenEntityProps = TokenEntityProps> extends Entity<T> {
+export abstract class TokenEntity<
+  T extends TokenEntityProps = TokenEntityProps,
+> extends Entity<T> {
   static DEFAULT_EXPIRATION_HOURS = 6
+
   static DEFAULT_TOKEN_LENGTH = 20
 
   readonly isHashed: boolean

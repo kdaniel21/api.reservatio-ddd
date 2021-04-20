@@ -3,7 +3,8 @@ import RefreshTokenMapper from '@modules/users/mappers/RefreshTokenMapper'
 import { PrismaClient, PrismaRefreshToken } from '@prisma/client'
 import RefreshTokenRepository from '../RefreshTokenRepository'
 
-export default class PrismaRefreshTokenRepository implements RefreshTokenRepository<PrismaRefreshToken> {
+export default class PrismaRefreshTokenRepository
+implements RefreshTokenRepository<PrismaRefreshToken> {
   constructor(private prisma: PrismaClient) {}
 
   async save(refreshToken: UserRefreshToken): Promise<void> {

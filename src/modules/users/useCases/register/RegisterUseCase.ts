@@ -16,9 +16,7 @@ export default class RegisterUseCase extends UseCase<RegisterDto, RegisterUseCas
   }
 
   protected async executeImpl(
-    
-    request: RegisterDto
-  
+    request: RegisterDto,
   ): Promise<ErrorOr<RegisterUseCaseResultDto>> {
     const newUserOrError = await this.createUserUseCase.execute(request)
     if (newUserOrError.isFailure()) return Result.fail(newUserOrError.error)
