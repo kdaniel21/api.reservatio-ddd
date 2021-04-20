@@ -8,10 +8,12 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    "import/prefer-default-export": "true",
+    "import/prefer-default-export": "warn",
     "no-unused-vars": "warn",
     "no-unused-labels": "warn",
     "sort-imports": "warn",
-    "no-duplicate-imports": "warn"
+    "no-duplicate-imports": "warn",
+    "@typescript-eslint/semi": "off",
+    "@typescript-eslint/quotes": ["warn", "single", { "allowTemplateLiterals": true }]
   }
 }

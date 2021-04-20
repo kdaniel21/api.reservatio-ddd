@@ -1,5 +1,4 @@
 import { DomainError } from '@shared/core/DomainError'
-import { Domain } from 'domain'
 
 export default class InvalidAccessTokenError extends DomainError {
   constructor() {

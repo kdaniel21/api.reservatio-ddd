@@ -1,7 +1,6 @@
 import logger from '@shared/infra/Logger/logger'
 import { AppError } from './AppError'
 import { ErrorOr } from './DomainError'
-import { Result } from './Result'
 
 export default abstract class UseCase<Request, Response> {
   constructor() {}
