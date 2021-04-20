@@ -33,7 +33,7 @@ export default async () => {
     },
   })
 
-  const { apolloPort: port } = config
+  const { apolloServerPort: port } = config
   const info = await server.listen({ port })
   logger.info(`[Apollo] Server is listening at ${info.url}`)
 }
