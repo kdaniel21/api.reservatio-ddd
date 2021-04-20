@@ -2,7 +2,7 @@ import MessageResponseDto from '@shared/infra/http/apollo/types/MessageResponseD
 import { ApolloError } from 'apollo-server'
 import { Arg, Mutation, Resolver } from 'type-graphql'
 import ChangePasswordUsingTokenUseCase from './ChangePasswordUsingTokenUseCase'
-import ChangePasswordUsingTokenUseCaseDto from './DTOs/ChangePasswordUsingTokenDto'
+import ChangePasswordUsingTokenUseCaseDto from './DTOs/ChangePasswordUsingTokenUseCaseDto'
 import ChangePasswordUsingTokenInputDto from './DTOs/ChangePasswordUsingTokenInputDto'
 
 @Resolver()

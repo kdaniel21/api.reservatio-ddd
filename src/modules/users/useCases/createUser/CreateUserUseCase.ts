@@ -6,18 +6,18 @@ import UserEmail from '@modules/users/domain/UserEmail'
 import UserName from '@modules/users/domain/UserName'
 import UserPassword from '@modules/users/domain/UserPassword'
 import UserRepository from '@modules/users/repositories/UserRepository'
-import CreateUserDto from './DTOs/CreateUserDto'
+import CreateUserUseCaseDto from './DTOs/CreateUserUseCaseDto'
 import { CreateUserError } from './CreateUserErrors'
-import CreateUserResponseDto from './DTOs/CreateUserResponseDto'
+import CreateUserUseCaseResultDto from './DTOs/CreateUserUseCaseResultDto'
 
-export default class CreateUserUseCase extends UseCase<CreateUserDto, CreateUserResponseDto> {
+export default class CreateUserUseCase extends UseCase<CreateUserUseCaseDto, CreateUserUseCaseResultDto> {
   constructor(private userRepo: UserRepository) {
     super()
   }
 
   protected async executeImpl(
-    request: CreateUserDto
-  ): Promise<ErrorOr<CreateUserResponseDto>> {
+    request: CreateUserUseCaseDto
+  ): Promise<ErrorOr<CreateUserUseCaseResultDto>> {
     const emailOrError = UserEmail.create(request.email)
     const nameOrError = UserName.create(request.name)
     const passwordOrError = UserPassword.create({ password: request.password })

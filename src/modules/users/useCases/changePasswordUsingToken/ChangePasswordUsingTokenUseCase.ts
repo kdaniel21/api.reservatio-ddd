@@ -5,17 +5,17 @@ import { Result } from '@shared/core/Result'
 import UseCase from '@shared/core/UseCase'
 import TextUtils from '@shared/utils/TextUtils'
 import { ChangePasswordUsingTokenErrors } from './ChangePasswordUsingTokenErrors'
-import ChangePasswordUsingTokenDto from './DTOs/ChangePasswordUsingTokenDto'
+import ChangePasswordUsingTokenUseCaseDto from './DTOs/ChangePasswordUsingTokenUseCaseDto'
 
 export default class ChangePasswordUsingTokenUseCase extends UseCase<
-  ChangePasswordUsingTokenDto,
+  ChangePasswordUsingTokenUseCaseDto,
   void
 > {
   constructor(private userRepo: UserRepository<PrismaUser>) {
     super()
   }
 
-  async executeImpl(request: ChangePasswordUsingTokenDto): Promise<ErrorOr<void>> {
+  async executeImpl(request: ChangePasswordUsingTokenUseCaseDto): Promise<ErrorOr<void>> {
     const token = request.passwordResetToken
     const hashedToken = TextUtils.hashText(token)
 

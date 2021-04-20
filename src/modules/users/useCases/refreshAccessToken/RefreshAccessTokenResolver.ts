@@ -21,7 +21,7 @@ export default class RefreshAccessTokenResolver {
       argument: refreshToken,
       argumentName: 'refresh token',
     })
-    if (!guardResult.isSuccess) throw new ApolloError(guardResult.)
+    if (!guardResult.isSuccess) throw new ApolloError(guardResult.message)
 
     const { accessToken } = params
     const requestDto: RefreshAccessTokenDto = {
