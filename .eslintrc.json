@@ -1,6 +1,5 @@
 {
   "extends": [
-    "airbnb-typescript/base", 
     "plugin:prettier/recommended",
     "plugin:jest/recommended"
   ],
@@ -11,9 +10,12 @@
     "import/prefer-default-export": "warn",
     "no-unused-vars": "warn",
     "no-unused-labels": "warn",
-    "sort-imports": "warn",
     "no-duplicate-imports": "warn",
     "@typescript-eslint/semi": "off",
-    "@typescript-eslint/quotes": ["warn", "single", { "allowTemplateLiterals": true }]
+    "@typescript-eslint/quotes": ["warn", "single", { "allowTemplateLiterals": true }],
+    "sort-imports": "off",
+    "class-methods-use-this": "off",
+    "indent": "off",
+    "@typescript-eslint/indent": "warn"
   }
 }
