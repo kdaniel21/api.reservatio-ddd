@@ -1,5 +1,4 @@
 import { DomainError } from '@shared/core/DomainError'
-import { Failure } from '@shared/core/Result'
 
 export namespace CreateUserError {
   export class EmailAlreadyExistsError extends DomainError {
