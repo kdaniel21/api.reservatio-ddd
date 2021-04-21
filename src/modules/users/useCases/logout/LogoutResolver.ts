@@ -1,6 +1,5 @@
 import ApolloContext from '@shared/infra/http/apollo/types/ApolloContext'
 import MessageResponseDto from '@shared/infra/http/apollo/types/MessageResponseDto'
-import { ApolloError } from 'apollo-server'
 import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
 import LogoutDto from './DTOs/LogoutDto'
 import { LogoutErrors } from './LogoutErrors'
@@ -11,7 +10,6 @@ export default class LogoutResolver {
   constructor(private useCase: LogoutUseCase) {}
 
   @Mutation(() => MessageResponseDto)
-  // TODO: Maybe separate class for validation?
   async logout(
     @Ctx() { req, user }: ApolloContext,
     @Arg('refreshToken') refreshTokenInput?: string

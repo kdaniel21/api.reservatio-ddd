@@ -1,5 +1,7 @@
-import { DomainError } from '@shared/core/DomainError'
+import { AppError } from '@shared/core/AppError'
 
-export default class InvalidUserNameError implements DomainError {
-  constructor(public readonly message: string) {}
+export default class InvalidUserNameError extends AppError.ValidationError {
+  constructor(public readonly message: string) {
+    super()
+  }
 }

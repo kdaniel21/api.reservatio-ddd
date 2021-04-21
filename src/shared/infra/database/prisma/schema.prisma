@@ -32,7 +32,7 @@ model PrismaUser {
 
 model PrismaRefreshToken {
   id        String     @id
-  token     String
+  token     String     @unique
   expiresAt DateTime   @map("expires_at")
   user      PrismaUser @relation(fields: [userId], references: [id])
   userId    String     @map("user_id")

@@ -4,7 +4,6 @@ const { compilerOptions } = require('./tsconfig.json')
 module.exports = {
   roots: ['<rootDir>/src'],
   preset: 'ts-jest',
-  testEnvironment: 'node',
   transform: { '^.+\\.(ts|tsx|js|jsx)?$': 'ts-jest' },
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
@@ -12,7 +11,7 @@ module.exports = {
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: '<rootDir>/',
   }),
-  // setupFilesAfterEnv: [`<rootDir>/src/config/jest.global-setup.ts`, 'jest-extended'],
+  testEnvironment: './src/shared/infra/database/prisma/utils/test-environment.js',
   verbose: true,
   collectCoverage: true,
   collectCoverageFrom: ['<rootDir>/src/**/*.ts'],

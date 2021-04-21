@@ -2,7 +2,7 @@ import { DomainError } from './DomainError'
 
 export namespace AppError {
   export class UnexpectedError implements DomainError {
-    public readonly message = 'Something went wrong unexpectedly. Please try again!'
+    readonly message = 'Something went wrong unexpectedly. Please try again!'
   }
 
   export class UndefinedArgumentError implements DomainError {
@@ -11,5 +11,10 @@ export namespace AppError {
 
   export class InputShortError implements DomainError {
     constructor(public readonly message: string) {}
+  }
+
+  export abstract class ValidationError implements DomainError {
+    readonly code = 'VALIDATION_ERROR'
+    abstract readonly message: string
   }
 }

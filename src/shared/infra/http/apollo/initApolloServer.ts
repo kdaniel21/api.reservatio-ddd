@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { path } from 'app-root-path'
-import { ApolloServer } from 'apollo-server'
+import { ApolloServer, ServerInfo } from 'apollo-server'
 import { buildSchema } from 'type-graphql'
 import container from 'typedi'
 import config from '@config'
@@ -10,7 +10,12 @@ import optionalValidateJwt from './auth/optionalValidateJwt'
 import ApolloContext from './types/ApolloContext'
 import { ErrorHandlerMiddleware } from './middleware/ErrorHandlerMiddleware'
 
-export default async () => {
+export interface InitializedApolloServer {
+  apolloServer: ApolloServer
+  serverInfo: ServerInfo
+}
+
+export const initApolloServer = async (): Promise<InitializedApolloServer> => {
   logger.info(`[Apollo] Initializing Apollo GraphQL server...`)
 
   const srcDir = `${path}/src`
@@ -24,7 +29,7 @@ export default async () => {
     authChecker,
   })
 
-  const server = new ApolloServer({
+  const apolloServer = new ApolloServer({
     schema,
     context: ({ req }): ApolloContext => {
       const jwtPayload = optionalValidateJwt(req)
@@ -34,6 +39,8 @@ export default async () => {
   })
 
   const { apolloServerPort: port } = config
-  const info = await server.listen({ port })
-  logger.info(`[Apollo] Server is listening at ${info.url}`)
+  const serverInfo = await apolloServer.listen({ port })
+  logger.info(`[Apollo] Server is listening at ${serverInfo.url}`)
+
+  return { serverInfo, apolloServer }
 }

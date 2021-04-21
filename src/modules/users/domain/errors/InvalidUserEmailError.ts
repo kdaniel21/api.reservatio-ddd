@@ -1,5 +1,5 @@
-import { DomainError } from '@shared/core/DomainError'
+import { AppError } from '@shared/core/AppError'
 
-export default class InvalidUserEmailError implements DomainError {
-  public readonly message = 'Invalid email address!'
+export default class InvalidUserEmailError extends AppError.ValidationError {
+  readonly message = 'Invalid email address!'
 }

@@ -1,10 +1,8 @@
-import User from '@modules/users/domain/User'
 import GraphQLUser from '@modules/users/infra/http/TypeGraphQL/types/GraphQLUser'
 import UserMapper from '@modules/users/mappers/UserMapper'
-import { ApolloError } from 'apollo-server'
 import { Arg, Mutation, Resolver } from 'type-graphql'
 import CreateUserUseCase from './CreateUserUseCase'
-import CreateUserDto from './DTOs/CreateUserUseCaseDto'
+import CreateUserUseCaseDto from './DTOs/CreateUserUseCaseDto'
 import CreateUserInputDto from './DTOs/CreateUserInputDto'
 import CreateUserResponseDto from './DTOs/CreateUserResponseDto'
 
@@ -12,9 +10,9 @@ import CreateUserResponseDto from './DTOs/CreateUserResponseDto'
 export default class CreateUserResolver {
   constructor(private useCase: CreateUserUseCase) {}
 
-  @Mutation(() => CreateUserResponseDto)
+  /*@Mutation(() => CreateUserResponseDto)
   async createUser(@Arg('params') params: CreateUserInputDto) {
-    const request: CreateUserDto = { ...params }
+    const request: CreateUserUseCaseDto = { ...params }
 
     const result = await this.useCase.execute(request)
 
@@ -22,5 +20,5 @@ export default class CreateUserResolver {
 
     const userDto: GraphQLUser = UserMapper.toDto(result.value.user)
     return { user: userDto }
-  }
+  }*/
 }

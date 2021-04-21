@@ -24,6 +24,9 @@ export default class LoginUseCase extends UseCase<LoginUseCaseDto, LoginUseCaseR
     const isPasswordCorrect = await user.password.comparePassword(password)
     if (!isPasswordCorrect) new LoginErrors.InvalidCredentialsError()
 
+    const { isEmailConfirmed } = user
+    if (!isEmailConfirmed) return Result.fail(LoginErrors.EmailAddressNotConfirmedError)
+
     const refreshTokenOrError = await this.authService.createRefreshToken(user)
     if (refreshTokenOrError.isFailure()) return Result.fail(refreshTokenOrError.error)
 

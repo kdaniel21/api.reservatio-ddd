@@ -1,11 +1,14 @@
 import { mocked } from 'ts-jest/utils'
-import faker from 'faker'
 import UserRepository from '@modules/users/repositories/UserRepository'
 import { AppError } from '@shared/core/AppError'
-import CreateUserDto from './DTOs/CreateUserUseCaseDto'
+import CreateUserUseCaseDto from './DTOs/CreateUserUseCaseDto'
 import CreateUserUseCase from './CreateUserUseCase'
 import { CreateUserError } from './CreateUserErrors'
 import UserRole from '@modules/users/domain/UserRole'
+import InvalidUserEmailError from '@modules/users/domain/errors/InvalidUserEmailError'
+import InvalidUserNameError from '@modules/users/domain/errors/InvalidUserNameError'
+import { InvalidUserPasswordError } from '@modules/users/domain/errors/InvalidUserPasswordError'
+import User from '@modules/users/domain/User'
 
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase
@@ -24,9 +27,9 @@ describe('CreateUserUseCase', () => {
   })
 
   it('should create a new user', async () => {
-    const request: CreateUserDto = {
-      email: faker.internet.email().toLowerCase(),
-      name: faker.name.findName(),
+    const request: CreateUserUseCaseDto = {
+      email: 'foo@bar.com',
+      name: 'Foo Bar',
       password: 'Th1sIsAG00dP4ssw0rd',
     }
     mocked(userRepo).existsByEmail.mockResolvedValueOnce(false)
@@ -43,10 +46,25 @@ describe('CreateUserUseCase', () => {
     expect(userRepo.save).toBeCalled()
   })
 
+  it('should emit a UserCreatedEvent', async () => {
+    const request: CreateUserUseCaseDto = {
+      email: 'foo@bar.com',
+      name: 'Foo Bar',
+      password: 'Th1sIsAG00dP4ssw0rd',
+    }
+    mocked(userRepo).existsByEmail.mockResolvedValueOnce(false)
+    jest.spyOn(User.prototype as any, 'addDomainEvent')
+
+    const result = await useCase.execute(request)
+
+    const user: any = result.value.user
+    expect(user.addDomainEvent).toHaveBeenCalledTimes(1)
+  })
+
   it('should fail to create a new user when using an invalid email address', async () => {
-    const request: CreateUserDto = {
-      email: faker.internet.userName(),
-      name: faker.name.findName(),
+    const request: CreateUserUseCaseDto = {
+      email: 'foo',
+      name: 'Foo Bar',
       password: 'Th1sIsAG00dP4ssw0rd',
     }
 
@@ -54,14 +72,47 @@ describe('CreateUserUseCase', () => {
 
     expect(result.isSuccess()).toBe(false)
     expect(result.isFailure()).toBe(true)
+    expect(result.error).toBeInstanceOf(InvalidUserEmailError)
+    expect(userRepo.save).toBeCalledTimes(0)
+    expect(userRepo.existsByEmail).toBeCalledTimes(0)
+  })
+
+  it('should fail to create a new user when using an invalid name', async () => {
+    const request: CreateUserUseCaseDto = {
+      email: 'foo@bar.com',
+      name: 'foo',
+      password: 'Th1sIsAG00dP4ssw0rd',
+    }
+
+    const result = await useCase.execute(request)
+
+    expect(result.isSuccess()).toBe(false)
+    expect(result.isFailure()).toBe(true)
+    expect(result.error).toBeInstanceOf(InvalidUserNameError)
+    expect(userRepo.save).not.toBeCalled()
+    expect(userRepo.existsByEmail).not.toBeCalled()
+  })
+
+  it('should fail to create a new user when using an invalid password', async () => {
+    const request: CreateUserUseCaseDto = {
+      email: 'foo@bar.com',
+      name: 'Foo Bar',
+      password: 'password',
+    }
+
+    const result = await useCase.execute(request)
+
+    expect(result.isSuccess()).toBe(false)
+    expect(result.isFailure()).toBe(true)
+    expect(result.error).toBeInstanceOf(InvalidUserPasswordError)
     expect(userRepo.save).not.toBeCalled()
     expect(userRepo.existsByEmail).not.toBeCalled()
   })
 
   it('should throw EmailAlreadyExistsError when using an already registered email address', async () => {
-    const request: CreateUserDto = {
-      email: faker.internet.email().toLowerCase(),
-      name: faker.name.findName(),
+    const request: CreateUserUseCaseDto = {
+      email: 'foo@bar.com',
+      name: 'Foo Bar',
       password: 'Th1sIsAG00dP4ssw0rd',
     }
     mocked(userRepo).existsByEmail.mockResolvedValueOnce(true)
@@ -75,9 +126,9 @@ describe('CreateUserUseCase', () => {
   })
 
   it('should throw UnexpectedError if userRepo.save() fails', async () => {
-    const request: CreateUserDto = {
-      email: faker.internet.email().toLowerCase(),
-      name: faker.name.findName(),
+    const request: CreateUserUseCaseDto = {
+      email: 'foo@bar.com',
+      name: 'Foo Bar',
       password: 'Th1sIsAG00dP4ssw0rd',
     }
     mocked(userRepo).existsByEmail.mockResolvedValueOnce(false)
@@ -88,26 +139,5 @@ describe('CreateUserUseCase', () => {
     expect(result.isSuccess()).toBe(false)
     expect(result.isFailure()).toBe(true)
     expect(result.error).toBeInstanceOf(AppError.UnexpectedError)
-  })
-
-  it('should not allow to create a user with isAdmin: true', async () => {
-    const request = {
-      email: faker.internet.email().toLowerCase(),
-      name: faker.name.findName(),
-      password: 'Th1sIsAG00dP4ssw0rd',
-      isAdmin: true,
-    } as CreateUserDto
-    mocked(userRepo).existsByEmail.mockResolvedValueOnce(false)
-
-    const result = await useCase.execute(request)
-
-    expect(result.isSuccess()).toBe(true)
-    expect(result.isFailure()).toBe(false)
-    expect(result.value.user.email.value).toBe(request.email)
-    expect(result.value.user.name.value).toBe(request.name)
-    expect(result.value.user.role).toBe(UserRole.User)
-    expect(result.value.user.isDeleted).toBe(false)
-    expect(result.value.user.isEmailConfirmed).toBe(false)
-    expect(userRepo.save).toBeCalled()
   })
 })
