@@ -19,7 +19,7 @@ export default class LoginUseCase extends UseCase<LoginUseCaseDto, LoginUseCaseR
     const user = await this.userRepo.findByEmail(email)
 
     const isUserFound = !!user
-    if (!isUserFound) return new LoginErrors.InvalidCredentialsError()
+    if (!isUserFound) return Result.fail(LoginErrors.InvalidCredentialsError)
 
     const isPasswordCorrect = await user.password.comparePassword(password)
     if (!isPasswordCorrect) new LoginErrors.InvalidCredentialsError()

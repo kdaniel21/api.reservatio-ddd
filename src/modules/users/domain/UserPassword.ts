@@ -41,11 +41,11 @@ export default class UserPassword extends ValueObject<UserPasswordProps> {
       Guard.againstLongerThan(this.MAX_PASSWORD_LENGTH, guardArgument),
     ])
     if (!combinedResult.isSuccess)
-      return new InvalidUserPasswordError(combinedResult.message as string)
+      return Result.fail(new InvalidUserPasswordError(combinedResult.message))
 
     if (!this.PASSWORD_REGEX.test(password)) {
       const message = 'The password must contain a mix of characters and numbers.'
-      return new InvalidUserPasswordError(message as string)
+      return Result.fail(new InvalidUserPasswordError(message))
     }
 
     const userPassword = new UserPassword({ password, isHashed })

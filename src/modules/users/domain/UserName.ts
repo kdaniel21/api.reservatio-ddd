@@ -23,16 +23,15 @@ export default class UserName extends ValueObject<UserNameProps> {
 
   static create(name: string): ErrorOr<UserName> {
     const guardArgument = { argument: name, argumentName: 'name' }
+    const guardResult = Guard.combine([
+      Guard.againstNullOrUndefined(guardArgument),
+      Guard.againstLongerThan(this.MAX_NAME_LENGTH, guardArgument),
+      Guard.againstShorterThan(this.MIN_NAME_LENGTH, guardArgument),
+    ])
+    if (!guardResult.isSuccess) {
+      const message = guardResult.message as string
 
-    const usernameResult = Guard.againstNullOrUndefined(guardArgument)
-    const maxLengthResult = Guard.againstLongerThan(this.MAX_NAME_LENGTH, guardArgument)
-    const minLengthResult = Guard.againstShorterThan(this.MIN_NAME_LENGTH, guardArgument)
-
-    const combinedResult = Guard.combine([usernameResult, maxLengthResult, minLengthResult])
-    if (!combinedResult.isSuccess) {
-      const message = combinedResult.message as string
-
-      return new InvalidUserNameError(message)
+      return Result.fail(new InvalidUserNameError(message))
     }
 
     const userName = new UserName({ name })

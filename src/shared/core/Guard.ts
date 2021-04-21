@@ -40,7 +40,7 @@ export class Guard {
   static againstNullOrUndefined(props: GuardArguments): GuardResult {
     const { argument, argumentName } = props
 
-    return [null, undefined].includes(argument)
+    return [null, undefined, ''].includes(argument)
       ? { isSuccess: false, message: `${argumentName} is null or undefined` }
       : { isSuccess: true }
   }

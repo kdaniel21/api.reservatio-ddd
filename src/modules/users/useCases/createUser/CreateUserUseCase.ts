@@ -11,8 +11,8 @@ import { CreateUserError } from './CreateUserErrors'
 import CreateUserUseCaseResultDto from './DTOs/CreateUserUseCaseResultDto'
 
 export default class CreateUserUseCase extends UseCase<
-CreateUserUseCaseDto,
-CreateUserUseCaseResultDto
+  CreateUserUseCaseDto,
+  CreateUserUseCaseResultDto
 > {
   constructor(private userRepo: UserRepository) {
     super()
@@ -34,7 +34,7 @@ CreateUserUseCaseResultDto
 
     const isEmailAlreadyRegistered = await this.userRepo.existsByEmail(email.value)
     if (isEmailAlreadyRegistered)
-      return new CreateUserError.EmailAlreadyExistsError(email.value)
+      return Result.fail(new CreateUserError.EmailAlreadyExistsError(email.value))
 
     const createdUserOrError = User.create({ email, name, password })
     if (createdUserOrError.isFailure()) return Result.fail(createdUserOrError.error)

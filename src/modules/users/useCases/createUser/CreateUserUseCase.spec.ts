@@ -5,6 +5,7 @@ import { AppError } from '@shared/core/AppError'
 import CreateUserDto from './DTOs/CreateUserUseCaseDto'
 import CreateUserUseCase from './CreateUserUseCase'
 import { CreateUserError } from './CreateUserErrors'
+import UserRole from '@modules/users/domain/UserRole'
 
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase
@@ -34,11 +35,11 @@ describe('CreateUserUseCase', () => {
 
     expect(result.isSuccess()).toBe(true)
     expect(result.isFailure()).toBe(false)
-    expect(result.value.email).toBe(request.email)
-    expect(result.value.name).toBe(request.name)
-    expect(result.value.isAdmin).toBe(false)
-    expect(result.value.isDeleted).toBe(false)
-    expect(result.value.isEmailConfirmed).toBe(false)
+    expect(result.value.user.email.value).toBe(request.email)
+    expect(result.value.user.name.value).toBe(request.name)
+    expect(result.value.user.role).toBe(UserRole.User)
+    expect(result.value.user.isDeleted).toBe(false)
+    expect(result.value.user.isEmailConfirmed).toBe(false)
     expect(userRepo.save).toBeCalled()
   })
 
@@ -102,11 +103,11 @@ describe('CreateUserUseCase', () => {
 
     expect(result.isSuccess()).toBe(true)
     expect(result.isFailure()).toBe(false)
-    expect(result.value.email).toBe(request.email)
-    expect(result.value.name).toBe(request.name)
-    expect(result.value.isAdmin).toBe(false)
-    expect(result.value.isDeleted).toBe(false)
-    expect(result.value.isEmailConfirmed).toBe(false)
+    expect(result.value.user.email.value).toBe(request.email)
+    expect(result.value.user.name.value).toBe(request.name)
+    expect(result.value.user.role).toBe(UserRole.User)
+    expect(result.value.user.isDeleted).toBe(false)
+    expect(result.value.user.isEmailConfirmed).toBe(false)
     expect(userRepo.save).toBeCalled()
   })
 })

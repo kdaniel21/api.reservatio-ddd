@@ -1,3 +1,4 @@
+import { AppError } from '@shared/core/AppError'
 import faker from 'faker'
 import InvalidUserEmailError from './errors/InvalidUserEmailError'
 import UserEmail from './UserEmail'
@@ -30,7 +31,7 @@ describe('UserEmail Value Object', () => {
 
     expect(validUserEmailOrError.isSuccess()).toBe(false)
     expect(validUserEmailOrError.isFailure()).toBe(true)
-    expect(validUserEmailOrError.error).toBeInstanceOf(InvalidUserEmailError)
+    expect(validUserEmailOrError.error).toBeInstanceOf(AppError.UndefinedArgumentError)
   })
 
   it('should make the valid email address lowercase', () => {

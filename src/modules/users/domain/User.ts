@@ -130,7 +130,7 @@ export default class User extends AggregateRoot<UserProps> {
     ])
 
     if (!guardResult.isSuccess)
-      return new AppError.UndefinedArgumentError(guardResult.message as string)
+      return Result.fail(new AppError.UndefinedArgumentError(guardResult.message))
 
     const user = new User(
       {

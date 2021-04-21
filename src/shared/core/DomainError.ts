@@ -1,14 +1,12 @@
-import { Either, Failure } from './Result'
+import { Either } from './Result'
 
-export interface DomainErrorDto {
+export interface DomainError {
   message: string
   code?: string
 }
 
-export const isDomainErrorDto = (object: any): object is DomainErrorDto => {
+export const isDomainError = (object: any): object is DomainError => {
   return 'message' in object
 }
 
-export type ErrorOr<S = any> = Either<DomainErrorDto, S>
-
-export abstract class DomainError extends Failure<DomainErrorDto, any> {}
+export type ErrorOr<S = any> = Either<DomainError, S>

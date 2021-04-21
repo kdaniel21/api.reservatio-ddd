@@ -33,8 +33,13 @@ export class Success<E, S> {
 }
 
 export namespace Result {
-  export function fail<E = DomainError, S = any>(error?: E): Either<E, S> {
-    return new Failure<E, S>(error)
+  export function fail<E extends object, S = any>(
+    ErrorClass?: (new () => E) | E
+  ): Either<E, S> {
+    if (!ErrorClass) return new Failure<E, S>()
+
+    const errorInstance: E = typeof ErrorClass === 'object' ? ErrorClass : new ErrorClass()
+    return new Failure<E, S>(errorInstance)
   }
 
   export function ok<E, S>(value?: S): Either<E, S> {

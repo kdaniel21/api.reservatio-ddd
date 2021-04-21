@@ -1,4 +1,6 @@
+import { AppError } from '@shared/core/AppError'
 import { ErrorOr } from '@shared/core/DomainError'
+import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import ValueObject from '@shared/domain/ValueObject'
 import InvalidUserEmailError from './errors/InvalidUserEmailError'
@@ -19,8 +21,15 @@ export default class UserEmail extends ValueObject<UserEmailProps> {
   }
 
   static create(email: string): ErrorOr<UserEmail> {
+    const guardResult = Guard.againstNullOrUndefined({
+      argument: email,
+      argumentName: 'email',
+    })
+    if (!guardResult.isSuccess)
+      return Result.fail(new AppError.UndefinedArgumentError(guardResult.message))
+
     const isValid = this.isValidEmail(email)
-    if (!isValid) new InvalidUserEmailError()
+    if (!isValid) return Result.fail(InvalidUserEmailError)
 
     const userEmail = new UserEmail({ email: this.format(email) })
 

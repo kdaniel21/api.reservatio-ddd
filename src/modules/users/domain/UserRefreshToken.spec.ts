@@ -1,7 +1,7 @@
 import UniqueID from '@shared/domain/UniqueID'
 import TextUtils from '@shared/utils/TextUtils'
 import faker from 'faker'
-import UserRefreshToken from './UserRefreshToken'
+import UserRefreshToken, { UserRefreshTokenProps } from './UserRefreshToken'
 
 describe('UserRefreshToken Value Object', () => {
   it('should create a new random refresh token', () => {
@@ -21,7 +21,8 @@ describe('UserRefreshToken Value Object', () => {
     const existingToken = {
       token: TextUtils.hashText(plainTextToken),
       expiresAt: faker.date.future(),
-    }
+      userId: new UniqueID(),
+    } as UserRefreshTokenProps
 
     const refreshTokenOrError = UserRefreshToken.create(existingToken, id)
 
@@ -39,7 +40,8 @@ describe('UserRefreshToken Value Object', () => {
     const existingToken = {
       token: TextUtils.hashText(plainTextToken),
       expiresAt: faker.date.past(),
-    }
+      userId: new UniqueID(),
+    } as UserRefreshTokenProps
 
     const refreshTokenOrError = UserRefreshToken.create(existingToken, id)
 

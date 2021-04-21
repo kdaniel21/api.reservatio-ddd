@@ -1,21 +1,15 @@
 import { DomainError } from './DomainError'
 
 export namespace AppError {
-  export class UnexpectedError extends DomainError {
-    constructor() {
-      super({ message: 'Something went wrong unexpectedly. Please try again!' })
-    }
+  export class UnexpectedError implements DomainError {
+    public readonly message = 'Something went wrong unexpectedly. Please try again!'
   }
 
-  export class UndefinedArgumentError extends DomainError {
-    constructor(message: string) {
-      super({ message })
-    }
+  export class UndefinedArgumentError implements DomainError {
+    constructor(public readonly message: string) {}
   }
 
-  export class InputShortError extends DomainError {
-    constructor(message: string) {
-      super({ message })
-    }
+  export class InputShortError implements DomainError {
+    constructor(public readonly message: string) {}
   }
 }

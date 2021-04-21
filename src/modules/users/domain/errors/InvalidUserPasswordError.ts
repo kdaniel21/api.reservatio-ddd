@@ -1,7 +1,5 @@
 import { DomainError } from '@shared/core/DomainError'
 
-export class InvalidUserPasswordError extends DomainError {
-  constructor(error: string) {
-    super({ message: error })
-  }
+export class InvalidUserPasswordError implements DomainError {
+  constructor(public readonly message: string) {}
 }

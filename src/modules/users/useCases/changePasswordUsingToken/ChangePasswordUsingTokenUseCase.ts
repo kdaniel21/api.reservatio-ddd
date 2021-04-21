@@ -20,10 +20,10 @@ export default class ChangePasswordUsingTokenUseCase extends UseCase<
     const hashedToken = TextUtils.hashText(token)
 
     const user = await this.userRepo.findOne({ passwordResetToken: hashedToken })
-    if (!user) return new ChangePasswordUsingTokenErrors.InvalidTokenError()
+    if (!user) return Result.fail(ChangePasswordUsingTokenErrors.InvalidTokenError)
 
     const isTokenValid = user.passwordResetToken.isTokenValid(token)
-    if (!isTokenValid) return new ChangePasswordUsingTokenErrors.InvalidTokenError()
+    if (!isTokenValid) return Result.fail(ChangePasswordUsingTokenErrors.InvalidTokenError)
 
     const result = user.setPassword(request.newPassword)
     if (result.isFailure()) return Result.fail(result.error)
