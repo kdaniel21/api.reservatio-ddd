@@ -4,7 +4,7 @@ import { DomainEvent } from './DomainEvent'
 import UniqueID from '../UniqueID'
 
 export default class DomainEvents {
-  private static handlersMap: { [eventClassName: string]: any } = {}
+  private static handlersMap: { [eventClassName: string]: Function[] } = {}
 
   private static markedAggregatesList: AggregateRoot<any>[] = []
 
@@ -48,12 +48,10 @@ export default class DomainEvents {
 
   private static dispatch(domainEvent: DomainEvent): void {
     const eventClassName: string = domainEvent.constructor.name
-    const handlers: any[] = this.handlersMap[eventClassName]
+    const handlers = this.handlersMap[eventClassName]
     if (!handlers) return
 
-    logger.info(
-      `[EVENTS] ${handlers.length} handler(s) have been dispatched for event ${eventClassName}.`
-    )
+    logger.info(`[EVENTS] ${handlers.length} handler(s) have been dispatched for event ${eventClassName}.`)
     handlers.forEach(handler => {
       handler(domainEvent)
     })

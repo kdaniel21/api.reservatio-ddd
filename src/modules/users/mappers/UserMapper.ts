@@ -15,6 +15,7 @@ import UserRole from '../domain/UserRole'
 export default class UserMapper implements BaseMapper<User> {
   static toDto(user: User): UserDto {
     return {
+      id: user.userId.toString(),
       name: user.name.value,
       email: user.email.value,
       isEmailConfirmed: user.isEmailConfirmed,

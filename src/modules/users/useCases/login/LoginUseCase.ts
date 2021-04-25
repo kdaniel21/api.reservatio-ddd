@@ -22,7 +22,7 @@ export default class LoginUseCase extends UseCase<LoginUseCaseDto, LoginUseCaseR
     if (!isUserFound) return Result.fail(LoginErrors.InvalidCredentialsError)
 
     const isPasswordCorrect = await user.password.comparePassword(password)
-    if (!isPasswordCorrect) new LoginErrors.InvalidCredentialsError()
+    if (!isPasswordCorrect) return Result.fail(LoginErrors.InvalidCredentialsError)
 
     const { isEmailConfirmed } = user
     if (!isEmailConfirmed) return Result.fail(LoginErrors.EmailAddressNotConfirmedError)

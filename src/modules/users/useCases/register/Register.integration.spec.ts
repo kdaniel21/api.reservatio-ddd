@@ -2,15 +2,14 @@ import 'reflect-metadata'
 import '@modules/users'
 import UserRole from '@modules/users/domain/UserRole'
 import validateJwt from '@shared/infra/http/apollo/auth/validateJwt'
-import {
-  initApolloServer,
-  InitializedApolloServer,
-} from '@shared/infra/http/apollo/initApolloServer'
+import { initApolloServer, InitializedApolloServer } from '@shared/infra/http/apollo/initApolloServer'
 import supertest from 'supertest'
 import prisma from '@shared/infra/database/prisma/prisma'
 import UniqueID from '@shared/domain/UniqueID'
 import clearAllData from '@shared/infra/database/prisma/utils/clearAllData'
 import TextUtils from '@shared/utils/TextUtils'
+import User from '@modules/users/domain/User'
+import UserCreatedEvent from '@modules/users/domain/events/UserCreatedEvent'
 
 describe('Register Integration', () => {
   let initializedServer: InitializedApolloServer
@@ -38,6 +37,7 @@ describe('Register Integration', () => {
         passwordConfirm: "Th1sIsAG00dPassw0rd"
       }) {
         user {
+          id
           name
           email
         }
@@ -48,9 +48,39 @@ describe('Register Integration', () => {
 
     const res = await request.post('/').send({ query }).expect(200)
 
+    expect(res.body.data.register.user.id).toBeTruthy()
     expect(res.body.data.register.user.name).toBe('Foo Bar')
     expect(res.body.data.register.user.email).toBe('foo@bar.com')
   })
+
+  it('should emit a UserCreatedEvent and fire an AfterUserCreated handler after creating a user', async () => {
+    jest.spyOn(User.prototype as any, 'addDomainEvent')
+    // jest.spyOn(AfterUserCreated.prototype as any, 'handleEvent')
+    const query = `mutation {
+      register(params: {
+        email: "foo@bar.com",
+        name: "Foo Bar",
+        password: "Th1sIsAG00dPassw0rd",
+        passwordConfirm: "Th1sIsAG00dPassw0rd"
+      }) {
+        user {
+          id
+          name
+          email
+        }
+        accessToken
+        refreshToken
+      }
+    }`
+
+    await request.post('/').send({ query }).expect(200)
+
+    expect((User.prototype as any).addDomainEvent).toHaveBeenCalledTimes(1)
+    expect((User.prototype as any).addDomainEvent).toHaveBeenCalledWith(expect.any(UserCreatedEvent))
+    // expect(AfterUserCreated.prototype.handleEvent).toHaveBeenCalledTimes(1)
+  })
+
+  // TODO: Track subsequent calls made by AfterUserCreated
 
   it('should register a new user and return a valid access token', async () => {
     const query = `mutation {
@@ -99,8 +129,7 @@ describe('Register Integration', () => {
     const res = await request.post('/').send({ query }).expect(200)
 
     expect(res.body.data.register.refreshToken).toBeTruthy()
-    const { refreshToken } = res.body.data.register
-    const hashedToken = TextUtils.hashText(refreshToken)
+    const hashedToken = TextUtils.hashText(res.body.data.register.refreshToken)
     const refreshTokenRecord = await prisma.prismaRefreshToken.findUnique({
       where: { token: hashedToken },
       include: { user: true },
