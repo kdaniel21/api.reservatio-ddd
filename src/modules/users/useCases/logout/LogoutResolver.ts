@@ -24,7 +24,7 @@ export default class LogoutResolver {
     const result = await this.useCase.execute(requestDto)
 
     if (result.isSuccess()) {
-      return { message: 'You have been logged out' }
+      return { message: 'You have been successfully logged out!' }
     }
 
     throw result.error

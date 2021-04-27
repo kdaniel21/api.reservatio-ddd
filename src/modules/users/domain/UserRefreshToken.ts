@@ -1,3 +1,4 @@
+import config from '@config'
 import { ErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import { TokenEntity, TokenEntityOptions, TokenEntityProps } from '@shared/domain/TokenEntity'
@@ -9,8 +10,8 @@ export interface UserRefreshTokenProps extends TokenEntityProps {
 
 export default class UserRefreshToken extends TokenEntity<UserRefreshTokenProps> {
   static tokenOptions: TokenEntityOptions = {
-    TOKEN_LENGTH: 30,
-    EXPIRATION_HOURS: 30 * 24,
+    TOKEN_LENGTH: config.auth.refreshTokenLength,
+    EXPIRATION_HOURS: config.auth.refreshTokenExpirationHours,
   }
 
   get userId(): UniqueID {

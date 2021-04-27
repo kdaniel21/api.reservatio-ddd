@@ -31,10 +31,10 @@ export const initApolloServer = async (): Promise<InitializedApolloServer> => {
 
   const apolloServer = new ApolloServer({
     schema,
-    context: ({ req }): ApolloContext => {
+    context: ({ req, res }): ApolloContext => {
       const jwtPayload = optionalValidateJwt(req)
 
-      return { user: jwtPayload, req }
+      return { user: jwtPayload, req, res }
     },
   })
 

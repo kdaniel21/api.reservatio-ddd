@@ -10,6 +10,9 @@ import clearAllData from '@shared/infra/database/prisma/utils/clearAllData'
 import TextUtils from '@shared/utils/TextUtils'
 import User from '@modules/users/domain/User'
 import UserCreatedEvent from '@modules/users/domain/events/UserCreatedEvent'
+import { extractCookies } from '@shared/utils/extractCookies'
+import config from '@config'
+import crypto from 'crypto'
 
 describe('Register Integration', () => {
   let initializedServer: InitializedApolloServer
@@ -129,14 +132,53 @@ describe('Register Integration', () => {
     const res = await request.post('/').send({ query }).expect(200)
 
     expect(res.body.data.register.refreshToken).toBeTruthy()
-    const hashedToken = TextUtils.hashText(res.body.data.register.refreshToken)
-    const refreshTokenRecord = await prisma.prismaRefreshToken.findUnique({
-      where: { token: hashedToken },
+    const refreshTokenRecord = await prisma.prismaRefreshToken.findFirst({
+      where: { user: { email: 'foo@bar.com' } },
       include: { user: true },
     })
     expect(refreshTokenRecord).toBeTruthy()
     expect(refreshTokenRecord.user.email).toBe('foo@bar.com')
     expect(refreshTokenRecord.expiresAt.getTime()).toBeGreaterThan(Date.now())
+    const plainRefreshToken = res.body.data.register.refreshToken
+    expect(crypto.createHash('sha256').update(plainRefreshToken).digest('hex').toString()).toBe(
+      refreshTokenRecord.token
+    )
+  })
+
+  it('should register a new user and set the refresh token as an http-only cookie', async () => {
+    const query = `mutation {
+      register(params: {
+        email: "foo@bar.com",
+        name: "Foo Bar",
+        password: "Th1sIsAG00dPassw0rd",
+        passwordConfirm: "Th1sIsAG00dPassw0rd"
+      }) {
+        user {
+          name
+          email
+        }
+        accessToken
+        refreshToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    const plainRefreshToken = res.body.data.register.refreshToken
+    const refreshTokenRecord = await prisma.prismaRefreshToken.findFirst({ where: { user: { email: 'foo@bar.com' } } })
+    const cookies = extractCookies(res.headers)
+    const refreshTokenCookie = cookies[config.auth.refreshTokenCookieName]
+    expect(refreshTokenCookie.value).toBe(plainRefreshToken)
+    expect(refreshTokenCookie.flags['HttpOnly']).toBeTruthy()
+    expect(refreshTokenCookie.flags['Secure']).toBe(true)
+    const expirationThreshold = 30 * 1000
+    const expectedExpiration = new Date(Date.now() + config.auth.refreshTokenExpirationHours * 60 * 60 * 1000).getTime()
+    const cookieExpiration = new Date(refreshTokenCookie.flags['Expires']).getTime()
+    expect(cookieExpiration).toBeGreaterThan(expectedExpiration - expirationThreshold)
+    expect(cookieExpiration).toBeLessThan(expectedExpiration + expirationThreshold)
+    expect(crypto.createHash('sha256').update(refreshTokenCookie.value).digest('hex').toString()).toBe(
+      refreshTokenRecord.token
+    )
   })
 
   it('should register a new user and store the user in the database', async () => {

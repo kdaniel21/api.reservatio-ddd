@@ -11,6 +11,8 @@ import config from '@config'
 import validateJwt from '@shared/infra/http/apollo/auth/validateJwt'
 import UserRole from '@modules/users/domain/UserRole'
 import TextUtils from '@shared/utils/TextUtils'
+import { extractCookies } from '@shared/utils/extractCookies'
+import crypto from 'crypto'
 
 describe('Login Integration', () => {
   let initializedServer: InitializedApolloServer
@@ -103,6 +105,35 @@ describe('Login Integration', () => {
     expect(refreshTokenRecord).toBeTruthy()
     expect(refreshTokenRecord.user.id).toBe(userRecord.id)
     expect(refreshTokenRecord.expiresAt.getTime()).toBeGreaterThan(Date.now())
+  })
+
+  it('should login with the correct credentials and set the refresh token as an http-only cookie', async () => {
+    const query = `mutation {
+      login(params: {
+        email: "foo@bar.com",
+        password: "password",
+      }) {
+        refreshToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    const plainRefreshToken = res.body.data.login.refreshToken
+    const refreshTokenRecord = await prisma.prismaRefreshToken.findFirst({ where: { user: { email: 'foo@bar.com' } } })
+    const cookies = extractCookies(res.headers)
+    const refreshTokenCookie = cookies[config.auth.refreshTokenCookieName]
+    expect(refreshTokenCookie.value).toBe(plainRefreshToken)
+    expect(refreshTokenCookie.flags['HttpOnly']).toBeTruthy()
+    expect(refreshTokenCookie.flags['Secure']).toBe(true)
+    const expirationThreshold = 30 * 1000
+    const expectedExpiration = new Date(Date.now() + config.auth.refreshTokenExpirationHours * 60 * 60 * 1000).getTime()
+    const cookieExpiration = new Date(refreshTokenCookie.flags['Expires']).getTime()
+    expect(cookieExpiration).toBeGreaterThan(expectedExpiration - expirationThreshold)
+    expect(cookieExpiration).toBeLessThan(expectedExpiration + expirationThreshold)
+    expect(crypto.createHash('sha256').update(refreshTokenCookie.value).digest('hex').toString()).toBe(
+      refreshTokenRecord.token
+    )
   })
 
   it('should throw an InvalidCredentials error if the email address is invalid', async () => {

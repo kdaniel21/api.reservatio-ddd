@@ -1,7 +1,7 @@
 import User from '@modules/users/domain/User'
 import UserRepository from '@modules/users/repositories/UserRepository'
 import AuthService from '@modules/users/services/AuthService'
-import {PromiseErrorOr } from '@shared/core/DomainError'
+import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import UseCase from '@shared/core/UseCase'
 import RefreshAccessTokenUseCaseDto from './DTOs/RefreshAccessTokenUseCaseDto'

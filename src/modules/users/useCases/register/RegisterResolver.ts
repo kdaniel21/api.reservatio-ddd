@@ -1,7 +1,9 @@
+import config from '@config'
 import RefreshTokenMapper from '@modules/users/mappers/RefreshTokenMapper'
 import UserMapper from '@modules/users/mappers/UserMapper'
+import ApolloContext from '@shared/infra/http/apollo/types/ApolloContext'
 import { ApolloError } from 'apollo-server-errors'
-import { Arg, Mutation, Resolver } from 'type-graphql'
+import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
 import RegisterInputDto from './DTOs/RegisterInputDto'
 import RegisterResponseDto from './DTOs/RegisterResponseDto'
 import RegisterUseCase from './RegisterUseCase'
@@ -11,7 +13,7 @@ export default class RegisterResolver {
   constructor(private useCase: RegisterUseCase) {}
 
   @Mutation(() => RegisterResponseDto)
-  async register(@Arg('params') params: RegisterInputDto): Promise<RegisterResponseDto> {
+  async register(@Arg('params') params: RegisterInputDto, @Ctx() { res }: ApolloContext): Promise<RegisterResponseDto> {
     if (params.password !== params.passwordConfirm)
       throw new ApolloError('The passwords must match!', 'VALIDATION_ERROR')
 
@@ -27,6 +29,13 @@ export default class RegisterResolver {
       refreshToken: RefreshTokenMapper.toDto(refreshToken),
       accessToken,
     }
+
+    const cookieExpirationTime = new Date(Date.now() + config.auth.refreshTokenExpirationHours * 60 * 60 * 1000)
+    res.cookie(config.auth.refreshTokenCookieName, resultDto.refreshToken, {
+      httpOnly: true,
+      secure: !config.isDevelopment,
+      expires: cookieExpirationTime,
+    })
 
     return resultDto
   }
