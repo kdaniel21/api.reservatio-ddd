@@ -1,7 +1,7 @@
 import { isDomainError } from '@shared/core/DomainError'
 import logger from '@shared/infra/Logger/logger'
-import { ApolloError } from 'apollo-server'
-import { MiddlewareFn, UnauthorizedError } from 'type-graphql'
+import { ApolloError } from 'apollo-server-koa'
+import { MiddlewareFn } from 'type-graphql'
 
 export const ErrorHandlerMiddleware: MiddlewareFn<any> = async (_, next) => {
   try {

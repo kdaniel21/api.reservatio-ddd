@@ -1,10 +1,7 @@
-import { Field, InputType } from 'type-graphql'
+import { ArgsType, Field } from 'type-graphql'
 
-@InputType()
+@ArgsType()
 export default class RefreshAccessTokenInputDto {
   @Field({ nullable: true })
   refreshToken?: string
-
-  @Field({ nullable: true })
-  accessToken?: string
 }

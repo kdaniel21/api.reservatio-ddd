@@ -50,7 +50,7 @@ describe('RefreshAccessToken Integration', () => {
         expiresAt: new Date(Date.now() + 10 * 10 * 1000),
         id: new UniqueID().toString(),
         token: crypto.createHash('sha256').update(refreshToken).digest('hex').toString(),
-        user: { connect: userRecord },
+        userId: userRecord.id,
       },
     })
 
@@ -58,7 +58,155 @@ describe('RefreshAccessToken Integration', () => {
       { userId: userRecord.id, role: userRecord.role, email: userRecord.email } as JwtPayload,
       config.auth.jwtSecretKey
     )
+
+    jest.clearAllMocks()
   })
 
-  it('should get the the refresh token from the cookies and')
+  it('should get the refresh token from the cookie and return a valid access token', async () => {
+    const query = `query {
+      refreshAccessToken {
+        accessToken
+      }
+    }`
+
+    const res = await request.post('/').set('Cookie', `refresh-token=${refreshToken}`).send({ query }).expect(200)
+
+    expect(res.body.data.refreshAccessToken.accessToken).toBeTruthy()
+    const accessTokenPayload = jwt.verify(
+      res.body.data.refreshAccessToken.accessToken,
+      config.auth.jwtSecretKey
+    ) as JwtPayload
+    expect(accessTokenPayload.email).toBe(userRecord.email)
+    expect(accessTokenPayload.role).toBe(userRecord.role)
+    expect(accessTokenPayload.userId).toBe(userRecord.id)
+  })
+
+  it('should get the refresh token from the input and return a valid access token', async () => {
+    const query = `query {
+      refreshAccessToken(refreshToken: "${refreshToken}") {
+        accessToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    expect(res.body.data.refreshAccessToken.accessToken).toBeTruthy()
+    const accessTokenPayload = jwt.verify(
+      res.body.data.refreshAccessToken.accessToken,
+      config.auth.jwtSecretKey
+    ) as JwtPayload
+    expect(accessTokenPayload.email).toBe(userRecord.email)
+    expect(accessTokenPayload.role).toBe(userRecord.role)
+    expect(accessTokenPayload.userId).toBe(userRecord.id)
+  })
+
+  it('should prefer the token provided via input over the one stored as a cookie', async () => {
+    const expiredRefreshToken = crypto.randomBytes(20).toString('hex')
+    await prisma.prismaRefreshToken.create({
+      data: {
+        expiresAt: new Date(Date.now() - 10 * 10 * 1000),
+        id: new UniqueID().toString(),
+        token: crypto.createHash('sha256').update(expiredRefreshToken).digest('hex').toString(),
+        userId: userRecord.id,
+      },
+    })
+    const query = `query {
+      refreshAccessToken(refreshToken: "${refreshToken}") {
+        accessToken
+      }
+    }`
+
+    const res = await request
+      .post('/')
+      .set('Cookie', `refresh-token=${expiredRefreshToken}`)
+      .send({ query })
+      .expect(200)
+
+    expect(res.body.data.refreshAccessToken.accessToken).toBeTruthy()
+    const accessTokenPayload = jwt.verify(
+      res.body.data.refreshAccessToken.accessToken,
+      config.auth.jwtSecretKey
+    ) as JwtPayload
+    expect(accessTokenPayload.email).toBe(userRecord.email)
+    expect(accessTokenPayload.role).toBe(userRecord.role)
+    expect(accessTokenPayload.userId).toBe(userRecord.id)
+  })
+
+  it('should throw an InvalidRefreshTokenError error if no refresh token is provided', async () => {
+    jest.spyOn(jwt as any, 'sign')
+    const query = `query {
+      refreshAccessToken {
+        accessToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('INVALID_REFRESH_TOKEN')
+    expect(jwt.sign).not.toBeCalled()
+  })
+
+  it('should throw an InvalidRefreshTokenError error if an invalid refresh token is provided', async () => {
+    jest.spyOn(jwt as any, 'sign')
+    const query = `query {
+      refreshAccessToken(refreshToken: "${new UniqueID().toString()}") {
+        accessToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('INVALID_REFRESH_TOKEN')
+    expect(jwt.sign).not.toBeCalled()
+  })
+
+  it('should throw an InvalidRefreshTokenError error if an expired refresh token is provided via input', async () => {
+    jest.spyOn(jwt as any, 'sign')
+    const expiredRefreshToken = crypto.randomBytes(20).toString('hex')
+    await prisma.prismaRefreshToken.create({
+      data: {
+        expiresAt: new Date(Date.now() - 10 * 10 * 1000),
+        id: new UniqueID().toString(),
+        token: crypto.createHash('sha256').update(expiredRefreshToken).digest('hex').toString(),
+        userId: userRecord.id,
+      },
+    })
+    const query = `query {
+      refreshAccessToken(refreshToken: "${expiredRefreshToken}") {
+        accessToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('INVALID_REFRESH_TOKEN')
+    expect(jwt.sign).not.toBeCalled()
+  })
+
+  it('should throw an InvalidRefreshTokenError error if an expired refresh token is provided via cookie', async () => {
+    jest.spyOn(jwt as any, 'sign')
+    const expiredRefreshToken = crypto.randomBytes(20).toString('hex')
+    await prisma.prismaRefreshToken.create({
+      data: {
+        expiresAt: new Date(Date.now() - 10 * 10 * 1000),
+        id: new UniqueID().toString(),
+        token: crypto.createHash('sha256').update(expiredRefreshToken).digest('hex').toString(),
+        userId: userRecord.id,
+      },
+    })
+    const query = `query {
+      refreshAccessToken {
+        accessToken
+      }
+    }`
+
+    const res = await request
+      .post('/')
+      .set('Cookie', `refresh-token=${expiredRefreshToken}`)
+      .send({ query })
+      .expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('INVALID_REFRESH_TOKEN')
+    expect(jwt.sign).not.toBeCalled()
+  })
 })

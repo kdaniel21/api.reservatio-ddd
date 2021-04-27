@@ -13,7 +13,7 @@ export default class LoginResolver {
   constructor(private useCase: LoginUseCase) {}
 
   @Mutation(() => LoginResponseDto)
-  async login(@Arg('params') params: LoginInputDto, @Ctx() { res }: ApolloContext): Promise<LoginResponseDto> {
+  async login(@Arg('params') params: LoginInputDto, @Ctx() { cookies }: ApolloContext): Promise<LoginResponseDto> {
     const loginDto: LoginDto = params
 
     const result = await this.useCase.execute(loginDto)
@@ -27,10 +27,10 @@ export default class LoginResolver {
     }
 
     const cookieExpirationTime = new Date(Date.now() + config.auth.refreshTokenExpirationHours * 60 * 60 * 1000)
-    res.cookie(config.auth.refreshTokenCookieName, resultDto.refreshToken, {
+    cookies.set(config.auth.refreshTokenCookieName, resultDto.refreshToken, {
       httpOnly: true,
-      secure: !config.isDevelopment,
-      expires: cookieExpirationTime
+      secure: config.isProduction,
+      expires: cookieExpirationTime,
     })
 
     return resultDto

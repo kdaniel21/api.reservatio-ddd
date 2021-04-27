@@ -1,39 +1,31 @@
 import { Guard } from '@shared/core/Guard'
 import ApolloContext from '@shared/infra/http/apollo/types/ApolloContext'
-import { ApolloError } from 'apollo-server-errors'
-import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
-import RefreshAccessTokenUseCaseDto from './DTOs/RefreshAccessTokenUseCaseDto'
+import { Arg, Args, Ctx, Mutation, Query, Resolver } from 'type-graphql'
 import RefreshAccessTokenInputDto from './DTOs/RefreshAccessTokenInputDto'
 import RefreshAccessTokenResponseDto from './DTOs/RefreshAccessTokenResponseDto'
 import RefreshAccessTokenUseCase from './RefreshAccessTokenUseCase'
+import config from '@config'
+import { RefreshAccessTokenErrors } from './RefreshAccessTokenErrors'
 
 @Resolver()
 export default class RefreshAccessTokenResolver {
   constructor(private useCase: RefreshAccessTokenUseCase) {}
 
-  @Mutation(() => RefreshAccessTokenResponseDto)
+  @Query(() => RefreshAccessTokenResponseDto)
   async refreshAccessToken(
-    @Arg('params') params: RefreshAccessTokenInputDto,
-    @Ctx() { req }: ApolloContext
+    @Ctx() { cookies }: ApolloContext,
+    @Args() params?: RefreshAccessTokenInputDto
   ): Promise<RefreshAccessTokenResponseDto> {
-    const refreshToken = params.refreshToken || req.cookies.refreshToken
+    const refreshToken = params?.refreshToken || cookies.get(config.auth.refreshTokenCookieName)
     const guardResult = Guard.againstNullOrUndefined({
       argument: refreshToken,
       argumentName: 'refresh token',
     })
-    if (!guardResult.isSuccess) throw new ApolloError(guardResult.message)
+    if (!guardResult.isSuccess) throw new RefreshAccessTokenErrors.InvalidRefreshTokenError()
 
-    const { accessToken } = params
-    const requestDto: RefreshAccessTokenUseCaseDto = {
-      refreshToken,
-      accessToken,
-    }
+    const result = await this.useCase.execute({ refreshToken })
 
-    const result = await this.useCase.execute(requestDto)
-
-    if (result.isFailure()) {
-      throw result.error
-    }
+    if (result.isFailure()) throw result.error
 
     return { accessToken: result.value.accessToken }
   }

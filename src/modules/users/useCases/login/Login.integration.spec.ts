@@ -124,11 +124,10 @@ describe('Login Integration', () => {
     const cookies = extractCookies(res.headers)
     const refreshTokenCookie = cookies[config.auth.refreshTokenCookieName]
     expect(refreshTokenCookie.value).toBe(plainRefreshToken)
-    expect(refreshTokenCookie.flags['HttpOnly']).toBeTruthy()
-    expect(refreshTokenCookie.flags['Secure']).toBe(true)
+    expect(refreshTokenCookie.flags['httponly']).toBeTruthy()
     const expirationThreshold = 30 * 1000
     const expectedExpiration = new Date(Date.now() + config.auth.refreshTokenExpirationHours * 60 * 60 * 1000).getTime()
-    const cookieExpiration = new Date(refreshTokenCookie.flags['Expires']).getTime()
+    const cookieExpiration = new Date(refreshTokenCookie.flags['expires']).getTime()
     expect(cookieExpiration).toBeGreaterThan(expectedExpiration - expirationThreshold)
     expect(cookieExpiration).toBeLessThan(expectedExpiration + expirationThreshold)
     expect(crypto.createHash('sha256').update(refreshTokenCookie.value).digest('hex').toString()).toBe(

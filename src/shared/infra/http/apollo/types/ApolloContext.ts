@@ -1,8 +1,7 @@
-import express from 'express'
 import { JwtPayload } from '@modules/users/domain/AccessToken'
+import Koa from 'koa'
 
 export default interface ApolloContext {
   user: JwtPayload
-  req: express.Request
-  res: express.Response
+  cookies: Koa.Context['cookies']
 }

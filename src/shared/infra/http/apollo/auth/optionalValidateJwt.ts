@@ -1,10 +1,10 @@
-import express from 'express'
 import { JwtPayload } from '@modules/users/domain/AccessToken'
 import logger from '@shared/infra/Logger/logger'
 import validateJwt from './validateJwt'
 import getJwtTokenFromRequest from './getJwtTokenFromRequest'
+import Koa from 'koa'
 
-export default (request: express.Request): JwtPayload => {
+export default (request: Koa.Request): JwtPayload => {
   try {
     const accessTokenOrError = getJwtTokenFromRequest(request)
     if (accessTokenOrError.isFailure()) throw new Error()

@@ -7,7 +7,6 @@ const initApplication = async () => {
 
   await initApolloServer()
 
-  // Load modules
   require('@modules/users')
 }
 

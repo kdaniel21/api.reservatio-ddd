@@ -16,7 +16,7 @@ import LogoutResolver from './useCases/logout/LogoutResolver'
 import { logoutResolver } from './useCases/logout'
 
 import RefreshAccessTokenResolver from './useCases/refreshAccessToken/RefreshAccessTokenResolver'
-import { refreshAccessTokenUseCase } from './useCases/refreshAccessToken'
+import { refreshAccessTokenResolver } from './useCases/refreshAccessToken'
 
 import RegisterResolver from './useCases/register/RegisterResolver'
 import { registerResolver } from './useCases/register'
@@ -31,6 +31,6 @@ Container.set(CreateUserResolver, createUserResolver)
 Container.set(GetCurrentUserResolver, getCurrentUserResolver)
 Container.set(LoginResolver, loginResolver)
 Container.set(LogoutResolver, logoutResolver)
-Container.set(RefreshAccessTokenResolver, refreshAccessTokenUseCase)
+Container.set(RefreshAccessTokenResolver, refreshAccessTokenResolver)
 Container.set(RegisterResolver, registerResolver)
 Container.set(ResetPasswordResolver, resetPasswordResolver)

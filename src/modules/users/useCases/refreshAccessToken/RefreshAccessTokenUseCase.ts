@@ -1,4 +1,3 @@
-import User from '@modules/users/domain/User'
 import UserRepository from '@modules/users/repositories/UserRepository'
 import AuthService from '@modules/users/services/AuthService'
 import { PromiseErrorOr } from '@shared/core/DomainError'
@@ -19,25 +18,13 @@ export default class RefreshAccessTokenUseCase extends UseCase<
   protected async executeImpl(
     request: RefreshAccessTokenUseCaseDto
   ): PromiseErrorOr<RefreshAccessTokenUseCaseResultDto> {
-    const { accessToken, refreshToken } = request
+    const { refreshToken } = request
 
-    let user: User
+    const userOrError = await this.userRepo.findByRefreshToken(refreshToken)
+    if (userOrError.isFailure())
+      return Result.fail(userOrError.error || RefreshAccessTokenErrors.InvalidRefreshTokenError)
 
-    const canReuseAccessToken = !!accessToken
-    if (canReuseAccessToken) {
-      const accessTokenPayloadOrError = this.authService.decodeAccessToken(accessToken)
-      if (accessTokenPayloadOrError.isFailure()) return Result.fail()
-
-      const userOrError = await this.userRepo.findOne({ id: accessTokenPayloadOrError.value.userId })
-
-      if (userOrError.isSuccess()) user = userOrError.value
-    }
-
-    if (!user) {
-      const userOrError = await this.userRepo.findByRefreshToken(refreshToken)
-      if (userOrError.isFailure())
-        return Result.fail(userOrError.error || RefreshAccessTokenErrors.InvalidRefreshTokenError)
-    }
+    const user = userOrError.value
 
     const isRefreshTokenValid = user.isRefreshTokenValid(refreshToken)
     if (!isRefreshTokenValid) return Result.fail(RefreshAccessTokenErrors.InvalidRefreshTokenError)

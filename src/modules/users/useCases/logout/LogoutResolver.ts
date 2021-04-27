@@ -1,3 +1,4 @@
+import config from '@config'
 import ApolloContext from '@shared/infra/http/apollo/types/ApolloContext'
 import MessageResponseDto from '@shared/infra/http/apollo/types/MessageResponseDto'
 import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
@@ -11,10 +12,10 @@ export default class LogoutResolver {
 
   @Mutation(() => MessageResponseDto)
   async logout(
-    @Ctx() { req, user }: ApolloContext,
+    @Ctx() { cookies, user }: ApolloContext,
     @Arg('refreshToken') refreshTokenInput?: string
   ): Promise<MessageResponseDto> {
-    const refreshToken = refreshTokenInput || req.cookies.get('refreshToken')
+    const refreshToken = refreshTokenInput || cookies.get(config.auth.refreshTokenCookieName)
     if (!refreshToken) throw new LogoutErrors.InvalidRefreshTokenError()
 
     const requestDto: LogoutDto = {

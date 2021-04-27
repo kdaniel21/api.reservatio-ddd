@@ -1,4 +1,4 @@
-import { ApolloError } from 'apollo-server'
+import { ApolloError } from 'apollo-server-koa'
 
 export default class InvalidOrMissingAccessTokenError extends ApolloError {
   constructor() {

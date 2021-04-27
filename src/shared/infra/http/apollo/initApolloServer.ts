@@ -1,17 +1,17 @@
 import 'reflect-metadata'
 import { path } from 'app-root-path'
-import { ApolloServer, ServerInfo } from 'apollo-server'
 import { buildSchema } from 'type-graphql'
 import container from 'typedi'
-import config from '@config'
 import logger from '@shared/infra/Logger/logger'
 import authChecker from './auth/authChecker'
 import optionalValidateJwt from './auth/optionalValidateJwt'
 import ApolloContext from './types/ApolloContext'
 import { ErrorHandlerMiddleware } from './middleware/ErrorHandlerMiddleware'
+import { BoostedApolloKoaServer, ServerInfo } from './BoostedApolloKoaServer'
+import Koa from 'koa'
 
 export interface InitializedApolloServer {
-  apolloServer: ApolloServer
+  apolloServer: any
   serverInfo: ServerInfo
 }
 
@@ -20,27 +20,23 @@ export const initApolloServer = async (): Promise<InitializedApolloServer> => {
 
   const srcDir = `${path}/src`
   const schema = await buildSchema({
-    resolvers: [
-      `${srcDir}/shared/**/HealthCheckResolver.ts`,
-      `${srcDir}/modules/**/useCases/**/*Resolver.ts`,
-    ],
+    resolvers: [`${srcDir}/shared/**/HealthCheckResolver.ts`, `${srcDir}/modules/**/useCases/**/*Resolver.ts`],
     globalMiddlewares: [ErrorHandlerMiddleware],
     container,
     authChecker,
   })
 
-  const apolloServer = new ApolloServer({
+  const apolloServer = new BoostedApolloKoaServer({
     schema,
-    context: ({ req, res }): ApolloContext => {
-      const jwtPayload = optionalValidateJwt(req)
+    context: ({ ctx }: { ctx: Koa.Context }): ApolloContext => {
+      const { request, cookies } = ctx
+      const jwtPayload = optionalValidateJwt(request)
 
-      return { user: jwtPayload, req, res }
+      return { user: jwtPayload, cookies }
     },
   })
 
-  const { apolloServerPort: port } = config
-  const serverInfo = await apolloServer.listen({ port })
-  logger.info(`[Apollo] Server is listening at ${serverInfo.url}`)
+  const serverInfo = await apolloServer.listen()
 
   return { serverInfo, apolloServer }
 }

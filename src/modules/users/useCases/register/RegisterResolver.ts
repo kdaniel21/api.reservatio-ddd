@@ -13,7 +13,10 @@ export default class RegisterResolver {
   constructor(private useCase: RegisterUseCase) {}
 
   @Mutation(() => RegisterResponseDto)
-  async register(@Arg('params') params: RegisterInputDto, @Ctx() { res }: ApolloContext): Promise<RegisterResponseDto> {
+  async register(
+    @Arg('params') params: RegisterInputDto,
+    @Ctx() { cookies }: ApolloContext
+  ): Promise<RegisterResponseDto> {
     if (params.password !== params.passwordConfirm)
       throw new ApolloError('The passwords must match!', 'VALIDATION_ERROR')
 
@@ -31,9 +34,9 @@ export default class RegisterResolver {
     }
 
     const cookieExpirationTime = new Date(Date.now() + config.auth.refreshTokenExpirationHours * 60 * 60 * 1000)
-    res.cookie(config.auth.refreshTokenCookieName, resultDto.refreshToken, {
+    cookies.set(config.auth.refreshTokenCookieName, resultDto.refreshToken, {
       httpOnly: true,
-      secure: !config.isDevelopment,
+      secure: config.isProduction,
       expires: cookieExpirationTime,
     })
 
