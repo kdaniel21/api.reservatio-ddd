@@ -25,6 +25,7 @@ describe('GetCurrentUser Integration', () => {
   })
 
   afterAll(async () => {
+    await clearAllData()
     await initializedServer.apolloServer.stop()
     await prisma.$disconnect()
   })

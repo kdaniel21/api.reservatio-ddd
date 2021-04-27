@@ -5,4 +5,6 @@ export default {
   refreshTokenCookieName: process.env.REFRESH_TOKEN_COOKIE_NAME || 'refresh-token',
   refreshTokenExpirationHours: +process.env.REFRESH_TOKEN_EXPIRATION_HOURS || 30 * 24,
   refreshTokenLength: +process.env.REFRESH_TOKEN_LENGTH || 30,
+  passwordResetTokenLength: +process.env.PASSWORD_RESET_TOKEN_LENGTH || 30,
+  passwordResetTokenExpirationHours: +process.env.PASSWORD_RESET_TOKEN_EXPIRATION_HOURS || 12,
 }

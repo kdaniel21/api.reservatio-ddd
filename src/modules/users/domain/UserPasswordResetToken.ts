@@ -1,3 +1,4 @@
+import config from '@config'
 import { ErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import { TokenEntity, TokenEntityOptions, TokenEntityProps } from '@shared/domain/TokenEntity'
@@ -5,8 +6,8 @@ import UniqueID from '@shared/domain/UniqueID'
 
 export default class UserPasswordResetToken extends TokenEntity {
   static tokenOptions: TokenEntityOptions = {
-    TOKEN_LENGTH: 30,
-    EXPIRATION_HOURS: 12,
+    TOKEN_LENGTH: config.auth.passwordResetTokenLength,
+    EXPIRATION_HOURS: config.auth.passwordResetTokenExpirationHours,
   }
 
   private constructor(props: TokenEntityProps, id?: UniqueID) {

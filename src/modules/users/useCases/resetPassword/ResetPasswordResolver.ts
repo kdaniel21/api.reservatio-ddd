@@ -10,7 +10,7 @@ export default class ResetPasswordResolver {
   async resetPassword(@Arg('email') email: string) {
     const result = await this.useCase.execute({ email })
 
-    if (result.isFailure()) throw result.error
+    if (result.isFailure() && result.error) throw result.error
 
     return {
       message:
