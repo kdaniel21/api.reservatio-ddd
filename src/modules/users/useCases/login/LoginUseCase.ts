@@ -1,5 +1,5 @@
 import UseCase from '@shared/core/UseCase'
-import { ErrorOr } from '@shared/core/DomainError'
+import { PromiseErrorOr } from '@shared/core/DomainError'
 import UserRepository from '@modules/users/repositories/UserRepository'
 import { Result } from '@shared/core/Result'
 import AuthService from '@modules/users/services/AuthService'
@@ -12,12 +12,12 @@ export default class LoginUseCase extends UseCase<LoginUseCaseDto, LoginUseCaseR
     super()
   }
 
-  protected async executeImpl(
-    request: LoginUseCaseDto
-  ): Promise<ErrorOr<LoginUseCaseResultDto>> {
+  protected async executeImpl(request: LoginUseCaseDto): PromiseErrorOr<LoginUseCaseResultDto> {
     const { email, password } = request
-    const user = await this.userRepo.findByEmail(email)
+    const userOrError = await this.userRepo.findByEmail(email)
+    if (userOrError.isFailure()) return Result.fail(userOrError.error || LoginErrors.InvalidCredentialsError)
 
+    const user = userOrError.value
     const isUserFound = !!user
     if (!isUserFound) return Result.fail(LoginErrors.InvalidCredentialsError)
 
@@ -33,7 +33,8 @@ export default class LoginUseCase extends UseCase<LoginUseCaseDto, LoginUseCaseR
     const refreshToken = refreshTokenOrError.value
     const accessToken = this.authService.createAccessToken(user)
 
-    await this.userRepo.save(user)
+    const saveResult = await this.userRepo.save(user)
+    if (saveResult.isFailure()) return Result.fail(saveResult.error)
 
     return Result.ok({
       user,

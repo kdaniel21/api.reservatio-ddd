@@ -16,7 +16,7 @@ describe('Login Integration', () => {
   let initializedServer: InitializedApolloServer
   let request: supertest.SuperTest<supertest.Test>
 
-  let prismaUser: PrismaUser
+  let userRecord: PrismaUser
 
   beforeAll(async () => {
     initializedServer = await initApolloServer()
@@ -31,7 +31,7 @@ describe('Login Integration', () => {
   beforeEach(async () => {
     await clearAllData()
 
-    prismaUser = await prisma.prismaUser.create({
+    userRecord = await prisma.prismaUser.create({
       data: {
         id: new UniqueID().toString(),
         name: 'Foo Bar',
@@ -79,7 +79,7 @@ describe('Login Integration', () => {
     const jwtPayload = validateJwt(res.body.data.login.accessToken)
     expect(jwtPayload.email).toBe('foo@bar.com')
     expect(jwtPayload.role).toBe(UserRole.User)
-    expect(jwtPayload.userId).toBe(prismaUser.id)
+    expect(jwtPayload.userId).toBe(userRecord.id)
   })
 
   it('should login with the correct credentials, generate and return a valid refresh token', async () => {
@@ -101,7 +101,7 @@ describe('Login Integration', () => {
       include: { user: true },
     })
     expect(refreshTokenRecord).toBeTruthy()
-    expect(refreshTokenRecord.user.id).toBe(prismaUser.id)
+    expect(refreshTokenRecord.user.id).toBe(userRecord.id)
     expect(refreshTokenRecord.expiresAt.getTime()).toBeGreaterThan(Date.now())
   })
 
@@ -118,7 +118,7 @@ describe('Login Integration', () => {
     const res = await request.post('/').send({ query }).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('INVALID_CREDENTIALS')
-    const numOfUserRefreshTokens = await prisma.prismaRefreshToken.count({ where: { userId: prismaUser.id } })
+    const numOfUserRefreshTokens = await prisma.prismaRefreshToken.count({ where: { userId: userRecord.id } })
     expect(numOfUserRefreshTokens).toBe(0)
   })
 
@@ -135,12 +135,12 @@ describe('Login Integration', () => {
     const res = await request.post('/').send({ query }).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('INVALID_CREDENTIALS')
-    const numOfUserRefreshTokens = await prisma.prismaRefreshToken.count({ where: { userId: prismaUser.id } })
+    const numOfUserRefreshTokens = await prisma.prismaRefreshToken.count({ where: { userId: userRecord.id } })
     expect(numOfUserRefreshTokens).toBe(0)
   })
 
   it('should throw an EmailAddressNotConfirmedError if the email address has not been confirmed', async () => {
-    await prisma.prismaUser.update({ where: { id: prismaUser.id }, data: { isEmailConfirmed: false } })
+    await prisma.prismaUser.update({ where: { id: userRecord.id }, data: { isEmailConfirmed: false } })
     const query = `mutation {
       login(params: {
         email: "foo@bar.com",
@@ -153,7 +153,7 @@ describe('Login Integration', () => {
     const res = await request.post('/').send({ query }).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('EMAIL_NOT_VERIFIED')
-    const numOfUserRefreshTokens = await prisma.prismaRefreshToken.count({ where: { userId: prismaUser.id } })
+    const numOfUserRefreshTokens = await prisma.prismaRefreshToken.count({ where: { userId: userRecord.id } })
     expect(numOfUserRefreshTokens).toBe(0)
   })
 })

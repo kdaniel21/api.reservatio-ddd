@@ -6,26 +6,22 @@ import UseCase from '@shared/core/UseCase'
 import ResetPasswordUseCaseDto from './DTOs/ResetPasswordUseCaseDto'
 import { ResetPasswordErrors } from './ResetPasswordErrors'
 
-export default class ResetPasswordUseCase extends UseCase<
-  ResetPasswordUseCaseDto,
-  UserPasswordResetToken
-> {
+export default class ResetPasswordUseCase extends UseCase<ResetPasswordUseCaseDto, UserPasswordResetToken> {
   constructor(private userRepo: UserRepository) {
     super()
   }
 
-  async executeImpl(
-    request: ResetPasswordUseCaseDto,
-  ): Promise<ErrorOr<UserPasswordResetToken>> {
-    const user = await this.userRepo.findByEmail(request.email)
-    if (!user) return Result.fail(ResetPasswordErrors.NonExistentEmailAddress)
+  async executeImpl(request: ResetPasswordUseCaseDto): Promise<ErrorOr<UserPasswordResetToken>> {
+    const userOrError = await this.userRepo.findByEmail(request.email)
+    if (userOrError.isFailure()) return Result.fail(userOrError.error || ResetPasswordErrors.NonExistentEmailAddress)
 
+    const user = userOrError.value
     const passwordResetTokenOrError = user.generatePasswordResetToken()
-    if (passwordResetTokenOrError.isFailure())
-      return Result.fail(passwordResetTokenOrError.error)
+    if (passwordResetTokenOrError.isFailure()) return Result.fail(passwordResetTokenOrError.error)
 
-    await this.userRepo.save(user)
+    const saveResult = await this.userRepo.save(user)
+    if (saveResult.isFailure()) return Result.fail(saveResult.error)
 
-    return Result.ok()
+    return Result.ok(passwordResetTokenOrError.value)
   }
 }

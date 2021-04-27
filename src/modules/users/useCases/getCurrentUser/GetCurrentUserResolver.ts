@@ -1,20 +1,20 @@
 import GraphQLUser from '@modules/users/infra/http/TypeGraphQL/types/GraphQLUser'
 import UserMapper from '@modules/users/mappers/UserMapper'
-import UserRepository from '@modules/users/repositories/UserRepository'
 import ApolloContext from '@shared/infra/http/apollo/types/ApolloContext'
 import { Authorized, Ctx, Query, Resolver } from 'type-graphql'
+import GetCurrentUserUseCase from './GetCurrentUserUseCase'
 
 @Resolver()
 export default class GetCurrentUserResolver {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private useCase: GetCurrentUserUseCase) {}
 
   @Authorized()
   @Query(() => GraphQLUser)
   async currentUser(@Ctx() context: ApolloContext): Promise<GraphQLUser> {
-    const { user: userPayload } = context
+    const result = await this.useCase.execute(context.user)
 
-    const user = await this.userRepository.findByEmail(userPayload.email)
+    if (result.isFailure()) throw result.error
 
-    return UserMapper.toDto(user)
+    return UserMapper.toDto(result.value.user)
   }
 }

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import config from '@config'
 import { Result } from '@shared/core/Result'
 import InvalidAccessTokenError from '@modules/users/domain/errors/InvalidAccessTokenError'
-import { ErrorOr } from '@shared/core/DomainError'
+import { ErrorOr, PromiseErrorOr } from '@shared/core/DomainError'
 import RefreshTokenRepository from '@modules/users/repositories/RefreshTokenRepository'
 import UserRefreshToken from '@modules/users/domain/UserRefreshToken'
 import AuthService from '../AuthService'
@@ -34,7 +34,7 @@ export default class JwtAuthService implements AuthService<JwtToken, JwtPayload>
     }
   }
 
-  async createRefreshToken(user: User): Promise<ErrorOr<UserRefreshToken>> {
+  async createRefreshToken(user: User): PromiseErrorOr<UserRefreshToken> {
     const refreshTokenOrError = user.createRefreshToken()
     if (refreshTokenOrError.isFailure()) return Result.fail(refreshTokenOrError.error)
 
@@ -47,7 +47,7 @@ export default class JwtAuthService implements AuthService<JwtToken, JwtPayload>
   async removeRefreshToken(
     refreshToken: UserRefreshToken,
     user: User
-  ): Promise<ErrorOr<void>> {
+  ): PromiseErrorOr {
     const result = user.removeRefreshToken(refreshToken.token)
     if (result.isFailure()) return Result.fail()
 

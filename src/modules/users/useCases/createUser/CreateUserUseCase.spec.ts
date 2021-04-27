@@ -9,6 +9,7 @@ import InvalidUserEmailError from '@modules/users/domain/errors/InvalidUserEmail
 import InvalidUserNameError from '@modules/users/domain/errors/InvalidUserNameError'
 import { InvalidUserPasswordError } from '@modules/users/domain/errors/InvalidUserPasswordError'
 import User from '@modules/users/domain/User'
+import { Result } from '@shared/core/Result'
 
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase
@@ -17,7 +18,7 @@ describe('CreateUserUseCase', () => {
   beforeEach(() => {
     userRepo = {
       existsByEmail: jest.fn(),
-      save: jest.fn(),
+      save: jest.fn().mockReturnValue(Result.ok()),
     }
     useCase = new CreateUserUseCase(userRepo as UserRepository)
   })
@@ -32,7 +33,7 @@ describe('CreateUserUseCase', () => {
       name: 'Foo Bar',
       password: 'Th1sIsAG00dP4ssw0rd',
     }
-    mocked(userRepo).existsByEmail.mockResolvedValueOnce(false)
+    mocked(userRepo).existsByEmail.mockResolvedValueOnce(Result.ok(false))
 
     const result = await useCase.execute(request)
 
@@ -52,7 +53,7 @@ describe('CreateUserUseCase', () => {
       name: 'Foo Bar',
       password: 'Th1sIsAG00dP4ssw0rd',
     }
-    mocked(userRepo).existsByEmail.mockResolvedValueOnce(false)
+    mocked(userRepo).existsByEmail.mockResolvedValueOnce(Result.ok(false))
     jest.spyOn(User.prototype as any, 'addDomainEvent')
 
     const result = await useCase.execute(request)
@@ -115,7 +116,7 @@ describe('CreateUserUseCase', () => {
       name: 'Foo Bar',
       password: 'Th1sIsAG00dP4ssw0rd',
     }
-    mocked(userRepo).existsByEmail.mockResolvedValueOnce(true)
+    mocked(userRepo).existsByEmail.mockResolvedValueOnce(Result.ok(true))
 
     const result = await useCase.execute(request)
 
@@ -131,7 +132,7 @@ describe('CreateUserUseCase', () => {
       name: 'Foo Bar',
       password: 'Th1sIsAG00dP4ssw0rd',
     }
-    mocked(userRepo).existsByEmail.mockResolvedValueOnce(false)
+    mocked(userRepo).existsByEmail.mockResolvedValueOnce(Result.ok(false))
     mocked(userRepo).save.mockRejectedValueOnce('error')
 
     const result = await useCase.execute(request)

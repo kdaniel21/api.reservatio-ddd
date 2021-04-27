@@ -8,7 +8,9 @@ export default class ResetPasswordResolver {
 
   @Mutation(() => MessageResponseDto)
   async resetPassword(@Arg('email') email: string) {
-    await this.useCase.execute({ email })
+    const result = await this.useCase.execute({ email })
+
+    if (result.isFailure()) throw result.error
 
     return {
       message:

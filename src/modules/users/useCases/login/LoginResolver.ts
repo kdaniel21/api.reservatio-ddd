@@ -16,9 +16,7 @@ export default class LoginResolver {
 
     const result = await this.useCase.execute(loginDto)
 
-    if (result.isFailure()) {
-      throw result.error
-    }
+    if (result.isFailure()) throw result.error
 
     const resultDto: LoginResponseDto = {
       accessToken: result.value.accessToken,

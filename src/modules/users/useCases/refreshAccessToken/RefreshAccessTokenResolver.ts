@@ -2,7 +2,7 @@ import { Guard } from '@shared/core/Guard'
 import ApolloContext from '@shared/infra/http/apollo/types/ApolloContext'
 import { ApolloError } from 'apollo-server-errors'
 import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
-import RefreshAccessTokenDto from './DTOs/RefreshAccessTokenDto'
+import RefreshAccessTokenUseCaseDto from './DTOs/RefreshAccessTokenUseCaseDto'
 import RefreshAccessTokenInputDto from './DTOs/RefreshAccessTokenInputDto'
 import RefreshAccessTokenResponseDto from './DTOs/RefreshAccessTokenResponseDto'
 import RefreshAccessTokenUseCase from './RefreshAccessTokenUseCase'
@@ -24,7 +24,7 @@ export default class RefreshAccessTokenResolver {
     if (!guardResult.isSuccess) throw new ApolloError(guardResult.message)
 
     const { accessToken } = params
-    const requestDto: RefreshAccessTokenDto = {
+    const requestDto: RefreshAccessTokenUseCaseDto = {
       refreshToken,
       accessToken,
     }
