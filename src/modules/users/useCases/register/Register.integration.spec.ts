@@ -12,6 +12,7 @@ import UserCreatedEvent from '@modules/users/domain/events/UserCreatedEvent'
 import { extractCookies } from '@shared/utils/extractCookies'
 import config from '@config'
 import crypto from 'crypto'
+import bcrypt from 'bcrypt'
 
 describe('Register Integration', () => {
   let initializedServer: InitializedApolloServer
@@ -205,6 +206,8 @@ describe('Register Integration', () => {
     expect(userRecord.isEmailConfirmed).toBe(false)
     expect(userRecord.password).toBeTruthy()
     expect(userRecord).not.toBe('Th1sIsAG00dPassw0rd')
+    const doPasswordsMatch = await bcrypt.compare('Th1sIsAG00dPassw0rd', userRecord.password)
+    expect(doPasswordsMatch).toBe(true)
     expect(userRecord.passwordResetToken).toBeFalsy()
     expect(userRecord.passwordResetTokenExpiresAt).toBeFalsy()
     expect(userRecord.role).toBe(UserRole.User)
@@ -262,7 +265,7 @@ describe('Register Integration', () => {
     expect(numOfUsersWithEmail).toBe(0)
   })
 
-  it('should throw an InvalidUserNameError if registering with an invalid password', async () => {
+  it('should throw an InvalidUserPasswordError if registering with an invalid password', async () => {
     const query = `mutation {
       register(params: {
         email: "foo@bar.com",

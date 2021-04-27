@@ -21,7 +21,7 @@ export default class ChangePasswordUsingTokenUseCase extends UseCase<ChangePassw
       return Result.fail(userOrError.error || ChangePasswordUsingTokenErrors.InvalidTokenError)
 
     const user = userOrError.value
-    const isTokenValid = user.passwordResetToken.isTokenValid(token)
+    const isTokenValid = user.passwordResetToken?.isTokenValid(token)
     if (!isTokenValid) return Result.fail(ChangePasswordUsingTokenErrors.InvalidTokenError)
 
     const result = user.setPassword(request.newPassword)

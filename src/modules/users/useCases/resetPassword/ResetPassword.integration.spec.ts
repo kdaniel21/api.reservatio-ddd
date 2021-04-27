@@ -1,13 +1,11 @@
 import 'reflect-metadata'
 import '@modules/users'
 import { PrismaUser } from '@prisma/client'
-import { JwtPayload, JwtToken } from '@modules/users/domain/AccessToken'
 import { InitializedApolloServer, initApolloServer } from '@shared/infra/http/apollo/initApolloServer'
 import supertest from 'supertest'
 import prisma from '@shared/infra/database/prisma/prisma'
 import UniqueID from '@shared/domain/UniqueID'
 import clearAllData from '@shared/infra/database/prisma/utils/clearAllData'
-import jwt from 'jsonwebtoken'
 import config from '@config'
 import bcrypt from 'bcrypt'
 import User from '@modules/users/domain/User'
@@ -18,7 +16,6 @@ describe('ResetPassword Integration', () => {
   let request: supertest.SuperTest<supertest.Test>
 
   let userRecord: PrismaUser
-  let accessToken: JwtToken
 
   beforeAll(async () => {
     initializedServer = await initApolloServer()
@@ -43,11 +40,6 @@ describe('ResetPassword Integration', () => {
         isEmailConfirmed: true,
       },
     })
-
-    accessToken = jwt.sign(
-      { userId: userRecord.id, role: userRecord.role, email: userRecord.email } as JwtPayload,
-      config.auth.jwtSecretKey
-    )
 
     jest.clearAllMocks()
   })

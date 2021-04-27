@@ -21,7 +21,6 @@ export default class ResetPasswordUseCase extends UseCase<ResetPasswordUseCaseDt
     const passwordResetTokenOrError = user.generatePasswordResetToken()
     if (passwordResetTokenOrError.isFailure()) return Result.fail(passwordResetTokenOrError.error)
 
-    console.log(user)
     const saveResult = await this.userRepo.save(user)
     if (saveResult.isFailure()) return Result.fail(saveResult.error)
 
