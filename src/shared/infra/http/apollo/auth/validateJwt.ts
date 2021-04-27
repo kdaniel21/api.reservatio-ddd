@@ -1,7 +1,7 @@
 import { JwtPayload } from '@modules/users/domain/AccessToken'
 import { authService } from '@modules/users/services'
 import logger from '@shared/infra/Logger/logger'
-import InvalidOrMissingAccessTokenError from './InvalidOrMissingAccessToken'
+import InvalidOrMissingAccessTokenError from './InvalidOrMissingAccessTokenError'
 
 export default (accessToken: string): JwtPayload => {
   const jwtPayloadOrError = authService.decodeAccessToken(accessToken)

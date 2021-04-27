@@ -10,6 +10,7 @@ import bcrypt from 'bcrypt'
 import config from '@config'
 import { JwtPayload, JwtToken } from '@modules/users/domain/AccessToken'
 import jwt from 'jsonwebtoken'
+import UserRole from '@modules/users/domain/UserRole'
 
 describe('GetCurrentUser Integration', () => {
   let initializedServer: InitializedApolloServer
@@ -67,7 +68,7 @@ describe('GetCurrentUser Integration', () => {
     expect(res.body.data.currentUser.role).toBe(userRecord.role)
   })
 
-  it('should throw an authentication error if no access token is provided', async () => {
+  it('should throw an InvalidOrMissingAccessTokenError error if no access token is provided', async () => {
     const query = `query {
       currentUser {
         id
@@ -80,6 +81,46 @@ describe('GetCurrentUser Integration', () => {
 
     const res = await request.post('/').send({ query }).expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('INTERNAL_SERVER_ERROR')
+    expect(res.body.errors[0].extensions.code).toBe('INVALID_ACCESS_TOKEN')
+  })
+
+  it('should throw a UserNotFoundError error if the access token is valid but the user does not exist', async () => {
+    const validAccessToken = jwt.sign(
+      {
+        email: 'invalid@bar.com',
+        role: UserRole.User,
+        userId: new UniqueID().toString(),
+      } as JwtPayload,
+      config.auth.jwtSecretKey
+    )
+    const query = `query {
+      currentUser {
+        id
+        name
+        email
+        isEmailConfirmed
+        role
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).set('Authorization', validAccessToken).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('USER_NOT_FOUND')
+  })
+
+  it('should throw a InvalidOrMissingAccessToken error if an invalid access token is provided', async () => {
+    const query = `query {
+      currentUser {
+        id
+        name
+        email
+        isEmailConfirmed
+        role
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).set('Authorization', new UniqueID().toString()).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('INVALID_ACCESS_TOKEN')
   })
 })
