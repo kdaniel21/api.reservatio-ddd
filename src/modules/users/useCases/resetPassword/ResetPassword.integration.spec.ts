@@ -61,7 +61,7 @@ describe('ResetPassword Integration', () => {
 
   it.skip('should send an email with the token to the email address of the user', () => {})
 
-  it.only('should persist the generated token to the database', async () => {
+  it('should persist the generated token to the database', async () => {
     const query = `mutation {
       resetPassword(email: "${userRecord.email}") {
         message
@@ -86,7 +86,7 @@ describe('ResetPassword Integration', () => {
     const user = await prisma.prismaUser.findUnique({ where: { email: userRecord.email } })
     expect(user.passwordResetTokenExpiresAt).toBeTruthy()
     const estimatedExpirationTime = new Date(
-      Date.now() + config.auth.refreshTokenExpirationHours * 60 * 60 * 1000
+      Date.now() + config.auth.passwordResetTokenExpirationHours * 60 * 60 * 1000
     ).getTime()
     const expirationThreshold = 30 * 1000
     const expirationTime = new Date(user.passwordResetTokenExpiresAt).getTime()
