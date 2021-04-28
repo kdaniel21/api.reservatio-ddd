@@ -1,4 +1,5 @@
-import authConfig from './auth'
+import auth from './auth'
+import mailer from './mailer'
 
 const config = {
   isProduction: process.env.NODE_ENV === 'prod' || process.env.NODE_ENV === 'production',
@@ -9,5 +10,6 @@ const config = {
 
 export default {
   ...config,
-  auth: { ...authConfig },
+  auth,
+  mailer,
 }
