@@ -8,6 +8,10 @@ export interface RegisterTemplateData {
 }
 
 export class RegisterTemplate extends BaseTemplate {
+  constructor(private templateData: RegisterTemplateData) {
+    super()
+  }
+
   readonly subject = 'Welcome onboard!'
   readonly template = mjml2html(`
     <mjml>
@@ -36,8 +40,4 @@ export class RegisterTemplate extends BaseTemplate {
     </mj-body>
   </mjml>
   `)
-
-  constructor(private templateData: RegisterTemplateData) {
-    super()
-  }
 }
