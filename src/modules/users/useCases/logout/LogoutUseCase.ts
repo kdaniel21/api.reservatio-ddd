@@ -1,5 +1,5 @@
 import UserRepository from '@modules/users/repositories/UserRepository'
-import AuthService from '@modules/users/services/AuthService'
+import AuthService from '@modules/users/services/AuthService/AuthService'
 import { PrismaUser } from '@prisma/client'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'

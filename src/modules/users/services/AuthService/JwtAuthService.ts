@@ -7,7 +7,7 @@ import InvalidAccessTokenError from '@modules/users/domain/errors/InvalidAccessT
 import { ErrorOr, PromiseErrorOr } from '@shared/core/DomainError'
 import RefreshTokenRepository from '@modules/users/repositories/RefreshTokenRepository'
 import UserRefreshToken from '@modules/users/domain/UserRefreshToken'
-import AuthService from '../AuthService'
+import AuthService from './AuthService'
 
 export default class JwtAuthService implements AuthService<JwtToken, JwtPayload> {
   constructor(private refreshTokenRepo: RefreshTokenRepository) {}
@@ -44,10 +44,7 @@ export default class JwtAuthService implements AuthService<JwtToken, JwtPayload>
     return Result.ok(refreshToken)
   }
 
-  async removeRefreshToken(
-    refreshToken: UserRefreshToken,
-    user: User
-  ): PromiseErrorOr {
+  async removeRefreshToken(refreshToken: UserRefreshToken, user: User): PromiseErrorOr {
     const result = user.removeRefreshToken(refreshToken.token)
     if (result.isFailure()) return Result.fail()
 

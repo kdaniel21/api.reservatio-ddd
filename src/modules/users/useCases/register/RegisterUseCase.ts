@@ -1,5 +1,5 @@
 import { JwtPayload, JwtToken } from '@modules/users/domain/AccessToken'
-import AuthService from '@modules/users/services/AuthService'
+import AuthService from '@modules/users/services/AuthService/AuthService'
 import { ErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import UseCase from '@shared/core/UseCase'
