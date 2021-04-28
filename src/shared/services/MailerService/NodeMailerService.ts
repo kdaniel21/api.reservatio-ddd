@@ -5,6 +5,7 @@ import logger from '@shared/infra/Logger/logger'
 import nodemailer from 'nodemailer'
 import SMTPConnection from 'nodemailer/lib/smtp-connection'
 import MailerService from './MailerService'
+import { Template } from './templates/BaseTemplate'
 
 export default class NodeMailerService implements MailerService {
   private transporter: nodemailer.Transporter
@@ -21,21 +22,21 @@ export default class NodeMailerService implements MailerService {
   private isInitialized = false
   private hasErrors = false
 
-  async sendToUser(templateName: any, user: User): PromiseErrorOr {
+  async sendToUser<T>(Template: Template<T>, user: User, templateData?: T): PromiseErrorOr {
     logger.info(
-      `[SERVICES] Sending ${templateName} template to ${user.name.value} (ID: ${user.id}) to address ${user.email.value}`
+      `[SERVICES] Sending ${Template.name} template to ${user.name.value} (ID: ${user.id}) to address ${user.email.value}`
     )
 
-    return this.send(templateName, user.email.value)
+    return this.send(Template, user.email.value, templateData)
   }
 
-  async sendToAddress(templateName: any, emailAddress: string): PromiseErrorOr {
-    logger.info(`[SERVICES] Sending ${templateName} template to address ${emailAddress}.`)
+  async sendToAddress<T>(Template: Template<T>, emailAddress: string, templateData?: T): PromiseErrorOr {
+    logger.info(`[SERVICES] Sending ${Template.name} template to address ${emailAddress}.`)
 
-    return this.send(templateName, emailAddress)
+    return this.send(Template, emailAddress, templateData)
   }
 
-  private async send(templateName: any, emailAddress: string): PromiseErrorOr {
+  private async send<T>(Template: Template<T>, emailAddress: string, templateData?: T): PromiseErrorOr {
     await this.initializeTransport()
 
     if (this.hasErrors) {
@@ -43,17 +44,14 @@ export default class NodeMailerService implements MailerService {
       return
     }
 
-    const template = {
-      subject: 'test email',
-      content: 'foobar',
-    }
+    const template = new Template(templateData)
 
     try {
       await this.transporter.sendMail({
         to: emailAddress,
         from: config.mailer.senderEmailAddress,
         subject: template.subject,
-        html: template.content,
+        html: template.html,
       })
 
       logger.info(`[SERVICES] Email has been sent to ${emailAddress}!`)
