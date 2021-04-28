@@ -14,6 +14,7 @@ import { RefreshTokenDto } from '../DTOs/RefreshTokenDto'
 import PasswordResetTokenCreatedEvent from './events/PasswordResetTokenCreatedEvent'
 import PasswordChangedEvent from './events/PasswordChangedEvent'
 import UserRole from './UserRole'
+import UserEmailConfirmationToken from './UserEmailConfirmationToken'
 
 interface UserProps {
   email: UserEmail
@@ -23,6 +24,7 @@ interface UserProps {
   passwordResetToken?: UserPasswordResetToken
   role?: UserRole
   isEmailConfirmed?: boolean
+  emailConfirmationToken?: UserEmailConfirmationToken
   isDeleted?: boolean
 }
 
@@ -55,6 +57,10 @@ export default class User extends AggregateRoot<UserProps> {
     return this.props.isEmailConfirmed as boolean
   }
 
+  get emailConfirmationToken(): UserEmailConfirmationToken | undefined {
+    return this.props.emailConfirmationToken
+  }
+
   get passwordResetToken(): UserPasswordResetToken | undefined {
     return this.props.passwordResetToken
   }
@@ -81,9 +87,7 @@ export default class User extends AggregateRoot<UserProps> {
   }
 
   removeRefreshToken(tokenToRemove: RefreshTokenDto): ErrorOr<void> {
-    const index = this.refreshTokens.findIndex(
-      refreshToken => refreshToken.token === tokenToRemove
-    )
+    const index = this.refreshTokens.findIndex(refreshToken => refreshToken.token === tokenToRemove)
     if (index === -1) return Result.fail()
 
     this.refreshTokens.splice(index, 1)
@@ -92,8 +96,7 @@ export default class User extends AggregateRoot<UserProps> {
 
   generatePasswordResetToken(): ErrorOr<UserPasswordResetToken> {
     const passwordResetTokenOrError = UserPasswordResetToken.create()
-    if (passwordResetTokenOrError.isFailure())
-      return Result.fail(passwordResetTokenOrError.error)
+    if (passwordResetTokenOrError.isFailure()) return Result.fail(passwordResetTokenOrError.error)
 
     const passwordResetToken = passwordResetTokenOrError.value
     this.props.passwordResetToken = passwordResetToken
@@ -129,8 +132,7 @@ export default class User extends AggregateRoot<UserProps> {
       { argument: props.password, argumentName: 'password' },
     ])
 
-    if (!guardResult.isSuccess)
-      return Result.fail(new AppError.UndefinedArgumentError(guardResult.message))
+    if (!guardResult.isSuccess) return Result.fail(new AppError.UndefinedArgumentError(guardResult.message))
 
     const user = new User(
       {

@@ -1,9 +1,9 @@
-interface GuardResult {
+export interface GuardResult {
   isSuccess: boolean
   message?: string
 }
 
-interface GuardArguments {
+export interface GuardArguments {
   argument: any
   argumentName: string
 }

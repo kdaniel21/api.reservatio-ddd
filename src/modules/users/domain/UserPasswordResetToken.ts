@@ -6,8 +6,8 @@ import UniqueID from '@shared/domain/UniqueID'
 
 export default class UserPasswordResetToken extends TokenEntity {
   static tokenOptions: TokenEntityOptions = {
-    TOKEN_LENGTH: config.auth.passwordResetTokenLength,
-    EXPIRATION_HOURS: config.auth.passwordResetTokenExpirationHours,
+    tokenLength: config.auth.passwordResetTokenLength,
+    expirationHours: config.auth.passwordResetTokenExpirationHours,
   }
 
   private constructor(props: TokenEntityProps, id?: UniqueID) {
@@ -19,7 +19,7 @@ export default class UserPasswordResetToken extends TokenEntity {
 
     if (validPropsOrError.isFailure()) return Result.fail(validPropsOrError.error)
 
-    const validProps = validPropsOrError.value as TokenEntityProps
+    const validProps = validPropsOrError.value
     const userPasswordResetToken = new UserPasswordResetToken(validProps, id)
     return Result.ok(userPasswordResetToken)
   }

@@ -10,8 +10,8 @@ export interface UserRefreshTokenProps extends TokenEntityProps {
 
 export default class UserRefreshToken extends TokenEntity<UserRefreshTokenProps> {
   static tokenOptions: TokenEntityOptions = {
-    TOKEN_LENGTH: config.auth.refreshTokenLength,
-    EXPIRATION_HOURS: config.auth.refreshTokenExpirationHours,
+    tokenLength: config.auth.refreshTokenLength,
+    expirationHours: config.auth.refreshTokenExpirationHours,
   }
 
   get userId(): UniqueID {

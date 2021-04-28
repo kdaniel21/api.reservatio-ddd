@@ -11,6 +11,7 @@ import RefreshTokenMapper from './RefreshTokenMapper'
 import UserRefreshToken from '../domain/UserRefreshToken'
 import UserPasswordResetToken from '../domain/UserPasswordResetToken'
 import UserRole from '../domain/UserRole'
+import UserEmailConfirmationToken from '../domain/UserEmailConfirmationToken'
 
 export default class UserMapper implements BaseMapper<User> {
   static toDto(user: User): UserDto {
@@ -34,22 +35,19 @@ export default class UserMapper implements BaseMapper<User> {
       },
       new UniqueID()
     )
+    const emailConfirmationTokenOrError = UserEmailConfirmationToken.create(
+      { token: raw.emailConfirmationToken },
+      new UniqueID()
+    )
 
-    const combinedResult = Result.combine([
-      emailOrError,
-      nameOrError,
-      passwordResetTokenOrError,
-      passwordOrError,
-    ])
+    const combinedResult = Result.combine([emailOrError, nameOrError, passwordResetTokenOrError, passwordOrError])
     if (combinedResult.isFailure()) logger.error(combinedResult.error.message)
 
     const id = raw.id ? new UniqueID(raw.id) : null
 
     let refreshTokens: UserRefreshToken[] = []
     if (raw.refreshTokens) {
-      refreshTokens = raw.refreshTokens.map((rawRefreshToken: any) =>
-        RefreshTokenMapper.toDomain(rawRefreshToken)
-      )
+      refreshTokens = raw.refreshTokens.map((rawRefreshToken: any) => RefreshTokenMapper.toDomain(rawRefreshToken))
     }
 
     const userOrError = User.create(
@@ -61,9 +59,10 @@ export default class UserMapper implements BaseMapper<User> {
         isDeleted: raw.isDeleted,
         role: raw.role as UserRole,
         refreshTokens,
-        passwordResetToken: passwordResetTokenOrError.isFailure()
-          ? undefined
-          : passwordResetTokenOrError.value,
+        passwordResetToken: passwordResetTokenOrError.isSuccess() ? passwordResetTokenOrError.value : undefined,
+        emailConfirmationToken: emailConfirmationTokenOrError.isSuccess()
+          ? emailConfirmationTokenOrError.value
+          : undefined,
       },
       id
     )
@@ -76,9 +75,7 @@ export default class UserMapper implements BaseMapper<User> {
   static async toObject(user: User) {
     const { isDeleted, isEmailConfirmed } = user
 
-    const refreshTokens = user.refreshTokens.map(refreshToken =>
-      RefreshTokenMapper.toObject(refreshToken)
-    )
+    const refreshTokens = user.refreshTokens.map(refreshToken => RefreshTokenMapper.toObject(refreshToken))
 
     return {
       id: user.userId.toString(),
@@ -90,6 +87,7 @@ export default class UserMapper implements BaseMapper<User> {
       password: await user.password.getHashedValue(),
       passwordResetToken: user.passwordResetToken?.hashedToken || null,
       passwordResetTokenExpiresAt: user.passwordResetToken?.expiresAt || null,
+      emailConfirmationToken: user.emailConfirmationToken?.hashedToken || null,
       refreshTokens,
     }
   }

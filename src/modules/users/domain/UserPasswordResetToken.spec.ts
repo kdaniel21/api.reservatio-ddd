@@ -17,7 +17,7 @@ describe('UserPasswordResetToken Value Object', () => {
   it('should create a UserPasswordResetToken from existing data', () => {
     const id = new UniqueID()
     const plainTextToken = faker.random.alpha({
-      count: UserPasswordResetToken.tokenOptions.TOKEN_LENGTH,
+      count: UserPasswordResetToken.tokenOptions.tokenLength,
     })
     const existingToken = {
       token: TextUtils.hashText(plainTextToken),
@@ -35,7 +35,7 @@ describe('UserPasswordResetToken Value Object', () => {
   it('should create an expired UserPasswordResetToken from existing data', () => {
     const id = new UniqueID()
     const plainTextToken = faker.random.alpha({
-      count: UserPasswordResetToken.tokenOptions.TOKEN_LENGTH,
+      count: UserPasswordResetToken.tokenOptions.tokenLength,
     })
     const existingToken = {
       token: TextUtils.hashText(plainTextToken),

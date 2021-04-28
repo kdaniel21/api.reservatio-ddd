@@ -25,6 +25,7 @@ model PrismaUser {
   role                        Role                 @default(USER)
   isDeleted                   Boolean              @default(false) @map("is_deleted")
   isEmailConfirmed            Boolean              @default(false) @map("is_email_confirmed")
+  emailConfirmationToken      String?              @map("email_confirmation_token")
   refreshTokens               PrismaRefreshToken[]
 
   @@map("users")

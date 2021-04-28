@@ -16,7 +16,7 @@ describe('UserRefreshToken Value Object', () => {
   it('should create a valid UserRefreshToken from existing data', () => {
     const id = new UniqueID()
     const plainTextToken = faker.random.alpha({
-      count: UserRefreshToken.tokenOptions.TOKEN_LENGTH,
+      count: UserRefreshToken.tokenOptions.tokenLength,
     })
     const existingToken = {
       token: TextUtils.hashText(plainTextToken),
@@ -35,7 +35,7 @@ describe('UserRefreshToken Value Object', () => {
   it('should create an expired UserRefreshToken from existing data', () => {
     const id = new UniqueID()
     const plainTextToken = faker.random.alpha({
-      count: UserRefreshToken.tokenOptions.TOKEN_LENGTH,
+      count: UserRefreshToken.tokenOptions.tokenLength,
     })
     const existingToken = {
       token: TextUtils.hashText(plainTextToken),

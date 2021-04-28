@@ -1,5 +1,5 @@
 import { ErrorOr } from '@shared/core/DomainError'
-import { Guard } from '@shared/core/Guard'
+import { Guard, GuardArguments } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import TextUtils from '@shared/utils/TextUtils'
 import { AppError } from '@shared/core/AppError'
@@ -12,15 +12,11 @@ export interface TokenEntityProps {
 }
 
 export interface TokenEntityOptions {
-  EXPIRATION_HOURS: number
-  TOKEN_LENGTH: number
+  tokenLength: number
+  expirationHours?: number
 }
 
-export abstract class TokenEntity<
-  T extends TokenEntityProps = TokenEntityProps,
-> extends Entity<T> {
-  static DEFAULT_EXPIRATION_HOURS = 6
-
+export abstract class TokenEntity<T extends TokenEntityProps = TokenEntityProps> extends Entity<T> {
   static DEFAULT_TOKEN_LENGTH = 20
 
   readonly isHashed: boolean
@@ -59,28 +55,27 @@ export abstract class TokenEntity<
     id?: UniqueID,
     options?: TokenEntityOptions
   ): ErrorOr<TokenEntityProps> {
-    const TOKEN_LENGTH = options?.TOKEN_LENGTH || this.DEFAULT_TOKEN_LENGTH
-    const EXPIRATION_HOURS = options?.EXPIRATION_HOURS || this.DEFAULT_EXPIRATION_HOURS
+    const tokenLength = options?.tokenLength || this.DEFAULT_TOKEN_LENGTH
+    const { expirationHours } = options
 
     if (!id) {
-      const newToken = this.generateNewTokenObject(TOKEN_LENGTH, EXPIRATION_HOURS)
+      const newToken = this.generateNewTokenObject(tokenLength, expirationHours)
       return Result.ok(newToken)
     }
 
-    const guardResultUndefined = Guard.againstNullOrUndefinedBulk([
-      { argument: props.token, argumentName: 'token' },
-      { argument: props.expiresAt, argumentName: 'expiration' },
-    ])
-    if (!guardResultUndefined.isSuccess) {
+    const guard: GuardArguments[] = [{ argument: props.token, argumentName: 'token' }]
+    if (options.expirationHours) guard.push({ argument: props.expiresAt, argumentName: 'expiration' })
+
+    const guardResultUndefined = Guard.againstNullOrUndefinedBulk(guard)
+    if (!guardResultUndefined.isSuccess)
       return Result.fail(new AppError.UndefinedArgumentError(guardResultUndefined.message))
-    }
 
     return Result.ok(props)
   }
 
-  private static generateNewTokenObject(length: number, expirationHours: number) {
+  private static generateNewTokenObject(length: number, expirationHours?: number) {
     const token = TextUtils.generateRandomCharacters(length).toUpperCase()
-    const expiresAt = new Date(Date.now() + expirationHours * 60 * 60 * 1000)
+    const expiresAt = expirationHours ? new Date(Date.now() + expirationHours * 60 * 60 * 1000) : undefined
 
     return { token, expiresAt }
   }
