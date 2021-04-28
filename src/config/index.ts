@@ -6,6 +6,7 @@ const config = {
   isTesting: process.env.NODE_ENV === 'test',
   isDevelopment: process.env.NODE_ENV === 'development',
   apolloServerPort: process.env.NODE_ENV === 'test' ? 7373 : +process.env.PORT || 3000,
+  frontendHost: process.env.FRONTEND_HOST ?? 'http://localhost:4200',
 }
 
 export default {
