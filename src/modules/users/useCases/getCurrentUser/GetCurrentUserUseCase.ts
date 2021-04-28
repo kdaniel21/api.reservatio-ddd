@@ -1,5 +1,5 @@
 import UserRepository from '@modules/users/repositories/UserRepository'
-import { ErrorOr, PromiseErrorOr } from '@shared/core/DomainError'
+import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import UseCase from '@shared/core/UseCase'
 import UniqueID from '@shared/domain/UniqueID'

@@ -11,7 +11,10 @@ module.exports = {
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: '<rootDir>/',
   }),
-  testEnvironment: './src/shared/infra/database/prisma/utils/test-environment.js',
+  testEnvironment: 'node',
+  setupFiles: ['./src/shared/infra/database/prisma/utils/clearAllData.js'],
+  globalSetup: './src/shared/infra/database/prisma/utils/setupPrismaSchema.js',
+  globalTeardown: './src/shared/infra/database/prisma/utils/dropPrismaSchema.js',
   verbose: true,
   collectCoverage: true,
   collectCoverageFrom: ['<rootDir>/src/**/*.ts'],
