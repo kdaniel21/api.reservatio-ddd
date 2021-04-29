@@ -45,7 +45,7 @@ export default class JwtAuthService implements AuthService<JwtToken, JwtPayload>
   }
 
   async removeRefreshToken(refreshToken: UserRefreshToken, user: User): PromiseErrorOr {
-    const result = user.removeRefreshToken(refreshToken.token)
+    const result = user.removeRefreshToken(refreshToken)
     if (result.isFailure()) return Result.fail()
 
     await this.refreshTokenRepo.deleteOne(refreshToken)

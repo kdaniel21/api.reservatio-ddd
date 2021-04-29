@@ -16,8 +16,9 @@ type ExtractedCookies = {
 
 export const extractCookies = (headers: { ['set-cookie']: string[] }): ExtractedCookies => {
   const cookies = headers['set-cookie']
+  if (!cookies) return {}
 
-  return cookies.reduce((shapedCookies, cookieString) => {
+  return cookies?.reduce((shapedCookies, cookieString) => {
     const [rawCookie, ...flags] = cookieString.split('; ')
     const [cookieName, value] = rawCookie.split('=')
     return { ...shapedCookies, [cookieName]: { value, flags: shapeFlags(flags) } }

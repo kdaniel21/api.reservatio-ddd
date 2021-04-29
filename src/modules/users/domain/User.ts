@@ -86,8 +86,8 @@ export default class User extends AggregateRoot<UserProps> {
     return Result.ok(newRefreshToken)
   }
 
-  removeRefreshToken(tokenToRemove: RefreshTokenDto): ErrorOr<void> {
-    const index = this.refreshTokens.findIndex(refreshToken => refreshToken.token === tokenToRemove)
+  removeRefreshToken(tokenToRemove: UserRefreshToken): ErrorOr<void> {
+    const index = this.refreshTokens.findIndex(refreshToken => refreshToken.hashedToken === tokenToRemove.hashedToken)
     if (index === -1) return Result.fail()
 
     this.refreshTokens.splice(index, 1)

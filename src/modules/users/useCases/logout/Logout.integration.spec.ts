@@ -13,7 +13,6 @@ import jwt from 'jsonwebtoken'
 import { JwtPayload } from '@modules/users/domain/AccessToken'
 import { extractCookies } from '@shared/utils/extractCookies'
 import UserRole from '@modules/users/domain/UserRole'
-import PrismaUserRepository from '@modules/users/repositories/implementations/PrismaUserRepository'
 import JwtAuthService from '@modules/users/services/AuthService/JwtAuthService'
 import { Result } from '@shared/core/Result'
 
@@ -56,7 +55,7 @@ describe('Logout Integration', () => {
         id: new UniqueID().toString(),
         token: crypto.createHash('sha256').update(refreshToken).digest('hex').toString(),
         expiresAt: new Date(Date.now() + 60 * 1000),
-        user: { connect: userRecord },
+        userId: userRecord.id,
       },
     })
 
@@ -136,13 +135,13 @@ describe('Logout Integration', () => {
     const res = await request
       .post('/')
       .send({ query })
-      .set('Cookie', `refresh-token=${new UniqueID().toString()}`)
+      .set('Cookie', `refresh-token=${refreshToken}`)
       .set('Authorization', accessToken)
       .expect(200)
 
     expect(res.body.data.logout.message).toBeTruthy()
     const cookies = extractCookies(res.headers)
-    expect(cookies[config.auth.refreshTokenCookieName]).toBeFalsy()
+    expect(cookies[config.auth.refreshTokenCookieName].value).toBeFalsy()
   })
 
   it('should throw an InvalidRefreshTokenError if neither the input nor the cookie contains the refresh token', async () => {
@@ -203,9 +202,10 @@ describe('Logout Integration', () => {
       .set('Authorization', accessTokenWithInvalidUser)
       .expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('TODO')
+    expect(res.body.errors[0].extensions.code).toBe('UNEXPECTED_ERROR')
     const cookies = extractCookies(res.headers)
-    expect(cookies[config.auth.refreshTokenCookieName]).toBeTruthy()
+    const hasCookieBeenChanged = !!cookies[config.auth.refreshTokenCookieName]
+    expect(hasCookieBeenChanged).toBeFalsy()
     const numOfRefreshTokens = await prisma.prismaRefreshToken.count()
     expect(numOfRefreshTokens).toBe(1)
   })
@@ -229,7 +229,8 @@ describe('Logout Integration', () => {
 
     expect(res.body.errors[0].extensions.code).toBeTruthy()
     const cookies = extractCookies(res.headers)
-    expect(cookies[config.auth.refreshTokenCookieName]).toBeTruthy()
+    const hasCookieBeenChanged = !!cookies[config.auth.refreshTokenCookieName]
+    expect(hasCookieBeenChanged).toBeFalsy()
     const numOfRefreshTokens = await prisma.prismaRefreshToken.count()
     expect(numOfRefreshTokens).toBe(1)
   })
