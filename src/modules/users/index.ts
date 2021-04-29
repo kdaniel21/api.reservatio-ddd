@@ -24,6 +24,9 @@ import { registerResolver } from './useCases/register'
 import ResetPasswordResolver from './useCases/resetPassword/ResetPasswordResolver'
 import { resetPasswordResolver } from './useCases/resetPassword'
 
+import SendEmailConfirmationResolver from './useCases/sendEmailConfirmation/SendEmailConfirmationResolver'
+import { sendEmailConfirmationResolver } from './useCases/sendEmailConfirmation'
+
 import './subscribers/index'
 
 Container.set(ChangePasswordUsingTokenResolver, changePasswordUsingTokenResolver)
@@ -34,3 +37,4 @@ Container.set(LogoutResolver, logoutResolver)
 Container.set(RefreshAccessTokenResolver, refreshAccessTokenResolver)
 Container.set(RegisterResolver, registerResolver)
 Container.set(ResetPasswordResolver, resetPasswordResolver)
+Container.set(SendEmailConfirmationResolver, sendEmailConfirmationResolver)

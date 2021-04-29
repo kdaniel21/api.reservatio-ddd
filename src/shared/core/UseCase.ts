@@ -3,12 +3,10 @@ import { AppError } from './AppError'
 import { ErrorOr } from './DomainError'
 import { Result } from './Result'
 
-export default abstract class UseCase<Request, Response> {
+export default abstract class UseCase<Request, Response = void> {
   constructor() {}
 
-  protected abstract executeImpl(
-    request: Request
-  ): Promise<ErrorOr<Response>> | ErrorOr<Response>
+  protected abstract executeImpl(request: Request): Promise<ErrorOr<Response>> | ErrorOr<Response>
 
   async execute(request: Request): Promise<ErrorOr<Response>> {
     try {

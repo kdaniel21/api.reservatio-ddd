@@ -11,4 +11,4 @@ export abstract class BaseTemplate {
   }
 }
 
-export type Template<TemplateData> = new (templateData: TemplateData) => BaseTemplate
+export type Template<TemplateData = any> = new (templateData: TemplateData) => BaseTemplate
