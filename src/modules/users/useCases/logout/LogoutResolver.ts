@@ -2,7 +2,7 @@ import config from '@config'
 import ApolloContext from '@shared/infra/http/apollo/types/ApolloContext'
 import MessageResponseDto from '@shared/infra/http/apollo/types/MessageResponseDto'
 import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
-import LogoutDto from './DTOs/LogoutDto'
+import LogoutUseCaseDto from './DTOs/LogoutUseCaseDto'
 import { LogoutErrors } from './LogoutErrors'
 import LogoutUseCase from './LogoutUseCase'
 
@@ -13,21 +13,17 @@ export default class LogoutResolver {
   @Mutation(() => MessageResponseDto)
   async logout(
     @Ctx() { cookies, user }: ApolloContext,
-    @Arg('refreshToken') refreshTokenInput?: string
+    @Arg('refreshToken', { nullable: true }) refreshTokenInput?: string
   ): Promise<MessageResponseDto> {
     const refreshToken = refreshTokenInput || cookies.get(config.auth.refreshTokenCookieName)
     if (!refreshToken) throw new LogoutErrors.InvalidRefreshTokenError()
 
-    const requestDto: LogoutDto = {
-      token: refreshToken,
-      user,
-    }
+    const requestDto: LogoutUseCaseDto = { token: refreshToken, user }
     const result = await this.useCase.execute(requestDto)
+    if (result.isFailure()) throw result.error
 
-    if (result.isSuccess()) {
-      return { message: 'You have been successfully logged out!' }
-    }
+    cookies.set(config.auth.refreshTokenCookieName, null)
 
-    throw result.error
+    return { message: 'You have been successfully logged out!' }
   }
 }

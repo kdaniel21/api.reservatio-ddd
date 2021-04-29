@@ -5,16 +5,17 @@ import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import UseCase from '@shared/core/UseCase'
 import UniqueID from '@shared/domain/UniqueID'
-import LogoutDto from './DTOs/LogoutDto'
+import LogoutUseCaseDto from './DTOs/LogoutUseCaseDto'
 import { LogoutErrors } from './LogoutErrors'
 
-export default class LogoutUseCase extends UseCase<LogoutDto, void> {
+export default class LogoutUseCase extends UseCase<LogoutUseCaseDto, void> {
   constructor(private userRepo: UserRepository<PrismaUser>, private authService: AuthService) {
     super()
   }
 
-  async executeImpl(request: LogoutDto): PromiseErrorOr {
+  async executeImpl(request: LogoutUseCaseDto): PromiseErrorOr {
     const userId = new UniqueID(request.user.userId)
+
     const userOrError = await this.userRepo.findById(userId, { refreshTokens: true })
     if (userOrError.isFailure()) return Result.fail(userOrError.error)
 
