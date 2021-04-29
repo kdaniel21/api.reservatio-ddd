@@ -69,7 +69,7 @@ describe('RefreshAccessToken Integration', () => {
       }
     }`
 
-    const res = await request.post('/').set('Cookie', `refresh-token=${refreshToken}`).send({ query }).expect(200)
+    const res = await request.post('/').send({ query }).set('Cookie', `refresh-token=${refreshToken}`).expect(200)
 
     expect(res.body.data.refreshAccessToken.accessToken).toBeTruthy()
     const accessTokenPayload = jwt.verify(
@@ -118,8 +118,8 @@ describe('RefreshAccessToken Integration', () => {
 
     const res = await request
       .post('/')
-      .set('Cookie', `refresh-token=${expiredRefreshToken}`)
       .send({ query })
+      .set('Cookie', `refresh-token=${expiredRefreshToken}`)
       .expect(200)
 
     expect(res.body.data.refreshAccessToken.accessToken).toBeTruthy()
@@ -202,8 +202,8 @@ describe('RefreshAccessToken Integration', () => {
 
     const res = await request
       .post('/')
-      .set('Cookie', `refresh-token=${expiredRefreshToken}`)
       .send({ query })
+      .set('Cookie', `refresh-token=${expiredRefreshToken}`)
       .expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('INVALID_REFRESH_TOKEN')
