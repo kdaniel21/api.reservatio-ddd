@@ -120,9 +120,12 @@ export default class User extends AggregateRoot<UserProps> {
     return Result.ok(emailConfirmationToken)
   }
 
-  // confirmEmail(): ErrorOr {
-  //   return Result.fail()
-  // }
+  confirmEmail(): ErrorOr {
+    this.props.emailConfirmationToken = undefined
+    this.props.isEmailConfirmed = true
+
+    return Result.ok()
+  }
 
   setPassword(password: string): ErrorOr<void> {
     const newPasswordOrError = UserPassword.create({ password })
