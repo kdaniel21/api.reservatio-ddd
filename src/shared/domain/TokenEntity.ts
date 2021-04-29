@@ -58,7 +58,8 @@ export abstract class TokenEntity<T extends TokenEntityProps = TokenEntityProps>
     const tokenLength = options?.tokenLength || this.DEFAULT_TOKEN_LENGTH
     const { expirationHours } = options
 
-    if (!id) {
+    const isNewToken = !id
+    if (isNewToken) {
       const newToken = this.generateNewTokenObject(tokenLength, expirationHours)
       return Result.ok(newToken)
     }

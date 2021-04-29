@@ -13,7 +13,6 @@ export default class UserEmailConfirmationToken extends TokenEntity {
 
   static create(props?: TokenEntityProps, id?: UniqueID): ErrorOr<UserEmailConfirmationToken> {
     const validPropsOrError = TokenEntity.validateProps(props, id, this.tokenOptions)
-
     if (validPropsOrError.isFailure()) return Result.fail(validPropsOrError.error)
 
     const validProps = validPropsOrError.value

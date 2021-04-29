@@ -40,7 +40,7 @@ export default class UserMapper implements BaseMapper<User> {
       new UniqueID()
     )
 
-    const combinedResult = Result.combine([emailOrError, nameOrError, passwordResetTokenOrError, passwordOrError])
+    const combinedResult = Result.combine([emailOrError, nameOrError, passwordOrError])
     if (combinedResult.isFailure()) logger.error(combinedResult.error.message)
 
     const id = raw.id ? new UniqueID(raw.id) : null

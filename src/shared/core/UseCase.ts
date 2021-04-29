@@ -13,7 +13,7 @@ export default abstract class UseCase<Request, Response = void> {
       const result = await this.executeImpl(request)
       return result
     } catch (err) {
-      logger.error('[USE CASE]: Unexpected error!')
+      logger.error('[USE CASE] Unexpected error!')
       logger.error(err)
       return Result.fail(AppError.UnexpectedError)
     }

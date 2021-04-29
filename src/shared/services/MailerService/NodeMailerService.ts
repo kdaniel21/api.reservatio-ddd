@@ -1,6 +1,7 @@
 import config from '@config'
 import User from '@modules/users/domain/User'
 import { PromiseErrorOr } from '@shared/core/DomainError'
+import { Result } from '@shared/core/Result'
 import logger from '@shared/infra/Logger/logger'
 import nodemailer from 'nodemailer'
 import SMTPConnection from 'nodemailer/lib/smtp-connection'
@@ -55,9 +56,13 @@ export default class NodeMailerService implements MailerService {
       })
 
       logger.info(`[SERVICES] Email has been sent to ${emailAddress}!`)
+
+      return Result.ok()
     } catch (err) {
       logger.error(`[SERVICES] Email could not be sent to ${emailAddress}!`)
       logger.error(err)
+
+      return Result.fail(err)
     }
   }
 

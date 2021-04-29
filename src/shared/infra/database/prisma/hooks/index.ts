@@ -2,6 +2,8 @@ import DomainEvents from '@shared/domain/events/DomainEvents'
 import UniqueID from '@shared/domain/UniqueID'
 import prisma from '../prisma'
 
+import './queryLogger'
+
 const actionsToSkip = ['findUnique', 'findFirst', 'findMany', 'queryRaw', 'aggregate', 'count']
 
 prisma.$use(async (params, next) => {
