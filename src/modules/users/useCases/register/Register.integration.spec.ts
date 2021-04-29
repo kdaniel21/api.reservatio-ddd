@@ -13,6 +13,9 @@ import { extractCookies } from '@shared/utils/extractCookies'
 import config from '@config'
 import crypto from 'crypto'
 import bcrypt from 'bcrypt'
+import NodeMailerService from '@shared/services/MailerService/NodeMailerService'
+import { Result } from '@shared/core/Result'
+import { RegisterTemplate } from '@shared/services/MailerService/templates/RegisterTemplate'
 
 describe('Register Integration', () => {
   let initializedServer: InitializedApolloServer
@@ -29,6 +32,10 @@ describe('Register Integration', () => {
 
   beforeEach(async () => {
     await clearAllData()
+
+    jest.spyOn(NodeMailerService.prototype as any, 'send').mockResolvedValue(Result.ok)
+
+    jest.clearAllMocks()
   })
 
   it('should register a new user and return the user', async () => {
@@ -84,6 +91,33 @@ describe('Register Integration', () => {
   })
 
   // TODO: Track subsequent calls made by AfterUserCreated
+  it('should send a confirmation to the email address of the user with the email confirmation', async () => {
+    const query = `mutation {
+      register(params: {
+        email: "foo@bar.com",
+        name: "Foo Bar",
+        password: "Th1sIsAG00dPassw0rd",
+        passwordConfirm: "Th1sIsAG00dPassw0rd"
+      }) {
+        user {
+          id
+          name
+          email
+        }
+        accessToken
+        refreshToken
+      }
+    }`
+
+    await request.post('/').send({ query }).expect(200)
+
+    const userRecord = await prisma.prismaUser.findUnique({ where: { email: 'foo@bar.com' } })
+    expect(NodeMailerService.prototype['send']).toHaveBeenCalledTimes(1)
+    const sendToUserArguments = (NodeMailerService.prototype as any).send.mock.calls[0]
+    expect(sendToUserArguments[0]).toBe(RegisterTemplate)
+    expect(sendToUserArguments[1]).toBe('foo@bar.com')
+    expect(sendToUserArguments[2].user.id.toString()).toBe(userRecord.id)
+  })
 
   it('should register a new user and return a valid access token', async () => {
     const query = `mutation {
@@ -204,6 +238,7 @@ describe('Register Integration', () => {
     expect(userRecord.email).toBe('foo@bar.com')
     expect(userRecord.isDeleted).toBe(false)
     expect(userRecord.isEmailConfirmed).toBe(false)
+    expect(userRecord.emailConfirmationToken).toBeTruthy()
     expect(userRecord.password).toBeTruthy()
     expect(userRecord).not.toBe('Th1sIsAG00dPassw0rd')
     const doPasswordsMatch = await bcrypt.compare('Th1sIsAG00dPassw0rd', userRecord.password)
