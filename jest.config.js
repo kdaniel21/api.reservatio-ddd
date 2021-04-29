@@ -14,8 +14,7 @@ module.exports = {
   testEnvironment: 'node',
   setupFiles: ['./src/shared/infra/database/prisma/utils/clearAllData.js'],
   globalSetup: './src/shared/infra/database/prisma/utils/setupTestSchema.js',
-  globalTeardown: './src/shared/infra/database/prisma/utils/dropTestSchema.js',
   verbose: true,
-  collectCoverage: true,
+  collectCoverage: false,
   collectCoverageFrom: ['<rootDir>/src/**/*.ts'],
 }
