@@ -54,7 +54,7 @@ export default class User extends AggregateRoot<UserProps> {
   }
 
   get isEmailConfirmed(): boolean {
-    return this.props.isEmailConfirmed as boolean
+    return this.props.isEmailConfirmed
   }
 
   get emailConfirmationToken(): UserEmailConfirmationToken | undefined {
@@ -66,7 +66,7 @@ export default class User extends AggregateRoot<UserProps> {
   }
 
   get isDeleted(): boolean {
-    return this.props.isDeleted as boolean
+    return this.props.isDeleted
   }
 
   isRefreshTokenValid(token: string): boolean {
