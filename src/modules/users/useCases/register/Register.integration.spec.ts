@@ -1,6 +1,5 @@
 import 'reflect-metadata'
 import '@modules/users'
-import UserRole from '@modules/users/domain/UserRole'
 import validateJwt from '@shared/infra/http/apollo/auth/validateJwt'
 import { initApolloServer, InitializedApolloServer } from '@shared/infra/http/apollo/initApolloServer'
 import supertest from 'supertest'
@@ -141,7 +140,6 @@ describe('Register Integration', () => {
     const { accessToken } = res.body.data.register
     const jwtPayload = validateJwt(accessToken)
     expect(jwtPayload.email).toBe('foo@bar.com')
-    expect(jwtPayload.role).toBe(UserRole.User)
     const userRecord = await prisma.prismaUser.findUnique({ where: { email: 'foo@bar.com' } })
     expect(jwtPayload.userId).toBe(userRecord.id)
   })
@@ -245,7 +243,6 @@ describe('Register Integration', () => {
     expect(doPasswordsMatch).toBe(true)
     expect(userRecord.passwordResetToken).toBeFalsy()
     expect(userRecord.passwordResetTokenExpiresAt).toBeFalsy()
-    expect(userRecord.role).toBe(UserRole.User)
   })
 
   it('should throw an InvalidUserEmailError if registering with an invalid email address', async () => {

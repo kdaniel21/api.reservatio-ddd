@@ -10,7 +10,6 @@ import UserDto from '../DTOs/UserDto'
 import RefreshTokenMapper from './RefreshTokenMapper'
 import UserRefreshToken from '../domain/UserRefreshToken'
 import UserPasswordResetToken from '../domain/UserPasswordResetToken'
-import UserRole from '../domain/UserRole'
 import UserEmailConfirmationToken from '../domain/UserEmailConfirmationToken'
 
 export default class UserMapper implements BaseMapper<User> {
@@ -20,7 +19,6 @@ export default class UserMapper implements BaseMapper<User> {
       name: user.name.value,
       email: user.email.value,
       isEmailConfirmed: user.isEmailConfirmed,
-      role: user.role,
     }
   }
 
@@ -57,7 +55,6 @@ export default class UserMapper implements BaseMapper<User> {
         password: passwordOrError.value,
         isEmailConfirmed: raw.isEmailConfirmed,
         isDeleted: raw.isDeleted,
-        role: raw.role as UserRole,
         refreshTokens,
         passwordResetToken: passwordResetTokenOrError.isSuccess() ? passwordResetTokenOrError.value : undefined,
         emailConfirmationToken: emailConfirmationTokenOrError.isSuccess()
@@ -81,7 +78,6 @@ export default class UserMapper implements BaseMapper<User> {
       id: user.userId.toString(),
       name: user.name.value,
       email: user.email.value,
-      role: user.role,
       isDeleted,
       isEmailConfirmed,
       password: await user.password.getHashedValue(),

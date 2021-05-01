@@ -9,7 +9,6 @@ import supertest from 'supertest'
 import bcrypt from 'bcrypt'
 import config from '@config'
 import validateJwt from '@shared/infra/http/apollo/auth/validateJwt'
-import UserRole from '@modules/users/domain/UserRole'
 import TextUtils from '@shared/utils/TextUtils'
 import { extractCookies } from '@shared/utils/extractCookies'
 import crypto from 'crypto'
@@ -80,7 +79,6 @@ describe('Login Integration', () => {
     expect(res.body.data.login.accessToken).toBeTruthy()
     const jwtPayload = validateJwt(res.body.data.login.accessToken)
     expect(jwtPayload.email).toBe('foo@bar.com')
-    expect(jwtPayload.role).toBe(UserRole.User)
     expect(jwtPayload.userId).toBe(userRecord.id)
   })
 

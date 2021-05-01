@@ -5,7 +5,6 @@ import UserName from './UserName'
 import UserPassword from './UserPassword'
 import UserPasswordResetToken from './UserPasswordResetToken'
 import UserRefreshToken from './UserRefreshToken'
-import UserRole from './UserRole'
 
 describe('User Aggregate Root', () => {
   it('should create a regular User from an existing object', async () => {
@@ -29,7 +28,6 @@ describe('User Aggregate Root', () => {
     expect(user?.name).toBe(userNameOrError.value)
     expect(user?.password.value).toBe(userPasswordOrError.value?.value)
     expect(await user?.password.comparePassword(password)).toBe(true)
-    expect(user?.role).toBe(UserRole.User)
     expect(user?.isDeleted).toBe(false)
     expect(user?.isEmailConfirmed).toBe(false)
   })
@@ -43,7 +41,6 @@ describe('User Aggregate Root', () => {
       email: userEmailOrError.value as UserEmail,
       name: userNameOrError.value as UserName,
       password: userPasswordOrError.value as UserPassword,
-      role: UserRole.Admin,
     }
 
     const userOrError = User.create(userProps)
@@ -55,7 +52,6 @@ describe('User Aggregate Root', () => {
     expect(user?.email).toBe(userEmailOrError.value)
     expect(user?.name).toBe(userNameOrError.value)
     expect(user?.password.value).toBe(userPasswordOrError.value?.value)
-    expect(user?.role).toBe(UserRole.Admin)
     expect(user?.isDeleted).toBe(false)
     expect(user?.isEmailConfirmed).toBe(false)
   })
@@ -81,7 +77,6 @@ describe('User Aggregate Root', () => {
     expect(user?.email).toBe(userEmailOrError.value)
     expect(user?.name).toBe(userNameOrError.value)
     expect(user?.password.value).toBe(userPasswordOrError.value?.value)
-    expect(user?.role).toBe(UserRole.User)
     expect(user?.isDeleted).toBe(true)
     expect(user?.isEmailConfirmed).toBe(false)
   })
@@ -108,7 +103,6 @@ describe('User Aggregate Root', () => {
     expect(user?.name).toBe(userNameOrError.value)
     expect(user?.password.value).toBe(userPasswordOrError.value?.value)
     expect(await user?.password.comparePassword(password)).toBe(true)
-    expect(user?.role).toBe(UserRole.User)
     expect(user?.isDeleted).toBe(false)
     expect(user?.isEmailConfirmed).toBe(false)
     expect(user?.isRefreshTokenValid(refreshToken.value?.token as string)).toBe(true)
@@ -138,12 +132,9 @@ describe('User Aggregate Root', () => {
     expect(user?.name).toBe(userNameOrError.value)
     expect(user?.password.value).toBe(userPasswordOrError.value?.value)
     expect(await user?.password.comparePassword(password)).toBe(true)
-    expect(user?.role).toBe(UserRole.User)
     expect(user?.isDeleted).toBe(false)
     expect(user?.isEmailConfirmed).toBe(false)
-    expect(
-      user?.passwordResetToken?.isTokenValid(passwordResetTokenOrError.value?.token as string)
-    ).toBe(true)
+    expect(user?.passwordResetToken?.isTokenValid(passwordResetTokenOrError.value?.token as string)).toBe(true)
     const invalidToken = faker.random.alphaNumeric(20)
     expect(user?.passwordResetToken?.isTokenValid(invalidToken)).toBe(false)
   })

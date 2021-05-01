@@ -4,7 +4,6 @@ import { AppError } from '@shared/core/AppError'
 import CreateUserUseCaseDto from './DTOs/CreateUserUseCaseDto'
 import CreateUserUseCase from './CreateUserUseCase'
 import { CreateUserError } from './CreateUserErrors'
-import UserRole from '@modules/users/domain/UserRole'
 import InvalidUserEmailError from '@modules/users/domain/errors/InvalidUserEmailError'
 import InvalidUserNameError from '@modules/users/domain/errors/InvalidUserNameError'
 import { InvalidUserPasswordError } from '@modules/users/domain/errors/InvalidUserPasswordError'
@@ -41,7 +40,6 @@ describe('CreateUserUseCase', () => {
     expect(result.isFailure()).toBe(false)
     expect(result.value.user.email.value).toBe(request.email)
     expect(result.value.user.name.value).toBe(request.name)
-    expect(result.value.user.role).toBe(UserRole.User)
     expect(result.value.user.isDeleted).toBe(false)
     expect(result.value.user.isEmailConfirmed).toBe(false)
     expect(userRepo.save).toBeCalled()

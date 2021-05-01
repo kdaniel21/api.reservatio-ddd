@@ -54,10 +54,7 @@ describe('RefreshAccessToken Integration', () => {
       },
     })
 
-    accessToken = jwt.sign(
-      { userId: userRecord.id, role: userRecord.role, email: userRecord.email } as JwtPayload,
-      config.auth.jwtSecretKey
-    )
+    accessToken = jwt.sign({ userId: userRecord.id, email: userRecord.email } as JwtPayload, config.auth.jwtSecretKey)
 
     jest.clearAllMocks()
   })
@@ -77,7 +74,6 @@ describe('RefreshAccessToken Integration', () => {
       config.auth.jwtSecretKey
     ) as JwtPayload
     expect(accessTokenPayload.email).toBe(userRecord.email)
-    expect(accessTokenPayload.role).toBe(userRecord.role)
     expect(accessTokenPayload.userId).toBe(userRecord.id)
   })
 
@@ -96,7 +92,6 @@ describe('RefreshAccessToken Integration', () => {
       config.auth.jwtSecretKey
     ) as JwtPayload
     expect(accessTokenPayload.email).toBe(userRecord.email)
-    expect(accessTokenPayload.role).toBe(userRecord.role)
     expect(accessTokenPayload.userId).toBe(userRecord.id)
   })
 
@@ -128,7 +123,6 @@ describe('RefreshAccessToken Integration', () => {
       config.auth.jwtSecretKey
     ) as JwtPayload
     expect(accessTokenPayload.email).toBe(userRecord.email)
-    expect(accessTokenPayload.role).toBe(userRecord.role)
     expect(accessTokenPayload.userId).toBe(userRecord.id)
   })
 

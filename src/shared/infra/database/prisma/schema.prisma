@@ -10,11 +10,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model PrismaUser {
   id                          String               @id
   name                        String
@@ -22,7 +17,6 @@ model PrismaUser {
   password                    String
   passwordResetToken          String?              @map("password_reset_token")
   passwordResetTokenExpiresAt DateTime?            @map("password_reset_token_expires_at")
-  role                        Role                 @default(USER)
   isDeleted                   Boolean              @default(false) @map("is_deleted")
   isEmailConfirmed            Boolean              @default(false) @map("is_email_confirmed")
   emailConfirmationToken      String?              @map("email_confirmation_token")
@@ -55,6 +49,11 @@ model PrismaReservation {
   badminton   Boolean        @default(false)
   createdAt   DateTime       @default(now()) @map("created_at")
   updatedAt   DateTime       @updatedAt @map("updated_at")
+}
+
+enum CustomerRole {
+  USER
+  ADMIN
 }
 
 model PrismaCustomer {

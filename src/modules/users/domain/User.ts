@@ -12,7 +12,6 @@ import UserRefreshToken from './UserRefreshToken'
 import UserCreatedEvent from './events/UserCreatedEvent'
 import PasswordResetTokenCreatedEvent from './events/PasswordResetTokenCreatedEvent'
 import PasswordChangedEvent from './events/PasswordChangedEvent'
-import UserRole from './UserRole'
 import UserEmailConfirmationToken from './UserEmailConfirmationToken'
 
 interface UserProps {
@@ -21,7 +20,6 @@ interface UserProps {
   password: UserPassword
   refreshTokens?: UserRefreshToken[]
   passwordResetToken?: UserPasswordResetToken
-  role?: UserRole
   isEmailConfirmed?: boolean
   emailConfirmationToken?: UserEmailConfirmationToken
   isDeleted?: boolean
@@ -46,10 +44,6 @@ export default class User extends AggregateRoot<UserProps> {
 
   get refreshTokens(): UserRefreshToken[] {
     return this.props.refreshTokens
-  }
-
-  get role(): UserRole {
-    return this.props.role
   }
 
   get isEmailConfirmed(): boolean {
@@ -155,7 +149,6 @@ export default class User extends AggregateRoot<UserProps> {
         ...props,
         refreshTokens: props.refreshTokens || [],
         isEmailConfirmed: props.isEmailConfirmed ?? false,
-        role: props.role ?? UserRole.User,
         isDeleted: props.isDeleted ?? false,
       },
       id

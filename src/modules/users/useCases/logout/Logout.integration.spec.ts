@@ -12,7 +12,6 @@ import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from '@modules/users/domain/AccessToken'
 import { extractCookies } from '@shared/utils/extractCookies'
-import UserRole from '@modules/users/domain/UserRole'
 import JwtAuthService from '@modules/users/services/AuthService/JwtAuthService'
 import { Result } from '@shared/core/Result'
 
@@ -182,7 +181,6 @@ describe('Logout Integration', () => {
     const accessTokenWithInvalidUser = jwt.sign(
       {
         email: 'whatever@foo.com',
-        role: UserRole.User,
         userId: new UniqueID().toString(),
       } as JwtPayload,
       config.auth.jwtSecretKey

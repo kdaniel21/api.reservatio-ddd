@@ -5,11 +5,13 @@ import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import AggregateRoot from '@shared/domain/AggregateRoot'
 import UniqueID from '@shared/domain/UniqueID'
+import CustomerRole from './CustomerRole'
 import Reservation from './Reservation'
 
 interface CustomerProps {
   userId: UniqueID
   name: UserName
+  role: CustomerRole
   reservations?: Reservation[]
 }
 

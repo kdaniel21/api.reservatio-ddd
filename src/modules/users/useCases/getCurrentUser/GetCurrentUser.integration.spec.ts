@@ -10,7 +10,6 @@ import bcrypt from 'bcrypt'
 import config from '@config'
 import { JwtPayload, JwtToken } from '@modules/users/domain/AccessToken'
 import jwt from 'jsonwebtoken'
-import UserRole from '@modules/users/domain/UserRole'
 
 describe('GetCurrentUser Integration', () => {
   let initializedServer: InitializedApolloServer
@@ -43,10 +42,7 @@ describe('GetCurrentUser Integration', () => {
       },
     })
 
-    accessToken = jwt.sign(
-      { userId: userRecord.id, role: userRecord.role, email: userRecord.email } as JwtPayload,
-      config.auth.jwtSecretKey
-    )
+    accessToken = jwt.sign({ userId: userRecord.id, email: userRecord.email } as JwtPayload, config.auth.jwtSecretKey)
   })
 
   it('should return the authenticated user', async () => {
@@ -56,7 +52,6 @@ describe('GetCurrentUser Integration', () => {
         name
         email
         isEmailConfirmed
-        role
       }
     }`
 
@@ -66,7 +61,6 @@ describe('GetCurrentUser Integration', () => {
     expect(res.body.data.currentUser.name).toBe(userRecord.name)
     expect(res.body.data.currentUser.email).toBe(userRecord.email)
     expect(res.body.data.currentUser.isEmailConfirmed).toBe(userRecord.isEmailConfirmed)
-    expect(res.body.data.currentUser.role).toBe(userRecord.role)
   })
 
   it('should throw an InvalidOrMissingAccessTokenError error if no access token is provided', async () => {
@@ -76,7 +70,6 @@ describe('GetCurrentUser Integration', () => {
         name
         email
         isEmailConfirmed
-        role
       }
     }`
 
@@ -89,7 +82,6 @@ describe('GetCurrentUser Integration', () => {
     const validAccessToken = jwt.sign(
       {
         email: 'invalid@bar.com',
-        role: UserRole.User,
         userId: new UniqueID().toString(),
       } as JwtPayload,
       config.auth.jwtSecretKey
@@ -100,7 +92,6 @@ describe('GetCurrentUser Integration', () => {
         name
         email
         isEmailConfirmed
-        role
       }
     }`
 
@@ -116,7 +107,6 @@ describe('GetCurrentUser Integration', () => {
         name
         email
         isEmailConfirmed
-        role
       }
     }`
 
