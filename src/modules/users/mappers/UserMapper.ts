@@ -41,7 +41,7 @@ export default class UserMapper implements BaseMapper<User> {
     )
 
     const combinedResult = Result.combine([emailOrError, nameOrError, passwordOrError])
-    if (combinedResult.isFailure()) logger.error(combinedResult.error.message)
+    if (combinedResult.isFailure()) logger.error(`Error while mapping to domain: ${combinedResult.error.message}`)
 
     const id = raw.id ? new UniqueID(raw.id) : null
 

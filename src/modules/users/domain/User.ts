@@ -10,7 +10,6 @@ import UserName from './UserName'
 import UserEmail from './UserEmail'
 import UserRefreshToken from './UserRefreshToken'
 import UserCreatedEvent from './events/UserCreatedEvent'
-import { RefreshTokenDto } from '../DTOs/RefreshTokenDto'
 import PasswordResetTokenCreatedEvent from './events/PasswordResetTokenCreatedEvent'
 import PasswordChangedEvent from './events/PasswordChangedEvent'
 import UserRole from './UserRole'
@@ -155,9 +154,9 @@ export default class User extends AggregateRoot<UserProps> {
       {
         ...props,
         refreshTokens: props.refreshTokens || [],
-        isEmailConfirmed: props.isEmailConfirmed || false,
-        role: props.role || UserRole.User,
-        isDeleted: props.isDeleted || false,
+        isEmailConfirmed: props.isEmailConfirmed ?? false,
+        role: props.role ?? UserRole.User,
+        isDeleted: props.isDeleted ?? false,
       },
       id
     )
