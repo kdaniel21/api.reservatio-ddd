@@ -64,7 +64,7 @@ export class Guard {
 
   static isDate(props: GuardArguments): GuardResult {
     const { argument, argumentName } = props
-    return argument instanceof Date
+    return argument instanceof Date && !isNaN(argument.getTime())
       ? { isSuccess: true }
       : { isSuccess: false, message: `Property ${argumentName} most be a valid Date!` }
   }

@@ -37,10 +37,10 @@ model PrismaRefreshToken {
 
 model PrismaReservation {
   id          String         @id
-  recurringId String         @map("recurring_id")
+  recurringId String?        @map("recurring_id")
   name        String
-  customer    PrismaCustomer @relation(fields: [customerId], references: [userId])
-  customerId  String         @map("owner_id")
+  customer    PrismaCustomer @relation(fields: [customerId], references: [id])
+  customerId  String         @map("customer_id")
   startTime   DateTime       @map("start_time")
   endTime     DateTime       @map("end_time")
   isActive    Boolean        @default(false) @map("is_active")

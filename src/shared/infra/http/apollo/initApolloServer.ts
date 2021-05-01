@@ -11,7 +11,7 @@ import { BoostedApolloKoaServer, ServerInfo } from './BoostedApolloKoaServer'
 import Koa from 'koa'
 
 export interface InitializedApolloServer {
-  apolloServer: any
+  apolloServer: BoostedApolloKoaServer
   serverInfo: ServerInfo
 }
 

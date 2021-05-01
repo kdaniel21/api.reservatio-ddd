@@ -28,9 +28,9 @@ CREATE TABLE "refresh_tokens" (
 -- CreateTable
 CREATE TABLE "PrismaReservation" (
     "id" TEXT NOT NULL,
-    "recurring_id" TEXT NOT NULL,
+    "recurring_id" TEXT,
     "name" TEXT NOT NULL,
-    "owner_id" TEXT NOT NULL,
+    "customer_id" TEXT NOT NULL,
     "start_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3) NOT NULL,
     "is_active" BOOLEAN NOT NULL DEFAULT false,
@@ -67,7 +67,7 @@ CREATE INDEX "PrismaCustomer.user_id_index" ON "PrismaCustomer"("user_id");
 ALTER TABLE "refresh_tokens" ADD FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PrismaReservation" ADD FOREIGN KEY ("owner_id") REFERENCES "PrismaCustomer"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "PrismaReservation" ADD FOREIGN KEY ("customer_id") REFERENCES "PrismaCustomer"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PrismaCustomer" ADD FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

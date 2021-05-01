@@ -11,6 +11,7 @@ interface ReservationTimeProps {
 
 export default class ReservationTime extends ValueObject<ReservationTimeProps> {
   static MAX_RESERVATION_HOURS = 4
+  static MIN_RESERVATION_HOURS = 0.5
 
   get startTime(): Date {
     return this.props.startTime
@@ -42,6 +43,19 @@ export default class ReservationTime extends ValueObject<ReservationTimeProps> {
       Guard.isDate(endTimeGuardArgument),
     ])
     if (!guardResult.isSuccess) return Result.fail(new InvalidReservationTimeError(guardResult.message))
+
+    const isEndTimeLaterThanStart = endTime.getTime() > startTime.getTime()
+    if (!isEndTimeLaterThanStart)
+      return Result.fail(new InvalidReservationTimeError(`The 'endTime' must be later in time than the 'startTime'.`))
+
+    const millisecondDifference = endTime.getTime() - startTime.getTime()
+    const hourDifference = millisecondDifference / 60 / 60 / 1000
+    if (hourDifference < this.MIN_RESERVATION_HOURS || hourDifference > this.MAX_RESERVATION_HOURS)
+      return Result.fail(
+        new InvalidReservationTimeError(
+          `The time difference must be between ${this.MIN_RESERVATION_HOURS} and ${this.MAX_RESERVATION_HOURS} hours!`
+        )
+      )
 
     const reservationTime = new ReservationTime({ startTime, endTime })
     return Result.ok(reservationTime)

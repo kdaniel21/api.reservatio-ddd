@@ -58,7 +58,7 @@ describe('Logout Integration', () => {
     })
 
     accessToken = jwt.sign(
-      { userId: userRecord.id, role: userRecord.role, email: userRecord.email } as JwtPayload,
+      { userId: userRecord.id, email: userRecord.email } as JwtPayload,
       config.auth.jwtSecretKey
     )
   })
