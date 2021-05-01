@@ -1,16 +1,28 @@
+import { PromiseErrorOr } from '@shared/core/DomainError'
+import { Failure } from '@shared/core/Result'
 import logger from '@shared/infra/Logger/logger'
 import { DomainEvent } from './DomainEvent'
 import DomainEvents from './DomainEvents'
 
 export default abstract class DomainEventSubscriber<Event = DomainEvent> {
-  constructor(eventClassName: string) {
-    this.initSubscriber(eventClassName)
+  constructor(private readonly eventClassName: string) {
+    this.initSubscriber()
   }
 
-  initSubscriber(eventClassName: string): void {
+  initSubscriber(): void {
     logger.info(`[EVENTS] Initializing subscriber ${this.constructor.name}...`)
-    DomainEvents.registerHandler(this.handleEvent.bind(this), eventClassName)
+    DomainEvents.registerHandler(this.execute.bind(this), this.eventClassName)
   }
 
-  abstract handleEvent(event: Event): Promise<void> | void
+  async execute(event: Event): Promise<void> {
+    try {
+      const result = await this.handleEvent(event)
+
+      if (result instanceof Failure) throw result.error
+    } catch (err) {
+      logger.error(`[SUBSCRIBERS] Error while executing ${this.eventClassName}: ${err}`)
+    }
+  }
+
+  abstract handleEvent(event: Event): Promise<void> | void | PromiseErrorOr<any>
 }

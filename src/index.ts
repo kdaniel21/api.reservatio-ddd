@@ -9,6 +9,7 @@ const initApplication = async () => {
   await initApolloServer()
 
   require('@modules/users')
+  require('@modules/reservation')
 }
 
 initApplication()

@@ -1,5 +1,3 @@
-import { DomainError } from './DomainError'
-
 export class Failure<E, S> {
   constructor(public readonly error?: E) {}
 
@@ -33,9 +31,7 @@ export class Success<E, S> {
 }
 
 export namespace Result {
-  export function fail<E extends object, S = any>(
-    ErrorClass?: (new () => E) | E
-  ): Either<E, S> {
+  export function fail<E extends object, S = any>(ErrorClass?: (new () => E) | E): Either<E, S> {
     if (!ErrorClass) return new Failure<E, S>()
 
     const errorInstance: E = typeof ErrorClass === 'object' ? ErrorClass : new ErrorClass()

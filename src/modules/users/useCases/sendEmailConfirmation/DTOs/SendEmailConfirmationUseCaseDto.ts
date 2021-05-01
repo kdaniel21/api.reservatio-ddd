@@ -4,6 +4,6 @@ import { Template } from '@shared/services/MailerService/templates/BaseTemplate'
 
 export default interface SendEmailConfirmationUseCaseDto {
   email: string
-  name: CustomerName
+  name?: CustomerName
   EmailTemplate?: Template<{ user: User; name?: CustomerName }>
 }

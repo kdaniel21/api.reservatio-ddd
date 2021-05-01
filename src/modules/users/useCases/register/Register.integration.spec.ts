@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 import '@modules/users'
+import '@modules/reservation'
 import validateJwt from '@shared/infra/http/apollo/auth/validateJwt'
 import { initApolloServer, InitializedApolloServer } from '@shared/infra/http/apollo/initApolloServer'
 import supertest from 'supertest'
@@ -15,6 +16,7 @@ import bcrypt from 'bcrypt'
 import NodeMailerService from '@shared/services/MailerService/NodeMailerService'
 import { Result } from '@shared/core/Result'
 import { RegisterTemplate } from '@shared/services/MailerService/templates/RegisterTemplate'
+import CreateCustomerUseCase from '@modules/reservation/useCases/createCustomer/CreateCustomerUseCase'
 
 describe('Register Integration', () => {
   let initializedServer: InitializedApolloServer
@@ -86,7 +88,6 @@ describe('Register Integration', () => {
     // expect(AfterUserCreated.prototype.handleEvent).toHaveBeenCalledTimes(1)
   })
 
-  // TODO: Track subsequent calls made by AfterUserCreated
   it('should send a confirmation to the email address of the user with the email confirmation', async () => {
     const query = `mutation {
       register(params: {
@@ -112,6 +113,33 @@ describe('Register Integration', () => {
     expect(sendToUserArguments[0]).toBe(RegisterTemplate)
     expect(sendToUserArguments[1]).toBe('foo@bar.com')
     expect(sendToUserArguments[2].user.id.toString()).toBe(userRecord.id)
+  })
+
+  it('should create a new customer with the correct name', async () => {
+    jest.spyOn(CreateCustomerUseCase.prototype, 'execute')
+    const query = `mutation {
+      register(params: {
+        email: "foo@bar.com",
+        name: "Foo Bar",
+        password: "Th1sIsAG00dPassw0rd",
+        passwordConfirm: "Th1sIsAG00dPassw0rd"
+      }) {
+        user {
+          id
+          email
+        }
+        accessToken
+        refreshToken
+      }
+    }`
+
+    await request.post('/').send({ query }).expect(200)
+
+    expect(CreateCustomerUseCase.prototype.execute).toHaveBeenCalledTimes(1)
+    const userRecord = await prisma.prismaUser.findUnique({ where: { email: 'foo@bar.com' } })
+    const customerRecord = await prisma.prismaCustomer.findUnique({ where: { userId: userRecord.id } })
+    expect(customerRecord.id).toBeTruthy()
+    expect(customerRecord.name).toBe('Foo Bar')
   })
 
   it('should register a new user and return a valid access token', async () => {
