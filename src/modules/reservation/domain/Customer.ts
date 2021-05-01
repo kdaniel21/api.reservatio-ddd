@@ -1,16 +1,16 @@
-import UserName from '@modules/users/domain/UserName'
 import { AppError } from '@shared/core/AppError'
 import { ErrorOr } from '@shared/core/DomainError'
 import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import AggregateRoot from '@shared/domain/AggregateRoot'
 import UniqueID from '@shared/domain/UniqueID'
+import CustomerName from './CustomerName'
 import CustomerRole from './CustomerRole'
 import Reservation from './Reservation'
 
 interface CustomerProps {
   userId: UniqueID
-  name: UserName
+  name: CustomerName
   role: CustomerRole
   reservations?: Reservation[]
 }
@@ -28,7 +28,7 @@ export default class Customer extends AggregateRoot<CustomerProps> {
     return this.props.reservations
   }
 
-  get name(): UserName {
+  get name(): CustomerName {
     return this.props.name
   }
 

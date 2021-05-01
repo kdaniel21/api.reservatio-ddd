@@ -1,11 +1,11 @@
-import UserDto from '@modules/users/DTOs/UserDto'
+import CustomerDto from './CustomerDto'
 import LocationDto from './LocationDto'
 
 export default interface ReservationDto {
   id: string
   recurringId: string
   name: string
-  owner: UserDto
+  customer: CustomerDto
   startTime: Date
   endTime: Date
   isActive: boolean

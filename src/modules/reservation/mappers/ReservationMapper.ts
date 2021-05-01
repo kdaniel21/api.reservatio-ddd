@@ -1,13 +1,14 @@
-import UserMapper from '@modules/users/mappers/UserMapper'
 import { Result } from '@shared/core/Result'
 import UniqueID from '@shared/domain/UniqueID'
 import BaseMapper from '@shared/infra/BaseMapper'
 import logger from '@shared/infra/Logger/logger'
+import Customer from '../domain/Customer'
 import Reservation from '../domain/Reservation'
 import { ReservationLocation } from '../domain/ReservationLocation'
 import ReservationName from '../domain/ReservationName'
 import ReservationTime from '../domain/ReservationTime'
 import ReservationDto from '../DTOs/ReservationDto'
+import CustomerMapper from './CustomerMapper'
 
 export default class ReservationMapper implements BaseMapper<Reservation> {
   static toDto(reservation: Reservation): ReservationDto {
@@ -15,7 +16,7 @@ export default class ReservationMapper implements BaseMapper<Reservation> {
       id: reservation.reservationId.toString(),
       recurringId: reservation.recurringId.toString(),
       name: reservation.name.value,
-      owner: UserMapper.toDto(reservation.owner),
+      customer: CustomerMapper.toDto(reservation.customer),
       startTime: reservation.time.startTime,
       endTime: reservation.time.endTime,
       isActive: reservation.isActive,
@@ -28,12 +29,12 @@ export default class ReservationMapper implements BaseMapper<Reservation> {
   static toDomain(raw: any) {
     const recurringId = raw.recurringId ? new UniqueID(raw.recurringId) : undefined
     const nameOrError = ReservationName.create(raw.name)
-    // const ownerOrError =
+    const customerOrError = Customer.create(raw.customer)
     const timeOrError = ReservationTime.create(raw.startTime, raw.endTime)
     const { tableTennis, badminton } = raw
     const locationsOrError = ReservationLocation.create({ tableTennis, badminton })
 
-    const combinedResult = Result.combine([nameOrError, timeOrError, locationsOrError])
+    const combinedResult = Result.combine([nameOrError, timeOrError, locationsOrError, customerOrError])
     if (combinedResult.isFailure()) logger.error(`Error while mapping to domain: ${combinedResult.error.message}`)
 
     const id = raw.id ? new UniqueID(raw.id) : undefined
@@ -42,7 +43,7 @@ export default class ReservationMapper implements BaseMapper<Reservation> {
       {
         recurringId,
         name: nameOrError.value,
-        owner: ownerOrError.value,
+        customer: customerOrError.value,
         time: timeOrError.value,
         isActive: raw.isActive || true,
         locations: locationsOrError.value,
