@@ -24,9 +24,7 @@ export default class NodeMailerService implements MailerService {
   private hasErrors = false
 
   async sendToUser<T>(Template: Template<T>, user: User, templateData?: T): PromiseErrorOr {
-    logger.info(
-      `[SERVICES] Sending ${Template.name} template to ${user.name.value} (ID: ${user.id}) to address ${user.email.value}`
-    )
+    logger.info(`[SERVICES] Sending ${Template.name} template to address ${user.email.value} (ID: ${user.id})`)
 
     return this.send(Template, user.email.value, templateData)
   }

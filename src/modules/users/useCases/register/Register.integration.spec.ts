@@ -47,7 +47,6 @@ describe('Register Integration', () => {
       }) {
         user {
           id
-          name
           email
         }
         accessToken
@@ -58,7 +57,6 @@ describe('Register Integration', () => {
     const res = await request.post('/').send({ query }).expect(200)
 
     expect(res.body.data.register.user.id).toBeTruthy()
-    expect(res.body.data.register.user.name).toBe('Foo Bar')
     expect(res.body.data.register.user.email).toBe('foo@bar.com')
   })
 
@@ -74,7 +72,6 @@ describe('Register Integration', () => {
       }) {
         user {
           id
-          name
           email
         }
         accessToken
@@ -100,7 +97,6 @@ describe('Register Integration', () => {
       }) {
         user {
           id
-          name
           email
         }
         accessToken
@@ -127,7 +123,6 @@ describe('Register Integration', () => {
         passwordConfirm: "Th1sIsAG00dPassw0rd"
       }) {
         user {
-          name
           email
         }
         accessToken
@@ -153,7 +148,6 @@ describe('Register Integration', () => {
         passwordConfirm: "Th1sIsAG00dPassw0rd"
       }) {
         user {
-          name
           email
         }
         accessToken
@@ -186,7 +180,6 @@ describe('Register Integration', () => {
         passwordConfirm: "Th1sIsAG00dPassw0rd"
       }) {
         user {
-          name
           email
         }
         accessToken
@@ -221,7 +214,6 @@ describe('Register Integration', () => {
         passwordConfirm: "Th1sIsAG00dPassw0rd"
       }) {
         user {
-          name
           email
         }
         accessToken
@@ -254,7 +246,6 @@ describe('Register Integration', () => {
         passwordConfirm: "Th1sIsAG00dPassw0rd"
       }) {
         user {
-          name
           email
         }
         accessToken
@@ -280,7 +271,6 @@ describe('Register Integration', () => {
         passwordConfirm: "Th1sIsAG00dPassw0rd"
       }) {
         user {
-          name
           email
         }
         accessToken
@@ -306,7 +296,6 @@ describe('Register Integration', () => {
         passwordConfirm: "badpassword"
       }) {
         user {
-          name
           email
         }
         accessToken
@@ -332,7 +321,6 @@ describe('Register Integration', () => {
         passwordConfirm: "Th1sIsAB4dPassw0rd"
       }) {
         user {
-          name
           email
         }
         accessToken
@@ -350,10 +338,10 @@ describe('Register Integration', () => {
   })
 
   it('should throw an EmailAlreadyExistsError if registering with an email address that is already being used', async () => {
+    const alreadyRegisteredUserId = new UniqueID().toString()
     await prisma.prismaUser.create({
       data: {
-        id: new UniqueID().toString(),
-        name: 'Foo Bar',
+        id: alreadyRegisteredUserId,
         email: 'foo@bar.com',
         password: 'foobar',
       },
@@ -366,7 +354,6 @@ describe('Register Integration', () => {
         passwordConfirm: "Th1sIsAG00dPassw0rd"
       }) {
         user {
-          name
           email
         }
         accessToken
@@ -381,6 +368,6 @@ describe('Register Integration', () => {
       where: { email: 'foo@bar.com' },
     })
     expect(usersWithEmail.length).toBe(1)
-    expect(usersWithEmail[0].name).toBe('Foo Bar')
+    expect(usersWithEmail[0].id).toBe(alreadyRegisteredUserId)
   })
 })

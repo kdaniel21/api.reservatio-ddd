@@ -4,20 +4,15 @@ import { ErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import UseCase from '@shared/core/UseCase'
 import CreateUserUseCase from '../createUser/CreateUserUseCase'
-import RegisterDto from './DTOs/RegisterUseCaseDto'
+import RegisterUseCaseDto from './DTOs/RegisterUseCaseDto'
 import RegisterUseCaseResultDto from './DTOs/RegisterUseCaseResultDto'
 
-export default class RegisterUseCase extends UseCase<RegisterDto, RegisterUseCaseResultDto> {
-  constructor(
-    private createUserUseCase: CreateUserUseCase,
-    private authService: AuthService<JwtToken, JwtPayload>
-  ) {
+export default class RegisterUseCase extends UseCase<RegisterUseCaseDto, RegisterUseCaseResultDto> {
+  constructor(private createUserUseCase: CreateUserUseCase, private authService: AuthService<JwtToken, JwtPayload>) {
     super()
   }
 
-  protected async executeImpl(
-    request: RegisterDto,
-  ): Promise<ErrorOr<RegisterUseCaseResultDto>> {
+  protected async executeImpl(request: RegisterUseCaseDto): Promise<ErrorOr<RegisterUseCaseResultDto>> {
     const newUserOrError = await this.createUserUseCase.execute(request)
     if (newUserOrError.isFailure()) return Result.fail(newUserOrError.error)
 

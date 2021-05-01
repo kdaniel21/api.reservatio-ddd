@@ -35,7 +35,6 @@ describe('Login Integration', () => {
     userRecord = await prisma.prismaUser.create({
       data: {
         id: new UniqueID().toString(),
-        name: 'Foo Bar',
         email: 'foo@bar.com',
         password: await bcrypt.hash('password', config.auth.bcryptSaltRounds),
         isEmailConfirmed: true,
@@ -51,7 +50,6 @@ describe('Login Integration', () => {
       }) {
         user {
           id
-          name
           email
         }
       }
@@ -60,7 +58,6 @@ describe('Login Integration', () => {
     const res = await request.post('/').send({ query }).expect(200)
 
     expect(res.body.data.login.user.id).toBeTruthy()
-    expect(res.body.data.login.user.name).toBe('Foo Bar')
     expect(res.body.data.login.user.email).toBe('foo@bar.com')
   })
 

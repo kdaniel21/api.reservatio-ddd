@@ -1,28 +1,28 @@
 import AggregateRoot from '@shared/domain/AggregateRoot'
 import UniqueID from '@shared/domain/UniqueID'
 import { ErrorOr } from '@shared/core/DomainError'
-import { Guard } from '@shared/core/Guard'
+import { Guard, GuardArguments } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import { AppError } from '@shared/core/AppError'
 import UserPasswordResetToken from './UserPasswordResetToken'
 import UserPassword from './UserPassword'
-import UserName from './UserName'
 import UserEmail from './UserEmail'
 import UserRefreshToken from './UserRefreshToken'
 import UserCreatedEvent from './events/UserCreatedEvent'
 import PasswordResetTokenCreatedEvent from './events/PasswordResetTokenCreatedEvent'
 import PasswordChangedEvent from './events/PasswordChangedEvent'
 import UserEmailConfirmationToken from './UserEmailConfirmationToken'
+import CustomerName from '@modules/reservation/domain/CustomerName'
 
 interface UserProps {
   email: UserEmail
-  name: UserName
   password: UserPassword
   refreshTokens?: UserRefreshToken[]
   passwordResetToken?: UserPasswordResetToken
   isEmailConfirmed?: boolean
   emailConfirmationToken?: UserEmailConfirmationToken
   isDeleted?: boolean
+  name?: CustomerName
 }
 
 export default class User extends AggregateRoot<UserProps> {
@@ -32,10 +32,6 @@ export default class User extends AggregateRoot<UserProps> {
 
   get email(): UserEmail {
     return this.props.email
-  }
-
-  get name(): UserName {
-    return this.props.name
   }
 
   get password(): UserPassword {
@@ -136,12 +132,15 @@ export default class User extends AggregateRoot<UserProps> {
   }
 
   static create(props: UserProps, id?: UniqueID): ErrorOr<User> {
-    const guardResult = Guard.againstNullOrUndefinedBulk([
-      { argument: props.email, argumentName: 'email' },
-      { argument: props.name, argumentName: 'name' },
-      { argument: props.password, argumentName: 'password' },
-    ])
+    const isNewUser = !id
 
+    const guards: GuardArguments[] = [
+      { argument: props.email, argumentName: 'email' },
+      { argument: props.password, argumentName: 'password' },
+    ]
+    if (isNewUser) guards.push({ argument: props.name, argumentName: 'name' })
+
+    const guardResult = Guard.againstNullOrUndefinedBulk(guards)
     if (!guardResult.isSuccess) return Result.fail(new AppError.UndefinedArgumentError(guardResult.message))
 
     const user = new User(
@@ -154,8 +153,7 @@ export default class User extends AggregateRoot<UserProps> {
       id
     )
 
-    const isNewUser = !id
-    if (isNewUser) user.addDomainEvent(new UserCreatedEvent(user))
+    if (isNewUser) user.addDomainEvent(new UserCreatedEvent(user, props.name))
 
     return Result.ok(user)
   }

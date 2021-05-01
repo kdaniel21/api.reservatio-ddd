@@ -1,5 +1,5 @@
 import UserDto from '@modules/users/DTOs/UserDto'
-import { Field, ObjectType, registerEnumType } from 'type-graphql'
+import { Field, ObjectType } from 'type-graphql'
 
 @ObjectType()
 export default class GraphQLUser implements UserDto {
@@ -8,9 +8,6 @@ export default class GraphQLUser implements UserDto {
 
   @Field()
   email: string
-
-  @Field()
-  name: string
 
   @Field()
   isEmailConfirmed: boolean

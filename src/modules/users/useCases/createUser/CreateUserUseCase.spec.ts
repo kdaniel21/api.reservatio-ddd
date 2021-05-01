@@ -5,10 +5,10 @@ import CreateUserUseCaseDto from './DTOs/CreateUserUseCaseDto'
 import CreateUserUseCase from './CreateUserUseCase'
 import { CreateUserError } from './CreateUserErrors'
 import InvalidUserEmailError from '@modules/users/domain/errors/InvalidUserEmailError'
-import InvalidUserNameError from '@modules/users/domain/errors/InvalidUserNameError'
 import { InvalidUserPasswordError } from '@modules/users/domain/errors/InvalidUserPasswordError'
 import User from '@modules/users/domain/User'
 import { Result } from '@shared/core/Result'
+import InvalidCustomerNameError from '@modules/reservation/domain/errors/InvalidCustomerNameError'
 
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase
@@ -39,7 +39,6 @@ describe('CreateUserUseCase', () => {
     expect(result.isSuccess()).toBe(true)
     expect(result.isFailure()).toBe(false)
     expect(result.value.user.email.value).toBe(request.email)
-    expect(result.value.user.name.value).toBe(request.name)
     expect(result.value.user.isDeleted).toBe(false)
     expect(result.value.user.isEmailConfirmed).toBe(false)
     expect(userRepo.save).toBeCalled()
@@ -87,7 +86,7 @@ describe('CreateUserUseCase', () => {
 
     expect(result.isSuccess()).toBe(false)
     expect(result.isFailure()).toBe(true)
-    expect(result.error).toBeInstanceOf(InvalidUserNameError)
+    expect(result.error).toBeInstanceOf(InvalidCustomerNameError)
     expect(userRepo.save).not.toBeCalled()
     expect(userRepo.existsByEmail).not.toBeCalled()
   })

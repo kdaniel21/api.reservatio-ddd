@@ -9,8 +9,8 @@ export default class AfterUserCreated extends DomainEventSubscriber<UserCreatedE
   }
 
   async handleEvent(event: UserCreatedEvent): Promise<void> {
-    const { user } = event
+    const { user, name } = event
 
-    await this.sendEmailConfirmationUseCase.execute({ email: user.email.value, EmailTemplate: RegisterTemplate })
+    await this.sendEmailConfirmationUseCase.execute({ email: user.email.value, EmailTemplate: RegisterTemplate, name })
   }
 }

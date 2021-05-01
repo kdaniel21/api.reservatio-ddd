@@ -12,7 +12,6 @@ generator client {
 
 model PrismaUser {
   id                          String               @id
-  name                        String
   email                       String               @unique
   password                    String
   passwordResetToken          String?              @map("password_reset_token")
@@ -58,6 +57,7 @@ enum CustomerRole {
 
 model PrismaCustomer {
   id           String              @id
+  name         String
   user         PrismaUser          @relation(fields: [userId], references: [id])
   userId       String              @unique @map("user_id")
   reservations PrismaReservation[]

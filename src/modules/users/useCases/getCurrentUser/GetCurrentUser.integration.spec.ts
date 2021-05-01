@@ -35,7 +35,6 @@ describe('GetCurrentUser Integration', () => {
     userRecord = await prisma.prismaUser.create({
       data: {
         id: new UniqueID().toString(),
-        name: 'Foo Bar',
         email: 'foo@bar.com',
         password: await bcrypt.hash('password', config.auth.bcryptSaltRounds),
         isEmailConfirmed: true,
@@ -49,7 +48,6 @@ describe('GetCurrentUser Integration', () => {
     const query = `query {
       currentUser {
         id
-        name
         email
         isEmailConfirmed
       }
@@ -58,7 +56,6 @@ describe('GetCurrentUser Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
     expect(res.body.data.currentUser.id).toBe(userRecord.id)
-    expect(res.body.data.currentUser.name).toBe(userRecord.name)
     expect(res.body.data.currentUser.email).toBe(userRecord.email)
     expect(res.body.data.currentUser.isEmailConfirmed).toBe(userRecord.isEmailConfirmed)
   })
@@ -67,7 +64,6 @@ describe('GetCurrentUser Integration', () => {
     const query = `query {
       currentUser {
         id
-        name
         email
         isEmailConfirmed
       }
@@ -89,7 +85,6 @@ describe('GetCurrentUser Integration', () => {
     const query = `query {
       currentUser {
         id
-        name
         email
         isEmailConfirmed
       }
@@ -104,7 +99,6 @@ describe('GetCurrentUser Integration', () => {
     const query = `query {
       currentUser {
         id
-        name
         email
         isEmailConfirmed
       }

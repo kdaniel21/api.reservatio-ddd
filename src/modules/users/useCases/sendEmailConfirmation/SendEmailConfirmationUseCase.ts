@@ -24,8 +24,8 @@ export default class SendEmailConfirmationUseCase extends UseCase<SendEmailConfi
     const emailConfirmationTokenOrError = user.generateEmailConfirmationToken()
     if (emailConfirmationTokenOrError.isFailure()) return Result.fail(emailConfirmationTokenOrError.error)
 
-    const { EmailTemplate = ConfirmEmailTemplate } = request
-    const sendMailResult = await this.mailerService.sendToUser(EmailTemplate, user, { user })
+    const { EmailTemplate = ConfirmEmailTemplate, name } = request
+    const sendMailResult = await this.mailerService.sendToUser(EmailTemplate, user, { user, name })
     if (sendMailResult.isFailure()) return Result.fail(sendMailResult.error)
 
     return this.userRepo.save(user)

@@ -2,9 +2,11 @@ import mjml2html from 'mjml'
 import User from '@modules/users/domain/User'
 import { BaseTemplate } from './BaseTemplate'
 import config from '@config'
+import CustomerName from '@modules/reservation/domain/CustomerName'
 
 export interface RegisterTemplateData {
   user: User
+  name: CustomerName
 }
 
 export class ConfirmEmailTemplate extends BaseTemplate {
@@ -29,7 +31,7 @@ export class ConfirmEmailTemplate extends BaseTemplate {
           <mj-divider border-color="#F45E43"></mj-divider>
 
           <mj-text font-size="20px" color="#F45E43" font-family="helvetica">
-            Hello ${this.templateData.user.name.value}!
+            Hello ${this.templateData.name.value}!
           </mj-text>
 
           <mj-button href="${config.frontendHost}/confirm-email/${this.templateData.user.userId}">

@@ -4,7 +4,6 @@ import logger from '@shared/infra/Logger/logger'
 import { Result } from '@shared/core/Result'
 import User from '../domain/User'
 import UserEmail from '../domain/UserEmail'
-import UserName from '../domain/UserName'
 import UserPassword from '../domain/UserPassword'
 import UserDto from '../DTOs/UserDto'
 import RefreshTokenMapper from './RefreshTokenMapper'
@@ -16,7 +15,6 @@ export default class UserMapper implements BaseMapper<User> {
   static toDto(user: User): UserDto {
     return {
       id: user.userId.toString(),
-      name: user.name.value,
       email: user.email.value,
       isEmailConfirmed: user.isEmailConfirmed,
     }
@@ -24,7 +22,6 @@ export default class UserMapper implements BaseMapper<User> {
 
   static toDomain(raw: any): User {
     const emailOrError = UserEmail.create(raw.email)
-    const nameOrError = UserName.create(raw.name)
     const passwordOrError = UserPassword.create({ password: raw.password, isHashed: true })
     const passwordResetTokenOrError = UserPasswordResetToken.create(
       {
@@ -38,7 +35,7 @@ export default class UserMapper implements BaseMapper<User> {
       new UniqueID()
     )
 
-    const combinedResult = Result.combine([emailOrError, nameOrError, passwordOrError])
+    const combinedResult = Result.combine([emailOrError, passwordOrError])
     if (combinedResult.isFailure()) logger.error(`Error while mapping to domain: ${combinedResult.error.message}`)
 
     const id = raw.id ? new UniqueID(raw.id) : null
@@ -51,7 +48,6 @@ export default class UserMapper implements BaseMapper<User> {
     const userOrError = User.create(
       {
         email: emailOrError.value,
-        name: nameOrError.value,
         password: passwordOrError.value,
         isEmailConfirmed: raw.isEmailConfirmed,
         isDeleted: raw.isDeleted,
@@ -76,7 +72,6 @@ export default class UserMapper implements BaseMapper<User> {
 
     return {
       id: user.userId.toString(),
-      name: user.name.value,
       email: user.email.value,
       isDeleted,
       isEmailConfirmed,

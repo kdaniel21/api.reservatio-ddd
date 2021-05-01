@@ -2,13 +2,13 @@ import { ErrorOr } from '@shared/core/DomainError'
 import { Guard } from '@shared/core/Guard'
 import { Result } from '@shared/core/Result'
 import ValueObject from '@shared/domain/ValueObject'
-import InvalidUserNameError from './errors/InvalidUserNameError'
+import InvalidCustomerNameError from './errors/InvalidCustomerNameError'
 
-interface UserNameProps {
+interface CustomerNameProps {
   name: string
 }
 
-export default class UserName extends ValueObject<UserNameProps> {
+export default class CustomerName extends ValueObject<CustomerNameProps> {
   static MAX_NAME_LENGTH = 25
 
   static MIN_NAME_LENGTH = 5
@@ -17,11 +17,11 @@ export default class UserName extends ValueObject<UserNameProps> {
     return this.props.name
   }
 
-  private constructor(props: UserNameProps) {
+  private constructor(props: CustomerNameProps) {
     super(props)
   }
 
-  static create(name: string): ErrorOr<UserName> {
+  static create(name: string): ErrorOr<CustomerName> {
     const guardArgument = { argument: name, argumentName: 'name' }
     const guardResult = Guard.combine([
       Guard.againstNullOrUndefined(guardArgument),
@@ -31,10 +31,10 @@ export default class UserName extends ValueObject<UserNameProps> {
     if (!guardResult.isSuccess) {
       const message = guardResult.message as string
 
-      return Result.fail(new InvalidUserNameError(message))
+      return Result.fail(new InvalidCustomerNameError(message))
     }
 
-    const userName = new UserName({ name })
-    return Result.ok(userName)
+    const customerName = new CustomerName({ name })
+    return Result.ok(customerName)
   }
 }

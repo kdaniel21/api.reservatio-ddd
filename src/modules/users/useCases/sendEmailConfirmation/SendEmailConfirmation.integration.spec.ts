@@ -35,7 +35,6 @@ describe('Send email confirmation', () => {
     userRecord = await prisma.prismaUser.create({
       data: {
         id: new UniqueID().toString(),
-        name: 'Foo Bar',
         email: 'foo@bar.com',
         password: await bcrypt.hash('password', config.auth.bcryptSaltRounds),
         isEmailConfirmed: false,
