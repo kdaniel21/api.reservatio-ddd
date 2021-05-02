@@ -1,5 +1,5 @@
 import Reservation from '@modules/reservation/domain/Reservation'
-import { ReservationLocation } from '@modules/reservation/domain/ReservationLocation'
+import ReservationLocation from '@modules/reservation/domain/ReservationLocation'
 import ReservationTime from '@modules/reservation/domain/ReservationTime'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import BaseRepository from '@shared/infra/database/BaseRepository'

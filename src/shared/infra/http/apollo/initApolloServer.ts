@@ -20,7 +20,11 @@ export const initApolloServer = async (): Promise<InitializedApolloServer> => {
 
   const srcDir = `${path}/src`
   const schema = await buildSchema({
-    resolvers: [`${srcDir}/shared/**/HealthCheckResolver.ts`, `${srcDir}/modules/**/useCases/**/*Resolver.ts`],
+    resolvers: [
+      `${srcDir}/shared/**/HealthCheckResolver.ts`,
+      `${srcDir}/modules/**/useCases/**/*Resolver.ts`,
+      `${srcDir}/modules/**/GraphQL/**/*Resolver.ts`,
+    ],
     globalMiddlewares: [ErrorHandlerMiddleware],
     container,
     authChecker,

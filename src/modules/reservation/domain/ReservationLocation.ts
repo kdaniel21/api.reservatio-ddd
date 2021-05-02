@@ -3,32 +3,28 @@ import { Result } from '@shared/core/Result'
 import ValueObject from '@shared/domain/ValueObject'
 import InvalidReservationLocationError from './errors/InvalidReservationLocationError'
 
-export enum ReservationLocationEnum {
-  TableTennis = 'TABLE_TENNIS',
-  Badminton = 'BADMINTON',
-}
-
 type ReservationLocationProps = {
-  [key in keyof typeof ReservationLocationEnum]: boolean
+  tableTennis: boolean
+  badminton: boolean
 }
 
-export class ReservationLocation extends ValueObject<ReservationLocationProps> {
+export default class ReservationLocation extends ValueObject<ReservationLocationProps> {
   get tableTennis(): boolean {
-    return this.props.TableTennis
+    return this.props.tableTennis
   }
 
   get badminton(): boolean {
-    return this.props.Badminton
+    return this.props.badminton
   }
 
   private constructor(props: ReservationLocationProps) {
     super(props)
   }
 
-  static create({ tableTennis = false, badminton = false }): ErrorOr<ReservationLocation> {
+  static create({ badminton = false, tableTennis = false }: ReservationLocationProps): ErrorOr<ReservationLocation> {
     if (!tableTennis && !badminton) return Result.fail(InvalidReservationLocationError)
 
-    const reservationLocation = new ReservationLocation({ TableTennis: tableTennis, Badminton: badminton })
+    const reservationLocation = new ReservationLocation({ tableTennis, badminton })
     return Result.ok(reservationLocation)
   }
 }

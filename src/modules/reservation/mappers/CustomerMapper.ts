@@ -32,12 +32,15 @@ export default class CustomerMapper implements BaseMapper<Customer> {
     if (raw.reservations)
       reservations = raw.reservations.map((rawReservation: any) => ReservationMapper.toDomain(rawReservation))
 
-    const customerOrError = Customer.create({
-      userId,
-      name: nameOrError.value,
-      role,
-      reservations,
-    })
+    const customerOrError = Customer.create(
+      {
+        userId,
+        name: nameOrError.value,
+        role,
+        reservations,
+      },
+      new UniqueID(raw.id)
+    )
 
     if (customerOrError.isFailure()) logger.error(`Error while mapping to domain: ${combinedResult.error.message}`)
 

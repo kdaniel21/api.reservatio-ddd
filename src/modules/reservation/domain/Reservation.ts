@@ -5,19 +5,19 @@ import { Result } from '@shared/core/Result'
 import AggregateRoot from '@shared/domain/AggregateRoot'
 import UniqueID from '@shared/domain/UniqueID'
 import Customer from './Customer'
-import { ReservationLocation } from './ReservationLocation'
+import ReservationLocation from './ReservationLocation'
 import ReservationName from './ReservationName'
 import ReservationTime from './ReservationTime'
 
 interface ReservationProps {
-  recurringId: UniqueID
+  recurringId?: UniqueID
   name: ReservationName
   customer: Customer
   time: ReservationTime
-  isActive: boolean
+  isActive?: boolean
   locations: ReservationLocation
-  createdAt: Date
-  updatedAt: Date
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export default class Reservation extends AggregateRoot<ReservationProps> {

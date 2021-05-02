@@ -1,4 +1,3 @@
-import { ReservationLocationEnum } from '@modules/reservation/domain/ReservationLocation'
 import { Args, Authorized, Query, Resolver } from 'type-graphql'
 import IsTimeAvailableInputDto from './DTOs/IsTimeAvailableInputDto'
 import IsTimeAvailableResponseDto from './DTOs/IsTimeAvailableResponseDto'
@@ -11,11 +10,7 @@ export default class IsTimeAvailableResolver {
   @Authorized()
   @Query(() => IsTimeAvailableResponseDto)
   async isTimeAvailable(@Args() params: IsTimeAvailableInputDto): Promise<IsTimeAvailableResponseDto> {
-    const tableTennis = params.locations.some(location => location === ReservationLocationEnum.TableTennis)
-    const badminton = params.locations.some(location => location === ReservationLocationEnum.Badminton)
-
-    const { startTime, endTime } = params
-    const result = await this.useCase.execute({ startTime, endTime, locations: { badminton, tableTennis } })
+    const result = await this.useCase.execute(params)
 
     if (result.isFailure()) throw result.error
 

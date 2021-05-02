@@ -4,7 +4,7 @@ import BaseMapper from '@shared/infra/BaseMapper'
 import logger from '@shared/infra/Logger/logger'
 import Customer from '../domain/Customer'
 import Reservation from '../domain/Reservation'
-import { ReservationLocation } from '../domain/ReservationLocation'
+import ReservationLocation from '../domain/ReservationLocation'
 import ReservationName from '../domain/ReservationName'
 import ReservationTime from '../domain/ReservationTime'
 import ReservationDto from '../DTOs/ReservationDto'
@@ -14,7 +14,7 @@ export default class ReservationMapper implements BaseMapper<Reservation> {
   static toDto(reservation: Reservation): ReservationDto {
     return {
       id: reservation.reservationId.toString(),
-      recurringId: reservation.recurringId.toString(),
+      recurringId: reservation.recurringId?.toString(),
       name: reservation.name.value,
       customer: CustomerMapper.toDto(reservation.customer),
       startTime: reservation.time.startTime,
@@ -58,6 +58,8 @@ export default class ReservationMapper implements BaseMapper<Reservation> {
   }
 
   static toObject(reservation: Reservation) {
-    return ReservationMapper.toDto(reservation)
+    const { locations, ...reservationDto } = ReservationMapper.toDto(reservation)
+
+    return { ...reservationDto, ...locations }
   }
 }

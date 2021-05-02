@@ -1,4 +1,4 @@
-import { ReservationLocation } from '@modules/reservation/domain/ReservationLocation'
+import ReservationLocation from '@modules/reservation/domain/ReservationLocation'
 import ReservationTime from '@modules/reservation/domain/ReservationTime'
 import ReservationRepository from '@modules/reservation/repositories/ReservationRepository/ReservationRepository'
 import { PromiseErrorOr } from '@shared/core/DomainError'
@@ -28,7 +28,7 @@ export default class IsTimeAvailableUseCase extends UseCase<
     const time = timeOrError.value
 
     const isInPastCorrection = 1 * 60 * 1000
-    const isInPast = Date.now() - isInPastCorrection > startTime.getTime()
+    const isInPast = (Date.now() - isInPastCorrection) > startTime.getTime()
     if (isInPast) return Result.fail(IsTimeAvailableErrors.PastTimeError)
 
     const isTimeAvailableOrError = await this.reservationRepo.isTimeAvailable(time, locationOrError.value)

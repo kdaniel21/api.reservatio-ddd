@@ -124,7 +124,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${startTime}",
         endTime: "${endTime}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -141,7 +141,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${dayAfterTomorrow('10:00')}",
         endTime: "${dayAfterTomorrow('13:30')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -157,7 +157,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('10:00')}",
         endTime: "${tomorrow('11:00')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -173,7 +173,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('6:00')}",
         endTime: "${tomorrow('8:00')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -189,7 +189,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('7:45')}",
         endTime: "${tomorrow('10:15')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -205,7 +205,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('19:45')}",
         endTime: "${tomorrow('21:15')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -221,7 +221,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('19:45')}",
         endTime: "${tomorrow('21:15')}",
-        locations: [TableTennis, Badminton]
+        locations: { tableTennis: true, badminton: true }
       ) {
         isTimeAvailable
       }
@@ -237,7 +237,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('9:30')}",
         endTime: "${tomorrow('10:30')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -253,7 +253,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('9:30')}",
         endTime: "${tomorrow('10:30')}",
-        locations: [TableTennis, Badminton]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -269,7 +269,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('20:30')}",
         endTime: "${tomorrow('21:30')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -285,7 +285,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('7:30')}",
         endTime: "${tomorrow('8:30')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -301,7 +301,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('7:30')}",
         endTime: "${tomorrow('8:30')}",
-        locations: [TableTennis, Badminton]
+        locations: { tableTennis: true, badminton: true }
       ) {
         isTimeAvailable
       }
@@ -317,7 +317,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('19:30')}",
         endTime: "${tomorrow('20:30')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -333,7 +333,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('8:30')}",
         endTime: "${tomorrow('9:30')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -349,7 +349,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('8:30')}",
         endTime: "${tomorrow('9:30')}",
-        locations: [TableTennis, Badminton]
+        locations: { tableTennis: true, badminton: true }
       ) {
         isTimeAvailable
       }
@@ -365,7 +365,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('20:15')}",
         endTime: "${tomorrow('20:45')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -376,12 +376,28 @@ describe('IsTimeAvailable Integration', () => {
     expect(res.body.data.isTimeAvailable.isTimeAvailable).toBe(true)
   })
 
+  it('should return false if the reservation starts and ends exactly at the same time as an existing reservation', async () => {
+    const query = `query {
+      isTimeAvailable(
+        startTime: "${tomorrow('12:00')}",
+        endTime: "${tomorrow('14:00')}",
+        locations: { tableTennis: true }
+      ) {
+        isTimeAvailable
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
+
+    expect(res.body.data.isTimeAvailable.isTimeAvailable).toBe(false)
+  })
+
   it('should throw a InvalidReservationError if the requested time span is greater than the allowed maximum', async () => {
     const query = `query {
       isTimeAvailable(
         startTime: "${tomorrow('10:00')}",
         endTime: "${tomorrow('15:00')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -398,7 +414,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('10:00')}",
         endTime: "${tomorrow('14:00')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -416,7 +432,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('10:00')}",
         endTime: "${tomorrow('14:00')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -429,11 +445,45 @@ describe('IsTimeAvailable Integration', () => {
     expect(prisma.prismaReservation.count).toBeCalled()
   })
 
+  it('should throw a InvalidReservationLocationError if both locations are false', async () => {
+    const query = `query {
+      isTimeAvailable(
+        startTime: "${tomorrow('10:00')}",
+        endTime: "${tomorrow('14:00')}",
+        locations: { tableTennis: false, badminton: false }
+      ) {
+        isTimeAvailable
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('VALIDATION_ERROR')
+    expect(prisma.prismaReservation.count).not.toBeCalled()
+  })
+
+  it(`should throw a InvalidReservationLocationError if 'locations' is an empty object`, async () => {
+    const query = `query {
+      isTimeAvailable(
+        startTime: "${tomorrow('10:00')}",
+        endTime: "${tomorrow('14:00')}",
+        locations: {}
+      ) {
+        isTimeAvailable
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('VALIDATION_ERROR')
+    expect(prisma.prismaReservation.count).not.toBeCalled()
+  })
+
   it(`should throw a GraphQL validation error if 'startTime' is not specified`, async () => {
     const query = `query {
       isTimeAvailable(
         endTime: "${tomorrow('14:00')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -449,7 +499,7 @@ describe('IsTimeAvailable Integration', () => {
     const query = `query {
       isTimeAvailable(
         startTime: "${tomorrow('10:00')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -477,29 +527,12 @@ describe('IsTimeAvailable Integration', () => {
     expect(prisma.prismaReservation.count).not.toBeCalled()
   })
 
-  it(`should throw a GraphQL validation error if 'locations' is an empty array`, async () => {
-    const query = `query {
-      isTimeAvailable(
-        startTime: "${tomorrow('10:00')}",
-        endTime: "${tomorrow('14:00')}",
-        locations: []
-      ) {
-        isTimeAvailable
-      }
-    }`
-
-    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(400)
-
-    expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
-    expect(prisma.prismaReservation.count).not.toBeCalled()
-  })
-
   it('should throw an InvalidOrMissingAccessTokenError if no access token is provided', async () => {
     const query = `query {
       isTimeAvailable(
         startTime: "${tomorrow('10:00')}",
         endTime: "${tomorrow('14:00')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -517,7 +550,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${tomorrow('10:00')}",
         endTime: "${tomorrow('14:00')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -534,7 +567,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${yesterday('10:00')}",
         endTime: "${yesterday('14:00')}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }
@@ -555,7 +588,7 @@ describe('IsTimeAvailable Integration', () => {
       isTimeAvailable(
         startTime: "${startTime}",
         endTime: "${endTime}",
-        locations: [TableTennis]
+        locations: { tableTennis: true }
       ) {
         isTimeAvailable
       }

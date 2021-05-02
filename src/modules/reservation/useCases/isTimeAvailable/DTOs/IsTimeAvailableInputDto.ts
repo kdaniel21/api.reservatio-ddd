@@ -1,6 +1,5 @@
-import { ReservationLocationEnum } from '@modules/reservation/domain/ReservationLocation'
+import { GraphQLReservationLocationInput } from '@modules/reservation/infra/http/GraphQL/GraphQLReservationLocation'
 import { ArgsType, Field } from 'type-graphql'
-import '@modules/reservation/infra/http/GraphQL/ReservationLocationEnum'
 
 @ArgsType()
 export default class IsTimeAvailableInputDto {
@@ -10,6 +9,6 @@ export default class IsTimeAvailableInputDto {
   @Field()
   endTime: Date
 
-  @Field(() => [ReservationLocationEnum])
-  locations: ReservationLocationEnum[]
+  @Field(() => GraphQLReservationLocationInput)
+  locations: GraphQLReservationLocationInput
 }
