@@ -1,4 +1,4 @@
-import GraphQLUser from '@modules/users/infra/http/GraphQL/types/GraphQLUser'
+import GraphQLUser from '@modules/users/infra/http/GraphQL/GraphQLUser'
 import UserMapper from '@modules/users/mappers/UserMapper'
 import { Arg, Mutation, Resolver } from 'type-graphql'
 import CreateUserUseCase from './CreateUserUseCase'

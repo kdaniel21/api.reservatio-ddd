@@ -1,5 +1,5 @@
 import CustomerDto from '@modules/reservation/DTOs/CustomerDto'
-import GraphQLUser from '@modules/users/infra/http/GraphQL/types/GraphQLUser'
+import GraphQLUser from '@modules/users/infra/http/GraphQL/GraphQLUser'
 import { Field, ID, ObjectType } from 'type-graphql'
 
 @ObjectType()
