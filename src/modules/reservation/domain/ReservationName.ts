@@ -9,8 +9,8 @@ interface ReservationNameProps {
 }
 
 export default class ReservationName extends ValueObject<ReservationNameProps> {
-  static MIN_NAME_LENGTH = 5
-  static MAX_NAME_LENGTH = 25
+  static MIN_NAME_LENGTH = 3
+  static MAX_NAME_LENGTH = 40
 
   get value(): string {
     return this.props.name

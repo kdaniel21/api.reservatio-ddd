@@ -477,6 +477,23 @@ describe('IsTimeAvailable Integration', () => {
     expect(prisma.prismaReservation.count).not.toBeCalled()
   })
 
+  it(`should throw a GraphQL validation error if 'locations' is an empty array`, async () => {
+    const query = `query {
+      isTimeAvailable(
+        startTime: "${tomorrow('10:00')}",
+        endTime: "${tomorrow('14:00')}",
+        locations: []
+      ) {
+        isTimeAvailable
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(400)
+
+    expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
+    expect(prisma.prismaReservation.count).not.toBeCalled()
+  })
+
   it('should throw an InvalidOrMissingAccessTokenError if no access token is provided', async () => {
     const query = `query {
       isTimeAvailable(
