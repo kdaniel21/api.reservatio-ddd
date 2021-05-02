@@ -5,7 +5,7 @@ import { Arg, Args, Authorized, Ctx, Mutation, Resolver } from 'type-graphql'
 import IsTimeAvailableInputDto from '../isTimeAvailable/DTOs/IsTimeAvailableInputDto'
 import CreateReservationUseCase from './CreateReservationUseCase'
 
-@Resolver(() => GraphQLReservation)
+@Resolver()
 export default class CreateReservationResolver {
   constructor(private useCase: CreateReservationUseCase) {}
 
