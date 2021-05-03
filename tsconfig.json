@@ -15,7 +15,6 @@
       "@config": ["src/config/index"],
       "@shared/*": ["src/shared/*"],
       "@modules/*": ["src/modules/*"],
-      "@users/*": ["src/modules/users/*"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true,

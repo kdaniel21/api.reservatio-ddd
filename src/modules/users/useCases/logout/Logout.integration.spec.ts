@@ -11,7 +11,7 @@ import config from '@config'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from '@modules/users/domain/AccessToken'
-import { extractCookies } from '@shared/utils/extractCookies'
+import { extractCookies } from '@shared/testing/extractCookies'
 import JwtAuthService from '@modules/users/services/AuthService/JwtAuthService'
 import { Result } from '@shared/core/Result'
 

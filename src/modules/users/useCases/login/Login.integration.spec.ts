@@ -10,7 +10,7 @@ import bcrypt from 'bcrypt'
 import config from '@config'
 import validateJwt from '@shared/infra/http/apollo/auth/validateJwt'
 import TextUtils from '@shared/utils/TextUtils'
-import { extractCookies } from '@shared/utils/extractCookies'
+import { extractCookies } from '@shared/testing/extractCookies'
 import crypto from 'crypto'
 
 describe('Login Integration', () => {

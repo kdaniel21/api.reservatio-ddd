@@ -17,7 +17,7 @@ export interface ServerInfo {
 
 export class BoostedApolloKoaServer extends ApolloServer {
   private httpServer: stoppable.StoppableServer
-  private readonly port: number = config.apolloServerPort
+  private readonly port: number = !config.isTesting ? config.apolloServerPort : undefined
 
   constructor(serverConfig: Config) {
     super(serverConfig)
