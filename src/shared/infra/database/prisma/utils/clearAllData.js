@@ -1,6 +1,8 @@
 const { PrismaClient } = require('.prisma/client')
 
 module.exports = async () => {
+  if (!process.ENV.NODE_ENV !== 'test') return
+
   const prisma = new PrismaClient()
 
   const databaseUrl = process.env.DATABASE_URL
