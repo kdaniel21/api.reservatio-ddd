@@ -6,4 +6,8 @@ import BaseRepository from '@shared/infra/database/BaseRepository'
 
 export default interface ReservationRepository<OrmE = any> extends BaseRepository<Reservation, OrmE> {
   isTimeAvailable(time: ReservationTime, location: ReservationLocation): PromiseErrorOr<boolean>
+  isTimeAvailableBulk(
+    times: ReservationTime[],
+    location: ReservationLocation
+  ): PromiseErrorOr<Map<ReservationTime, boolean>>
 }

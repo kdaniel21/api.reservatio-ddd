@@ -33,6 +33,8 @@ const yesterday = (time: string) => {
   return new Date(`${yesterday.toLocaleDateString()} ${time}`)
 }
 
+// TODO: Refactor tests to mock date and have dates manually
+
 describe('IsTimeAvailable Integration', () => {
   let initializedServer: InitializedApolloServer
   let request: supertest.SuperTest<supertest.Test>

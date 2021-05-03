@@ -2,7 +2,7 @@ import Reservation from '@modules/reservation/domain/Reservation'
 import ReservationLocation from '@modules/reservation/domain/ReservationLocation'
 import ReservationTime from '@modules/reservation/domain/ReservationTime'
 import ReservationMapper from '@modules/reservation/mappers/ReservationMapper'
-import { PrismaClient, PrismaReservation } from '@prisma/client'
+import { prisma, PrismaClient, PrismaReservation } from '@prisma/client'
 import { AppError } from '@shared/core/AppError'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
@@ -24,6 +24,30 @@ export default class PrismaReservationRepository implements ReservationRepositor
 
       const isAvailable = count === 0
       return Result.ok(isAvailable)
+    } catch (err) {
+      return Result.fail(err)
+    }
+  }
+
+  async isTimeAvailableBulk(
+    times: ReservationTime[],
+    location: ReservationLocation
+  ): PromiseErrorOr<Map<ReservationTime, boolean>> {
+    try {
+      const queries = times.map(time =>
+        this.prisma.prismaReservation.count({
+          where: {
+            startTime: { lt: time.endTime },
+            endTime: { gt: time.startTime },
+            OR: [{ tableTennis: location.tableTennis }, { badminton: location.badminton }],
+          },
+        })
+      )
+
+      const queryResult = await this.prisma.$transaction(queries)
+      const result = new Map(times.map((time, index) => [time, queryResult[index] === 0]))
+
+      return Result.ok(result)
     } catch (err) {
       return Result.fail(err)
     }

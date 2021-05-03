@@ -3,9 +3,6 @@ import Container from 'typedi'
 import ChangePasswordUsingTokenResolver from './useCases/changePasswordUsingToken/ChangePasswordUsingTokenResolver'
 import { changePasswordUsingTokenResolver } from './useCases/changePasswordUsingToken'
 
-import CreateUserResolver from './useCases/createUser/CreateUserResolver'
-import { createUserResolver } from './useCases/createUser'
-
 import GetCurrentUserResolver from './useCases/getCurrentUser/GetCurrentUserResolver'
 import { getCurrentUserResolver } from './useCases/getCurrentUser'
 
@@ -33,7 +30,6 @@ import { confirmEmailResolver } from './useCases/confirmEmail'
 import './subscribers/index'
 
 Container.set(ChangePasswordUsingTokenResolver, changePasswordUsingTokenResolver)
-Container.set(CreateUserResolver, createUserResolver)
 Container.set(GetCurrentUserResolver, getCurrentUserResolver)
 Container.set(LoginResolver, loginResolver)
 Container.set(LogoutResolver, logoutResolver)
