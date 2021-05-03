@@ -465,12 +465,13 @@ describe('IsRecurringTimeAvailable', () => {
     expect(prisma.$transaction).toBeCalledTimes(0)
   })
 
-  it(`should throw a GraphQL validation error if there is no 'timePeriod' argument`, async () => {
+  it(`should use the 'HalfYear' value if there is no 'timePeriod' argument specified`, async () => {
+    const startTime = new Date('2021-05-04 11:00')
     const query = `query {
       isRecurringTimeAvailable(
-        startTime: "${new Date('2021-05-04 14:00')}",
-        endTime: "${new Date('2021-05-04 14:00')}",
-        recurrence: Monthly,
+        startTime: "${startTime}",
+        endTime: "${new Date('2021-05-04 13:00')}",
+        recurrence: Weekly,
         locations: { tableTennis: true }
       ) {
         availableTimes
@@ -478,17 +479,24 @@ describe('IsRecurringTimeAvailable', () => {
       }
     }`
 
-    const res = await request.post('/').send({ query }).expect(400)
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
-    expect(prisma.$transaction).toBeCalledTimes(0)
+    expect(res.body.data.isRecurringTimeAvailable.availableTimes.length).toBe(27)
+    expect(res.body.data.isRecurringTimeAvailable.unavailableTimes.length).toBe(0)
+    const dates = [...Array(27).keys()].map((_, index) => {
+      const date = new Date(startTime)
+      date.setDate(date.getDate() + index * 7)
+      return date.toJSON()
+    })
+    expect(res.body.data.isRecurringTimeAvailable.availableTimes).toIncludeAllMembers(dates)
   })
 
-  it(`should throw a GraphQL validation error if there is no 'recurrence' argument`, async () => {
+  it(`should use the 'Weekly' value if there is no 'recurrence' argument specified`, async () => {
+    const startTime = new Date('2021-05-04 11:00')
     const query = `query {
       isRecurringTimeAvailable(
-        startTime: "${new Date('2021-05-04 14:00')}",
-        endTime: "${new Date('2021-05-04 14:00')}",
+        startTime: "${startTime}",
+        endTime: "${new Date('2021-05-04 13:00')}",
         timePeriod: HalfYear,
         locations: { tableTennis: true }
       ) {
@@ -497,10 +505,16 @@ describe('IsRecurringTimeAvailable', () => {
       }
     }`
 
-    const res = await request.post('/').send({ query }).expect(400)
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
-    expect(prisma.$transaction).toBeCalledTimes(0)
+    expect(res.body.data.isRecurringTimeAvailable.availableTimes.length).toBe(27)
+    expect(res.body.data.isRecurringTimeAvailable.unavailableTimes.length).toBe(0)
+    const dates = [...Array(27).keys()].map((_, index) => {
+      const date = new Date(startTime)
+      date.setDate(date.getDate() + index * 7)
+      return date.toJSON()
+    })
+    expect(res.body.data.isRecurringTimeAvailable.availableTimes).toIncludeAllMembers(dates)
   })
 
   it(`should throw a GraphQL validation error if there is no 'locations' argument`, async () => {

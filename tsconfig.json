@@ -14,7 +14,7 @@
     "paths": {
       "@config": ["src/config/index"],
       "@shared/*": ["src/shared/*"],
-      "@modules/*": ["src/modules/*"],
+      "@modules/*": ["src/modules/*"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true,

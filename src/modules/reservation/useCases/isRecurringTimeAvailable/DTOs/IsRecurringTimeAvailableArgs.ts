@@ -19,10 +19,10 @@ export default class IsRecurringTimeAvailableArgs implements IsRecurringTimeAvai
   @Field(() => GraphQLReservationLocationInput)
   locations: GraphQLReservationLocationInput
 
-  @Field(() => Recurrence)
+  @Field(() => Recurrence, { defaultValue: Recurrence.Weekly })
   recurrence: Recurrence
 
-  @Field(() => TimePeriod)
+  @Field(() => TimePeriod, { defaultValue: TimePeriod.HalfYear })
   timePeriod: TimePeriod
 }
 
