@@ -542,7 +542,8 @@ describe('IsRecurringTimeAvailable', () => {
         startTime: "${new Date('2021-05-02 14:00')}",
         endTime: "${new Date('2021-05-02 14:00')}",
         timePeriod: HalfYear,
-        recurrence: Monthly
+        recurrence: Monthly,
+        locations: { badminton: true }
       ) {
         availableTimes
         unavailableTimes
