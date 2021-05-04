@@ -69,4 +69,24 @@ export default class PrismaReservationRepository implements ReservationRepositor
       return Result.fail(AppError.UnexpectedError)
     }
   }
+
+  async saveBulk(reservations: Reservation[]): PromiseErrorOr {
+    try {
+      const upsertOperations = reservations.map(reservation => {
+        const { customer, ...reservationObject } = ReservationMapper.toObject(reservation)
+
+        return this.prisma.prismaReservation.upsert({
+          create: { ...reservationObject, customerId: customer.id },
+          update: reservationObject,
+          where: { id: reservation.id.toString() },
+        })
+      })
+
+      await this.prisma.$transaction(upsertOperations)
+      return Result.ok()
+    } catch (err) {
+      logger.error(err)
+      return Result.fail(AppError.UnexpectedError)
+    }
+  }
 }

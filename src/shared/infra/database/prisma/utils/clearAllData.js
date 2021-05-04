@@ -1,7 +1,7 @@
 const { PrismaClient } = require('.prisma/client')
 
 module.exports = async () => {
-  if (!process.ENV.NODE_ENV !== 'test') return
+  if (process.env.NODE_ENV !== 'test') return
 
   const prisma = new PrismaClient()
 

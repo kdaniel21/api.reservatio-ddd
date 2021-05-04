@@ -13,7 +13,11 @@ import { customerResolver } from './infra/http/GraphQL'
 import IsRecurringTimeAvailableResolver from './useCases/isRecurringTimeAvailable/IsRecurringTimeAvailableResolver'
 import { isRecurringTimeAvailableResolver } from './useCases/isRecurringTimeAvailable'
 
+import CreateRecurringReservationResolver from './useCases/createRecurringReservation/CreateRecurringReservationResolver'
+import { createRecurringReservationResolver } from './useCases/createRecurringReservation'
+
 Container.set(IsTimeAvailableResolver, isTimeAvailableResolver)
 Container.set(CreateReservationResolver, createReservationResolver)
 Container.set(CustomerResolver, customerResolver)
 Container.set(IsRecurringTimeAvailableResolver, isRecurringTimeAvailableResolver)
+Container.set(CreateRecurringReservationResolver, createRecurringReservationResolver)

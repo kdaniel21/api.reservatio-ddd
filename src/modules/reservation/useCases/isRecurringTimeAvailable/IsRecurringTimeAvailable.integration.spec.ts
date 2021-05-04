@@ -535,4 +535,23 @@ describe('IsRecurringTimeAvailable', () => {
     expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
     expect(prisma.$transaction).toBeCalledTimes(0)
   })
+
+  it('should throw a PastTimeError if the reservation starts in the past', async () => {
+    const query = `query {
+      isRecurringTimeAvailable(
+        startTime: "${new Date('2021-05-02 14:00')}",
+        endTime: "${new Date('2021-05-02 14:00')}",
+        timePeriod: HalfYear,
+        recurrence: Monthly
+      ) {
+        availableTimes
+        unavailableTimes
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('PAST_TIME')
+    expect(prisma.$transaction).toBeCalledTimes(0)
+  })
 })

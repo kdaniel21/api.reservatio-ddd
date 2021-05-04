@@ -1,8 +1,7 @@
 import { Field, ObjectType } from 'type-graphql'
-import IsRecurringTimeAvailableResultDto from './IsRecurringTimeAvailableResultDto'
 
 @ObjectType()
-export default class IsRecurringTimeAvailableResponseDto implements IsRecurringTimeAvailableResultDto {
+export default class IsRecurringTimeAvailableResponseDto {
   @Field(() => [Date])
   availableTimes: Date[]
 

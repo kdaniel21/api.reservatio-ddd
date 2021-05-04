@@ -10,4 +10,5 @@ export default interface ReservationRepository<OrmE = any> extends BaseRepositor
     times: ReservationTime[],
     location: ReservationLocation
   ): PromiseErrorOr<Map<ReservationTime, boolean>>
+  saveBulk(reservations: Reservation[]): PromiseErrorOr
 }

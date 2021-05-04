@@ -1,4 +1,6 @@
+import ReservationTime from '@modules/reservation/domain/ReservationTime'
+
 export default interface IsRecurringTimeAvailableResultDto {
-  availableTimes: Date[]
-  unavailableTimes: Date[]
+  availableTimes: ReservationTime[]
+  unavailableTimes: ReservationTime[]
 }

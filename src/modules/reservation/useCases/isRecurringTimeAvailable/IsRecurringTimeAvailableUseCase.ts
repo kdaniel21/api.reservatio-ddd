@@ -5,6 +5,7 @@ import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import UseCase from '@shared/core/UseCase'
 import DateUtils from '@shared/utils/DateUtils'
+import { IsTimeAvailableErrors } from '../isTimeAvailable/IsTimeAvailableErrors'
 import IsRecurringTimeAvailableResultDto from './DTOs/IsRecurringTimeAvailableResultDto'
 import { IsRecurringTimeAvailableDto, Recurrence, TimePeriod } from './DTOs/IsRecurringTimeAvailableUseCaseDto'
 
@@ -17,6 +18,9 @@ export default class IsRecurringTimeAvailableUseCase extends UseCase<
   }
 
   async executeImpl(request: IsRecurringTimeAvailableDto): PromiseErrorOr<IsRecurringTimeAvailableResultDto> {
+    const doesReservationStartInPast = request.startTime.getTime() < Date.now()
+    if (doesReservationStartInPast) return Result.fail(IsTimeAvailableErrors.PastTimeError)
+
     const { recurrence, timePeriod, includedDates = [], locations } = request
     const excludedDates = request.excludedDates?.map(date => date.getTime()) || []
 
@@ -43,10 +47,10 @@ export default class IsRecurringTimeAvailableUseCase extends UseCase<
     if (timeAvailabilityMapOrError.isFailure()) return Result.fail(timeAvailabilityMapOrError.error)
 
     const timeAvailabilityMap = timeAvailabilityMapOrError.value
-    const availableTimes: Date[] = []
-    const unavailableTimes: Date[] = []
+    const availableTimes: ReservationTime[] = []
+    const unavailableTimes: ReservationTime[] = []
     timeAvailabilityMap.forEach((isAvailable, time) => {
-      isAvailable ? availableTimes.push(time.startTime) : unavailableTimes.push(time.startTime)
+      isAvailable ? availableTimes.push(time) : unavailableTimes.push(time)
     })
 
     return Result.ok({ availableTimes, unavailableTimes })

@@ -16,6 +16,9 @@ export default class IsRecurringTimeAvailableResolver {
 
     if (result.isFailure()) throw result.error
 
-    return result.value
+    const availableTimes = result.value.availableTimes.map(time => time.startTime)
+    const unavailableTimes = result.value.unavailableTimes.map(time => time.startTime)
+
+    return { availableTimes, unavailableTimes }
   }
 }

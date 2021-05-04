@@ -1,3 +1,5 @@
+import 'reflect-metadata'
+import '@modules/reservation'
 import ReservationName from '@modules/reservation/domain/ReservationName'
 import { PrismaUser, PrismaCustomer, PrismaReservation } from '@prisma/client'
 import { Result } from '@shared/core/Result'
@@ -8,6 +10,11 @@ import supertest from 'supertest'
 import { mocked } from 'ts-jest/utils'
 import IsRecurringTimeAvailableUseCase from '../isRecurringTimeAvailable/IsRecurringTimeAvailableUseCase'
 import crypto from 'crypto'
+import ReservationTime from '@modules/reservation/domain/ReservationTime'
+import UniqueID from '@shared/domain/UniqueID'
+import jwt from 'jsonwebtoken'
+import { JwtPayload } from '@modules/users/domain/AccessToken'
+import config from '@config'
 
 describe('CreateRecurringReservation Integration', () => {
   let initializedServer: InitializedApolloServer
@@ -29,18 +36,37 @@ describe('CreateRecurringReservation Integration', () => {
   beforeEach(async () => {
     await clearAllData()
 
+    user = await prisma.prismaUser.create({
+      data: {
+        id: new UniqueID().toString(),
+        email: 'foo@bar.com',
+        password: crypto.randomBytes(20).toString('hex'),
+        isEmailConfirmed: true,
+      },
+    })
+
+    customer = await prisma.prismaCustomer.create({
+      data: {
+        id: new UniqueID().toString(),
+        userId: user.id,
+        name: 'Foo Bar',
+      },
+    })
+
+    accessToken = jwt.sign({ userId: user.id, email: user.email } as JwtPayload, config.auth.jwtSecretKey)
+
     jest.clearAllMocks()
     jest.spyOn(prisma, '$transaction')
-    jest.spyOn(prisma.prismaReservation, 'createMany')
+    jest.spyOn(prisma.prismaReservation, 'upsert')
     jest.spyOn(IsRecurringTimeAvailableUseCase.prototype, 'execute')
     Date.now = jest.fn(() => new Date('2021-05-03 10:00:00').getTime())
   })
 
-  it(`should create a recurring reservation based with given properties`, async () => {
+  it(`should create a recurring reservation with given properties`, async () => {
     const query = `mutation {
-      createRecurringReservation (
+      createRecurringReservation(
         name: "Valid Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         recurrence: Monthly,
         timePeriod: CurrentYear,
@@ -53,7 +79,7 @@ describe('CreateRecurringReservation Integration', () => {
 
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
-    expect(res.body.data.isRecurringTimeAvailable.availableTimes.length).toBe(6)
+    expect(res.body.data.createRecurringReservation.count).toBe(8)
     expect(res.body.data.createRecurringReservation.recurringId).toBeTruthy()
   })
 
@@ -61,7 +87,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         recurrence: Monthly,
         timePeriod: CurrentYear,
@@ -82,7 +108,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         recurrence: Monthly,
         timePeriod: CurrentYear,
@@ -97,11 +123,11 @@ describe('CreateRecurringReservation Integration', () => {
 
     expect(res.body.errors[0].extensions.code).toBeTruthy()
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).toBeCalledTimes(1)
-    expect(prisma.prismaReservation.create).toBeCalledTimes(0)
+    expect(prisma.prismaReservation.upsert).toBeCalledTimes(0)
   })
 
   it('should persist the created reservations to the DB', async () => {
-    const startTime = new Date('2020-05-04 12:00')
+    const startTime = new Date('2021-05-04 12:00')
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
@@ -121,10 +147,10 @@ describe('CreateRecurringReservation Integration', () => {
     const reservations = await prisma.prismaReservation.findMany()
     expect(reservations.length).toBe(8)
     const reservationStartTimes = reservations.map(reservation => reservation.startTime)
-    const dates = [...Array(6).keys()].map((_, index) => {
+    const dates = [...Array(8).keys()].map((_, index) => {
       const date = new Date(startTime)
       date.setMonth(startTime.getMonth() + index)
-      return date.toJSON()
+      return date
     })
     expect(reservationStartTimes).toIncludeAllMembers(dates)
     expect(reservations).toSatisfyAll((reservation: PrismaReservation) => reservation.name === 'Valid Reservation')
@@ -134,7 +160,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         recurrence: Monthly,
         timePeriod: CurrentYear,
@@ -147,15 +173,15 @@ describe('CreateRecurringReservation Integration', () => {
 
     await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
-    expect(prisma.$transaction).toBeCalledTimes(1)
-    expect(prisma.prismaReservation.createMany).toBeCalledTimes(1)
+    expect(prisma.$transaction).toBeCalledTimes(2)
+    expect(prisma.prismaReservation.upsert).toBeCalledTimes(8)
   })
 
   it(`should assign the same 'recurringId' to all created reservations in the DB`, async () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         recurrence: Monthly,
         timePeriod: CurrentYear,
@@ -178,7 +204,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -191,12 +217,12 @@ describe('CreateRecurringReservation Integration', () => {
 
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
-    expect(res.body.data.createRecurringReservation.count).toBe(35)
+    expect(res.body.data.createRecurringReservation.count).toBe(27)
     expect(res.body.data.createRecurringReservation.recurringId).toBeTruthy()
   })
 
   it('should persist the multi-location reservation to the DB', async () => {
-    const startTime = new Date('2020-05-04 12:00')
+    const startTime = new Date('2021-05-04 12:00')
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
@@ -213,12 +239,12 @@ describe('CreateRecurringReservation Integration', () => {
     await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
     const reservations = await prisma.prismaReservation.findMany()
-    expect(reservations.length).toBe(35)
+    expect(reservations.length).toBe(27)
     const reservationStartTimes = reservations.map(reservation => reservation.startTime)
-    const dates = [...Array(35).keys()].map((_, index) => {
+    const dates = [...Array(27).keys()].map((_, index) => {
       const date = new Date(startTime)
       date.setDate(date.getDate() + index * 7)
-      return date.toJSON()
+      return date
     })
     expect(reservationStartTimes).toIncludeAllMembers(dates)
     expect(reservations).toSatisfyAll((reservation: PrismaReservation) => reservation.name === 'Valid Reservation')
@@ -230,7 +256,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -246,7 +272,7 @@ describe('CreateRecurringReservation Integration', () => {
     expect(res.body.errors[0].extensions.code).toBe('INVALID_ACCESS_TOKEN')
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -259,7 +285,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "${name}",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -275,7 +301,7 @@ describe('CreateRecurringReservation Integration', () => {
     expect(res.body.errors[0].extensions.code).toBe('VALIDATION_ERROR')
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -285,7 +311,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "${name}",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -301,7 +327,7 @@ describe('CreateRecurringReservation Integration', () => {
     expect(res.body.errors[0].extensions.code).toBe('VALIDATION_ERROR')
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -310,7 +336,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Past Reservation",
-        startTime: "${new Date('2020-05-02 12:00')}",
+        startTime: "${new Date('2021-05-02 12:00')}",
         endTime: "${new Date('2021-05-02 14:00')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -323,10 +349,9 @@ describe('CreateRecurringReservation Integration', () => {
 
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('VALIDATION_ERROR')
-    expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
+    expect(res.body.errors[0].extensions.code).toBe('PAST_TIME')
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -335,7 +360,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Past Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 12:20')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -349,9 +374,8 @@ describe('CreateRecurringReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('INVALID_TIME_SPAN')
-    expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -360,7 +384,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Past Reservation",
-        startTime: "${new Date('2020-05-04 10:00')}",
+        startTime: "${new Date('2021-05-04 10:00')}",
         endTime: "${new Date('2021-05-04 16:20')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -374,9 +398,8 @@ describe('CreateRecurringReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('INVALID_TIME_SPAN')
-    expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -385,7 +408,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Past Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 11:20')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -399,9 +422,8 @@ describe('CreateRecurringReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('INVALID_TIME_SPAN')
-    expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -410,7 +432,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Past Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 13:20')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -426,7 +448,7 @@ describe('CreateRecurringReservation Integration', () => {
     expect(res.body.errors[0].extensions.code).toBe('VALIDATION_ERROR')
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -435,7 +457,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Past Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 13:20')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -451,7 +473,7 @@ describe('CreateRecurringReservation Integration', () => {
     expect(res.body.errors[0].extensions.code).toBe('VALIDATION_ERROR')
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -459,7 +481,7 @@ describe('CreateRecurringReservation Integration', () => {
   it(`should throw a GraphQL validation error if the 'name' argument is not specified`, async () => {
     const query = `mutation {
       createRecurringReservation (
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 13:20')}",
         recurrence: Weekly,
         timePeriod: HalfYear,
@@ -475,7 +497,7 @@ describe('CreateRecurringReservation Integration', () => {
     expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -499,7 +521,7 @@ describe('CreateRecurringReservation Integration', () => {
     expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -523,7 +545,7 @@ describe('CreateRecurringReservation Integration', () => {
     expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -547,7 +569,7 @@ describe('CreateRecurringReservation Integration', () => {
     expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).not.toBeCalled()
     expect(prisma.$transaction).not.toBeCalled()
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -556,7 +578,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         recurrence: Monthly,
         locations: { tableTennis: true }
@@ -568,7 +590,7 @@ describe('CreateRecurringReservation Integration', () => {
 
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
-    expect(res.body.data.isRecurringTimeAvailable.availableTimes.length).toBe(6)
+    expect(res.body.data.createRecurringReservation.count).toBe(6)
     expect(res.body.data.createRecurringReservation.recurringId).toBeTruthy()
   })
 
@@ -576,7 +598,7 @@ describe('CreateRecurringReservation Integration', () => {
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         timePeriod: CurrentYear,
         locations: { tableTennis: true }
@@ -588,18 +610,21 @@ describe('CreateRecurringReservation Integration', () => {
 
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
-    expect(res.body.data.isRecurringTimeAvailable.availableTimes.length).toBe(35)
+    expect(res.body.data.createRecurringReservation.count).toBe(35)
     expect(res.body.data.createRecurringReservation.recurringId).toBeTruthy()
   })
 
   it('should throw a TimeNotAvailableError if at least one of the dates is not available', async () => {
     mocked(IsRecurringTimeAvailableUseCase.prototype.execute).mockResolvedValueOnce(
-      Result.ok({ availableTimes: [new Date()], unavailableTimes: [new Date('2021-05-12 12:00')] })
+      Result.ok({
+        availableTimes: [new Date() as any],
+        unavailableTimes: [ReservationTime.create(new Date('2021-05-04 13:00'), new Date('2021-05-04 15:00')).value],
+      })
     )
     const query = `mutation {
       createRecurringReservation (
         name: "Valid Reservation",
-        startTime: "${new Date('2020-05-04 12:00')}",
+        startTime: "${new Date('2021-05-04 12:00')}",
         endTime: "${new Date('2021-05-04 14:00')}",
         timePeriod: CurrentYear,
         recurrence: Weekly,
@@ -614,7 +639,7 @@ describe('CreateRecurringReservation Integration', () => {
 
     expect(res.body.errors[0].extensions.code).toBe('TIME_NOT_AVAILABLE')
     expect(IsRecurringTimeAvailableUseCase.prototype.execute).toBeCalledTimes(1)
-    expect(prisma.prismaReservation.createMany).not.toBeCalled()
+    expect(prisma.prismaReservation.upsert).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
