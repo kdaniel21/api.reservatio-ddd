@@ -1,3 +1,4 @@
+import CustomerRole from '../domain/CustomerRole'
 import ReservationDto from './ReservationDto'
 
 export default interface CustomerDto {
@@ -5,4 +6,5 @@ export default interface CustomerDto {
   userId: string
   name: string
   reservations?: ReservationDto[]
+  role: CustomerRole
 }

@@ -43,7 +43,7 @@ model PrismaReservation {
   customerId  String         @map("customer_id")
   startTime   DateTime       @map("start_time")
   endTime     DateTime       @map("end_time")
-  isActive    Boolean        @default(false) @map("is_active")
+  isActive    Boolean        @default(true) @map("is_active")
   tableTennis Boolean        @default(false) @map("table_tennis")
   badminton   Boolean        @default(false)
   createdAt   DateTime       @default(now()) @map("created_at")
@@ -51,8 +51,8 @@ model PrismaReservation {
 }
 
 enum CustomerRole {
-  USER
   ADMIN
+  CUSTOMER
 }
 
 model PrismaCustomer {
@@ -61,6 +61,7 @@ model PrismaCustomer {
   user         PrismaUser          @relation(fields: [userId], references: [id])
   userId       String              @unique @map("user_id")
   reservations PrismaReservation[]
+  role         CustomerRole        @default(CUSTOMER)
 
   @@index([userId])
 }

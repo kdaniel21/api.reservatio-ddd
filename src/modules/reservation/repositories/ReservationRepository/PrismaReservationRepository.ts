@@ -2,15 +2,35 @@ import Reservation from '@modules/reservation/domain/Reservation'
 import ReservationLocation from '@modules/reservation/domain/ReservationLocation'
 import ReservationTime from '@modules/reservation/domain/ReservationTime'
 import ReservationMapper from '@modules/reservation/mappers/ReservationMapper'
-import { prisma, PrismaClient, PrismaReservation } from '@prisma/client'
+import { Prisma, prisma, PrismaClient, PrismaReservation } from '@prisma/client'
 import { AppError } from '@shared/core/AppError'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
+import UniqueID from '@shared/domain/UniqueID'
 import logger from '@shared/infra/Logger/logger'
 import ReservationRepository from './ReservationRepository'
 
 export default class PrismaReservationRepository implements ReservationRepository<PrismaReservation> {
   constructor(private prisma: PrismaClient) {}
+
+  async findById(reservationId: UniqueID): PromiseErrorOr<Reservation> {
+    return this.findOne({ id: reservationId.toString() })
+  }
+
+  async findOne(
+    where: Partial<PrismaReservation>,
+    include: Prisma.PrismaReservationInclude = { customer: true }
+  ): PromiseErrorOr<Reservation> {
+    try {
+      const reservationObject = await this.prisma.prismaReservation.findFirst({ where, include,  })
+      if (!reservationObject) return Result.fail()
+
+      return Result.ok(ReservationMapper.toDomain(reservationObject))
+    } catch (err) {
+      logger.error(err)
+      return Result.fail(err)
+    }
+  }
 
   async isTimeAvailable(time: ReservationTime, location: ReservationLocation): PromiseErrorOr<boolean> {
     try {
@@ -25,6 +45,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
       const isAvailable = count === 0
       return Result.ok(isAvailable)
     } catch (err) {
+      logger.error(err)
       return Result.fail(err)
     }
   }
@@ -49,6 +70,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
 
       return Result.ok(result)
     } catch (err) {
+      logger.error(err)
       return Result.fail(err)
     }
   }

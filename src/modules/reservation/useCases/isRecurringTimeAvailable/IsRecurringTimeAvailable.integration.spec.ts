@@ -11,6 +11,7 @@ import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from '@modules/users/domain/AccessToken'
 import config from '@config'
+import { advanceTo } from 'jest-date-mock'
 
 describe('IsRecurringTimeAvailable', () => {
   let initializedServer: InitializedApolloServer
@@ -25,8 +26,14 @@ describe('IsRecurringTimeAvailable', () => {
     request = supertest(initializedServer.serverInfo.url)
   })
 
+  afterAll(async () => {
+    await initializedServer.apolloServer.stop()
+  })
+
   beforeEach(async () => {
     await clearAllData()
+
+    advanceTo(new Date('2021-05-03 10:00:00'))
 
     user = await prisma.prismaUser.create({
       data: {
@@ -49,11 +56,6 @@ describe('IsRecurringTimeAvailable', () => {
 
     jest.clearAllMocks()
     jest.spyOn(prisma, '$transaction')
-    Date.now = jest.fn(() => new Date('2021-05-03 10:00:00').getTime())
-  })
-
-  afterAll(async () => {
-    await initializedServer.apolloServer.stop()
   })
 
   it(`should calculate all dates with a weekly recurrence for the current year and return as available if 
@@ -550,7 +552,7 @@ describe('IsRecurringTimeAvailable', () => {
       }
     }`
 
-    const res = await request.post('/').send({ query }).expect(200)
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('PAST_TIME')
     expect(prisma.$transaction).toBeCalledTimes(0)

@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "CustomerRole" AS ENUM ('USER', 'ADMIN');
+CREATE TYPE "CustomerRole" AS ENUM ('ADMIN', 'CUSTOMER');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -33,7 +33,7 @@ CREATE TABLE "PrismaReservation" (
     "customer_id" TEXT NOT NULL,
     "start_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3) NOT NULL,
-    "is_active" BOOLEAN NOT NULL DEFAULT false,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
     "table_tennis" BOOLEAN NOT NULL DEFAULT false,
     "badminton" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -47,6 +47,7 @@ CREATE TABLE "PrismaCustomer" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
+    "role" "CustomerRole" NOT NULL DEFAULT E'CUSTOMER',
 
     PRIMARY KEY ("id")
 );

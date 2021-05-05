@@ -9,6 +9,11 @@ import Reservation from '../domain/Reservation'
 import CustomerDto from '../DTOs/CustomerDto'
 import ReservationMapper from './ReservationMapper'
 
+function getEnumKeyByEnumValue<T extends { [index: string]: string }>(myEnum: T, enumValue: string): keyof T | null {
+  let keys = Object.keys(myEnum).filter(x => myEnum[x] == enumValue)
+  return keys.length > 0 ? keys[0] : null
+}
+
 export default class CustomerMapper implements BaseMapper<Customer> {
   static toDto(customer: Customer): CustomerDto {
     return {
@@ -16,6 +21,7 @@ export default class CustomerMapper implements BaseMapper<Customer> {
       userId: customer.userId.toString(),
       name: customer.name.value,
       reservations: customer.reservations.map(reservation => ReservationMapper.toDto(reservation)),
+      role: customer.role,
     }
   }
 
@@ -53,6 +59,7 @@ export default class CustomerMapper implements BaseMapper<Customer> {
       userId: customer.userId.toString(),
       name: customer.name.value,
       reservations: customer.reservations.map(reservation => ReservationMapper.toObject(reservation)),
+      role: customer.role,
     }
   }
 }

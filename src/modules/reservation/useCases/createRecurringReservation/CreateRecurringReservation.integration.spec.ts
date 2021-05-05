@@ -15,6 +15,7 @@ import UniqueID from '@shared/domain/UniqueID'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from '@modules/users/domain/AccessToken'
 import config from '@config'
+import { advanceTo } from 'jest-date-mock'
 
 describe('CreateRecurringReservation Integration', () => {
   let initializedServer: InitializedApolloServer
@@ -35,6 +36,8 @@ describe('CreateRecurringReservation Integration', () => {
 
   beforeEach(async () => {
     await clearAllData()
+
+    advanceTo('2021-05-03 10:00:00')
 
     user = await prisma.prismaUser.create({
       data: {
@@ -59,7 +62,6 @@ describe('CreateRecurringReservation Integration', () => {
     jest.spyOn(prisma, '$transaction')
     jest.spyOn(prisma.prismaReservation, 'upsert')
     jest.spyOn(IsRecurringTimeAvailableUseCase.prototype, 'execute')
-    Date.now = jest.fn(() => new Date('2021-05-03 10:00:00').getTime())
   })
 
   it(`should create a recurring reservation with given properties`, async () => {

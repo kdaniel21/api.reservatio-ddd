@@ -29,21 +29,21 @@ export default class ReservationMapper implements BaseMapper<Reservation> {
   static toDomain(raw: any) {
     const recurringId = raw.recurringId ? new UniqueID(raw.recurringId) : undefined
     const nameOrError = ReservationName.create(raw.name)
-    const customerOrError = Customer.create(raw.customer)
     const timeOrError = ReservationTime.create(raw.startTime, raw.endTime)
     const { tableTennis, badminton } = raw
     const locationsOrError = ReservationLocation.create({ tableTennis, badminton })
-
-    const combinedResult = Result.combine([nameOrError, timeOrError, locationsOrError, customerOrError])
+    
+    const combinedResult = Result.combine([nameOrError, timeOrError, locationsOrError])
     if (combinedResult.isFailure()) logger.error(`Error while mapping to domain: ${combinedResult.error.message}`)
-
+    
     const id = raw.id ? new UniqueID(raw.id) : undefined
+    const customer = CustomerMapper.toDomain(raw.customer)
 
     const reservationOrError = Reservation.create(
       {
         recurringId,
         name: nameOrError.value,
-        customer: customerOrError.value,
+        customer,
         time: timeOrError.value,
         isActive: raw.isActive || true,
         locations: locationsOrError.value,

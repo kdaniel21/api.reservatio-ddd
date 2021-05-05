@@ -32,6 +32,10 @@ export default class Customer extends AggregateRoot<CustomerProps> {
     return this.props.name
   }
 
+  get role(): CustomerRole {
+    return this.props.role
+  }
+
   constructor(props: CustomerProps, id?: UniqueID) {
     super(props, id)
   }
@@ -45,6 +49,7 @@ export default class Customer extends AggregateRoot<CustomerProps> {
 
     const customer = new Customer(
       {
+        role: CustomerRole.Customer,
         ...props,
         reservations: [],
       },

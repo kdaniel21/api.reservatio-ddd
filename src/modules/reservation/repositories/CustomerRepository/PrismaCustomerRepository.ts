@@ -35,11 +35,11 @@ export default class PrismaCustomerRepository implements CustomerRepository<Pris
 
   async save(customer: Customer): PromiseErrorOr {
     try {
-      const { reservations, ...userObject } = CustomerMapper.toObject(customer)
+      const { reservations, userId, ...customerObject } = CustomerMapper.toObject(customer)
 
       await this.prisma.prismaCustomer.upsert({
-        create: userObject,
-        update: userObject,
+        create: { ...customerObject, role: customerObject.role as any, user: { connect: { id: userId } } },
+        update: { ...customerObject, role: customerObject.role as any, user: { connect: { id: userId } } },
         where: { id: customer.customerId.toString() },
       })
       return Result.ok()
