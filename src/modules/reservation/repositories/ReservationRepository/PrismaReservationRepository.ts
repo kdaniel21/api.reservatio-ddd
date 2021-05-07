@@ -22,13 +22,29 @@ export default class PrismaReservationRepository implements ReservationRepositor
     include: Prisma.PrismaReservationInclude = { customer: true }
   ): PromiseErrorOr<Reservation> {
     try {
-      const reservationObject = await this.prisma.prismaReservation.findFirst({ where, include,  })
+      const reservationObject = await this.prisma.prismaReservation.findFirst({ where, include })
       if (!reservationObject) return Result.fail()
 
       return Result.ok(ReservationMapper.toDomain(reservationObject))
     } catch (err) {
       logger.error(err)
-      return Result.fail(err)
+      return Result.fail(AppError.UnexpectedError)
+    }
+  }
+
+  async findMany(
+    where: Partial<PrismaReservation>,
+    include: Prisma.PrismaReservationInclude = { customer: true }
+  ): PromiseErrorOr<Reservation[]> {
+    try {
+      const reservationObjects = await this.prisma.prismaReservation.findMany({ where, include })
+      if (!reservationObjects.length) return Result.fail()
+
+      const reservations = reservationObjects.map(reservationObject => ReservationMapper.toDomain(reservationObject))
+      return Result.ok(reservations)
+    } catch (err) {
+      logger.error(err)
+      return Result.fail(AppError.UnexpectedError)
     }
   }
 
@@ -46,7 +62,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
       return Result.ok(isAvailable)
     } catch (err) {
       logger.error(err)
-      return Result.fail(err)
+      return Result.fail(AppError.UnexpectedError)
     }
   }
 
@@ -71,7 +87,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
       return Result.ok(result)
     } catch (err) {
       logger.error(err)
-      return Result.fail(err)
+      return Result.fail(AppError.UnexpectedError)
     }
   }
 

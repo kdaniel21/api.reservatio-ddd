@@ -1,8 +1,21 @@
-import { lastDayOfYear, addMonths, eachWeekOfInterval, set, setDate, eachMonthOfInterval } from 'date-fns'
+import {
+  lastDayOfYear,
+  addMonths,
+  eachWeekOfInterval,
+  set,
+  setDate,
+  eachMonthOfInterval,
+  differenceInCalendarDays,
+  addDays,
+} from 'date-fns'
 
 export default class DateUtils {
   static lastDayOfCurrentYear(): Date {
     return lastDayOfYear(new Date())
+  }
+
+  static addDays(date: Date, numOfDays: number): Date {
+    return addDays(date, numOfDays)
   }
 
   static addMonths(date: Date, numOfMonths: number): Date {
@@ -29,5 +42,13 @@ export default class DateUtils {
         })
       })
       .filter(date => date.getTime() <= endDate.getTime())
+  }
+
+  static removeTime(date: Date): Date {
+    return new Date(date.toDateString())
+  }
+
+  static differenceInCalendarDays(startDate: Date, endDate: Date): number {
+    return differenceInCalendarDays(endDate, startDate)
   }
 }
