@@ -28,7 +28,7 @@ export class BoostedApolloKoaServer extends ApolloServer {
 
     const koaServer = new Koa().use(koaCookie())
 
-    super.applyMiddleware({ app: koaServer, path: '/', cors: { origin: '*' } })
+    super.applyMiddleware({ app: koaServer, path: '/', cors: { origin: 'http://localhost:4200', credentials: true } })
 
     this.httpServer = stoppable(http.createServer(koaServer.callback()), 10_000)
     const serverInfo = await this.startServer()
