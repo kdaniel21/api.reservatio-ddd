@@ -27,6 +27,9 @@ import { sendEmailConfirmationResolver } from './useCases/sendEmailConfirmation'
 import ConfirmEmailResolver from './useCases/confirmEmail/ConfirmEmailResolver'
 import { confirmEmailResolver } from './useCases/confirmEmail'
 
+import UserResolver from './infra/http/GraphQL/UserResolver'
+import { userResolver } from './infra/http/GraphQL'
+
 import './subscribers/index'
 
 Container.set(ChangePasswordUsingTokenResolver, changePasswordUsingTokenResolver)
@@ -38,3 +41,4 @@ Container.set(RegisterResolver, registerResolver)
 Container.set(ResetPasswordResolver, resetPasswordResolver)
 Container.set(SendEmailConfirmationResolver, sendEmailConfirmationResolver)
 Container.set(ConfirmEmailResolver, confirmEmailResolver)
+Container.set(UserResolver, userResolver)

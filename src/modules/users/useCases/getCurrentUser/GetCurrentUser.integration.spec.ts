@@ -60,6 +60,30 @@ describe('GetCurrentUser Integration', () => {
     expect(res.body.data.currentUser.isEmailConfirmed).toBe(userRecord.isEmailConfirmed)
   })
 
+  it('should return the customer profile of the user', async () => {
+    const customer = await prisma.prismaCustomer.create({
+      data: { id: new UniqueID().toString(), name: 'Test Name', userId: userRecord.id },
+    })
+    const query = `query {
+      currentUser {
+        id
+        email
+        isEmailConfirmed
+        customer {
+          id
+          name
+        }
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
+
+    expect(res.body.data.currentUser.id).toBe(userRecord.id)
+    expect(res.body.data.currentUser.customer).toBeTruthy()
+    expect(res.body.data.currentUser.customer.id).toBe(customer.id)
+    expect(res.body.data.currentUser.customer.name).toBe(customer.name)
+  })
+
   it('should throw an InvalidOrMissingAccessTokenError error if no access token is provided', async () => {
     const query = `query {
       currentUser {
