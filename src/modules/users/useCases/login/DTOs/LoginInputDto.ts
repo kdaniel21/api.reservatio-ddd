@@ -1,7 +1,7 @@
 import { IsEmail } from 'class-validator'
-import { Field, InputType, ObjectType } from 'type-graphql'
+import { ArgsType, Field } from 'type-graphql'
 
-@InputType({ description: 'The login mutation.' })
+@ArgsType()
 export default class LoginInputDto {
   @IsEmail()
   @Field()

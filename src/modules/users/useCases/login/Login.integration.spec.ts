@@ -44,10 +44,10 @@ describe('Login Integration', () => {
 
   it('should login with the correct credentials and return the user', async () => {
     const query = `mutation {
-      login(params: {
+      login(
         email: "foo@bar.com",
         password: "password",
-      }) {
+      ) {
         user {
           id
           email
@@ -63,10 +63,10 @@ describe('Login Integration', () => {
 
   it('should login with the correct credentials and return a valid access token', async () => {
     const query = `mutation {
-      login(params: {
+      login(
         email: "foo@bar.com",
         password: "password",
-      }) {
+      ) {
         accessToken
       }
     }`
@@ -81,10 +81,10 @@ describe('Login Integration', () => {
 
   it('should login with the correct credentials, generate and return a valid refresh token', async () => {
     const query = `mutation {
-      login(params: {
+      login(
         email: "foo@bar.com",
         password: "password",
-      }) {
+      ) {
         refreshToken
       }
     }`
@@ -104,10 +104,10 @@ describe('Login Integration', () => {
 
   it('should login with the correct credentials and set the refresh token as an http-only cookie', async () => {
     const query = `mutation {
-      login(params: {
+      login(
         email: "foo@bar.com",
         password: "password",
-      }) {
+      ) {
         refreshToken
       }
     }`
@@ -132,10 +132,10 @@ describe('Login Integration', () => {
 
   it('should throw an InvalidCredentials error if the email address is invalid', async () => {
     const query = `mutation {
-      login(params: {
+      login(
         email: "foo1@bar.com",
         password: "password",
-      }) {
+      ) {
         refreshToken
       }
     }`
@@ -149,10 +149,10 @@ describe('Login Integration', () => {
 
   it('should throw an InvalidCredentials error if the password is invalid', async () => {
     const query = `mutation {
-      login(params: {
+      login(
         email: "foo@bar.com",
         password: "password12",
-      }) {
+      ) {
         refreshToken
       }
     }`
@@ -167,10 +167,10 @@ describe('Login Integration', () => {
   it('should throw an EmailAddressNotConfirmedError if the email address has not been confirmed', async () => {
     await prisma.prismaUser.update({ where: { id: userRecord.id }, data: { isEmailConfirmed: false } })
     const query = `mutation {
-      login(params: {
+      login(
         email: "foo@bar.com",
         password: "password",
-      }) {
+      ) {
         refreshToken
       }
     }`

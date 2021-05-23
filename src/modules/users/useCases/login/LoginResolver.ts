@@ -1,6 +1,6 @@
 import RefreshTokenMapper from '@modules/users/mappers/RefreshTokenMapper'
 import UserMapper from '@modules/users/mappers/UserMapper'
-import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
+import { Args, Ctx, Mutation, Resolver } from 'type-graphql'
 import LoginDto from './DTOs/LoginUseCaseDto'
 import LoginInputDto from './DTOs/LoginInputDto'
 import LoginResponseDto from './DTOs/LoginResponseDto'
@@ -13,7 +13,7 @@ export default class LoginResolver {
   constructor(private useCase: LoginUseCase) {}
 
   @Mutation(() => LoginResponseDto)
-  async login(@Arg('params') params: LoginInputDto, @Ctx() { cookies }: ApolloContext): Promise<LoginResponseDto> {
+  async login(@Args() params: LoginInputDto, @Ctx() { cookies }: ApolloContext): Promise<LoginResponseDto> {
     const loginDto: LoginDto = params
 
     const result = await this.useCase.execute(loginDto)
