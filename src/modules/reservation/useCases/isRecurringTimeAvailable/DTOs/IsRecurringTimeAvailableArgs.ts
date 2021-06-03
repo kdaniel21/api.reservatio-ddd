@@ -10,11 +10,11 @@ export default class IsRecurringTimeAvailableArgs implements IsRecurringTimeAvai
   @Field()
   endTime: Date
 
-  @Field(() => [Date], { nullable: true })
-  includedDates?: Date[]
+  @Field(() => [Date], { defaultValue: [] })
+  includedDates: Date[]
 
-  @Field(() => [Date], { nullable: true })
-  excludedDates?: Date[]
+  @Field(() => [Date], { defaultValue: [] })
+  excludedDates: Date[]
 
   @Field(() => GraphQLReservationLocationInput)
   locations: GraphQLReservationLocationInput
