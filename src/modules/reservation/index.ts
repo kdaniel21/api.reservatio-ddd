@@ -22,6 +22,9 @@ import { getReservationResolver } from './useCases/getReservation'
 import GetReservationsResolver from './useCases/getReservations/GetReservationsResolver'
 import { getReservationsResolver } from './useCases/getReservations'
 
+import GetRecurringReservationsResolver from './useCases/getRecurringReservations/GetRecurringReservationsResolver'
+import { getRecurringReservationsResolver } from './useCases/getRecurringReservations'
+
 Container.set(AreTimesAvailableResolver, areTimesAvailableResolver)
 Container.set(CreateReservationResolver, createReservationResolver)
 Container.set(CustomerResolver, customerResolver)
@@ -29,3 +32,4 @@ Container.set(IsRecurringTimeAvailableResolver, isRecurringTimeAvailableResolver
 Container.set(CreateRecurringReservationResolver, createRecurringReservationResolver)
 Container.set(GetReservationResolver, getReservationResolver)
 Container.set(GetReservationsResolver, getReservationsResolver)
+Container.set(GetRecurringReservationsResolver, getRecurringReservationsResolver)
