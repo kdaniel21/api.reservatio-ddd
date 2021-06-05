@@ -106,7 +106,6 @@ describe('GetRecurringReservations', () => {
     await prisma.prismaReservation.createMany({ data: reservations as Prisma.PrismaReservationCreateManyInput[] })
 
     jest.clearAllMocks()
-    jest.spyOn(prisma, '$transaction')
   })
 
   it(`should get all reservations that belong to the same 'recurringId'`, async () => {
