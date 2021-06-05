@@ -1,10 +1,10 @@
 import { customerRepository, reservationRepository } from '@modules/reservation/repositories'
-import { isTimeAvailableUseCase } from '../isTimeAvailable'
+import { areTimesAvailableUseCase } from '../areTimesAvailable'
 import CreateReservationResolver from './CreateReservationResolver'
 import CreateReservationUseCase from './CreateReservationUseCase'
 
 export const createReservationUseCase = new CreateReservationUseCase(
-  isTimeAvailableUseCase,
+  areTimesAvailableUseCase,
   reservationRepository,
   customerRepository
 )

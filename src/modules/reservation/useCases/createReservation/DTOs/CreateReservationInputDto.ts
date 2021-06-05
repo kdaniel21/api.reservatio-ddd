@@ -1,8 +1,17 @@
+import { GraphQLReservationLocationInput } from '@modules/reservation/infra/http/GraphQL/GraphQLReservationLocation'
 import { ArgsType, Field } from 'type-graphql'
-import IsTimeAvailableInputDto from '../../isTimeAvailable/DTOs/IsTimeAvailableInputDto'
 
 @ArgsType()
-export default class CreateReservationInputDto extends IsTimeAvailableInputDto {
+export default class CreateReservationInputDto {
   @Field()
   name: string
+
+  @Field()
+  startTime: Date
+
+  @Field()
+  endTime: Date
+
+  @Field(() => GraphQLReservationLocationInput)
+  locations: GraphQLReservationLocationInput
 }

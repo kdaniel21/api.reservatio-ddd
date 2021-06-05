@@ -8,7 +8,7 @@ import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import UseCase from '@shared/core/UseCase'
 import UniqueID from '@shared/domain/UniqueID'
-import IsTimeAvailableUseCase from '../isTimeAvailable/IsTimeAvailableUseCase'
+import AreTimesAvailableUseCase from '../areTimesAvailable/AreTimesAvailableUseCase'
 import { CreateReservationErrors } from './CreateReservationErrors'
 import CreateReservationUseCaseDto from './DTOs/CreateReservationUseCaseDto'
 import CreateReservationUseCaseResultDto from './DTOs/CreateReservationUseCaseResultDto'
@@ -18,7 +18,7 @@ export default class CreateReservationUseCase extends UseCase<
   CreateReservationUseCaseResultDto
 > {
   constructor(
-    private isTimeAvailableUseCase: IsTimeAvailableUseCase,
+    private areTimesAvailableUseCase: AreTimesAvailableUseCase,
     private reservationRepo: ReservationRepository,
     private customerRepo: CustomerRepository
   ) {
@@ -34,10 +34,10 @@ export default class CreateReservationUseCase extends UseCase<
     const combinedResult = Result.combine([nameOrError, timeOrError, locationOrError])
     if (combinedResult.isFailure()) return Result.fail(combinedResult.error)
 
-    const isTimeAvailableOrError = await this.isTimeAvailableUseCase.execute(request)
+    const isTimeAvailableOrError = await this.areTimesAvailableUseCase.execute([request])
     if (isTimeAvailableOrError.isFailure()) return Result.fail(isTimeAvailableOrError.error)
 
-    const { isTimeAvailable } = isTimeAvailableOrError.value
+    const { isAvailable: isTimeAvailable } = isTimeAvailableOrError.value[0]
     if (!isTimeAvailable) return Result.fail(CreateReservationErrors.TimeNotAvailableError)
 
     const customerOrError = await this.customerRepo.findByUserId(new UniqueID(request.user.userId))

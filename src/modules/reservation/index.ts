@@ -1,8 +1,8 @@
 import Container from 'typedi'
 import './subscribers'
 
-import IsTimeAvailableResolver from './useCases/isTimeAvailable/IsTimeAvailableResolver'
-import { isTimeAvailableResolver } from './useCases/isTimeAvailable'
+import AreTimesAvailableResolver from './useCases/areTimesAvailable/AreTimesAvailableResolver'
+import { areTimesAvailableResolver } from './useCases/areTimesAvailable'
 
 import CreateReservationResolver from './useCases/createReservation/CreateReservationResolver'
 import { createReservationResolver } from './useCases/createReservation'
@@ -22,7 +22,7 @@ import { getReservationResolver } from './useCases/getReservation'
 import GetReservationsResolver from './useCases/getReservations/GetReservationsResolver'
 import { getReservationsResolver } from './useCases/getReservations'
 
-Container.set(IsTimeAvailableResolver, isTimeAvailableResolver)
+Container.set(AreTimesAvailableResolver, areTimesAvailableResolver)
 Container.set(CreateReservationResolver, createReservationResolver)
 Container.set(CustomerResolver, customerResolver)
 Container.set(IsRecurringTimeAvailableResolver, isRecurringTimeAvailableResolver)

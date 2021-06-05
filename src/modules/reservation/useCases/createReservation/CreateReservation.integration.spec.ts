@@ -10,7 +10,7 @@ import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from '@modules/users/domain/AccessToken'
 import config from '@config'
-import IsTimeAvailableUseCase from '../isTimeAvailable/IsTimeAvailableUseCase'
+import AreTimesAvailableUseCase from '../areTimesAvailable/AreTimesAvailableUseCase'
 import { mocked } from 'ts-jest/utils'
 import { Result } from '@shared/core/Result'
 import ReservationName from '@modules/reservation/domain/ReservationName'
@@ -63,8 +63,11 @@ describe('CreateReservation Integration', () => {
 
     jest.clearAllMocks()
     jest.spyOn(prisma.prismaReservation, 'count')
-    jest.spyOn(IsTimeAvailableUseCase.prototype, 'execute')
-    mocked(IsTimeAvailableUseCase.prototype.execute).mockResolvedValue(Result.ok({ isTimeAvailable: true }))
+    jest.spyOn(AreTimesAvailableUseCase.prototype, 'execute')
+    // mocked(AreTimesAvailableUseCase.prototype.execute).mockImplementation(Result.ok({ times: [ { isAvailable: true}]}))
+    mocked(AreTimesAvailableUseCase.prototype.execute).mockImplementation(async foo =>
+      Result.ok(foo.map(() => ({ isAvailable: true } as any)))
+    )
   })
 
   it('should create a reservation for a single location if the IsTimeAvailable use case returns true', async () => {
@@ -221,7 +224,9 @@ describe('CreateReservation Integration', () => {
   })
 
   it(`should throw a TimeNotAvailableError if 'IsTimeAvailable' returns false`, async () => {
-    mocked(IsTimeAvailableUseCase.prototype.execute).mockResolvedValueOnce(Result.ok({ isTimeAvailable: false }))
+    mocked(AreTimesAvailableUseCase.prototype.execute).mockImplementation(async foo =>
+      Result.ok(foo.map(() => ({ isAvailable: false } as any)))
+    )
     const query = `mutation {
       createReservation(
         name: "Invalid Reservation",
@@ -274,7 +279,7 @@ describe('CreateReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('VALIDATION_ERROR')
-    expect(IsTimeAvailableUseCase.prototype.execute).not.toBeCalled()
+    expect(AreTimesAvailableUseCase.prototype.execute).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -298,7 +303,7 @@ describe('CreateReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('VALIDATION_ERROR')
-    expect(IsTimeAvailableUseCase.prototype.execute).not.toBeCalled()
+    expect(AreTimesAvailableUseCase.prototype.execute).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -412,7 +417,7 @@ describe('CreateReservation Integration', () => {
     const res = await request.post('/').send({ query }).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('INVALID_ACCESS_TOKEN')
-    expect(IsTimeAvailableUseCase.prototype.execute).not.toBeCalled()
+    expect(AreTimesAvailableUseCase.prototype.execute).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -439,7 +444,7 @@ describe('CreateReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', invalidAccessToken).expect(200)
 
     expect(res.body.errors[0].extensions.code).toBe('INVALID_ACCESS_TOKEN')
-    expect(IsTimeAvailableUseCase.prototype.execute).not.toBeCalled()
+    expect(AreTimesAvailableUseCase.prototype.execute).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -503,7 +508,7 @@ describe('CreateReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(400)
 
     expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
-    expect(IsTimeAvailableUseCase.prototype.execute).not.toBeCalled()
+    expect(AreTimesAvailableUseCase.prototype.execute).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -525,7 +530,7 @@ describe('CreateReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(400)
 
     expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
-    expect(IsTimeAvailableUseCase.prototype.execute).not.toBeCalled()
+    expect(AreTimesAvailableUseCase.prototype.execute).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -547,7 +552,7 @@ describe('CreateReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(400)
 
     expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
-    expect(IsTimeAvailableUseCase.prototype.execute).not.toBeCalled()
+    expect(AreTimesAvailableUseCase.prototype.execute).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -569,7 +574,7 @@ describe('CreateReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(400)
 
     expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
-    expect(IsTimeAvailableUseCase.prototype.execute).not.toBeCalled()
+    expect(AreTimesAvailableUseCase.prototype.execute).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })
@@ -592,7 +597,7 @@ describe('CreateReservation Integration', () => {
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(400)
 
     expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
-    expect(IsTimeAvailableUseCase.prototype.execute).not.toBeCalled()
+    expect(AreTimesAvailableUseCase.prototype.execute).not.toBeCalled()
     const numOfReservations = await prisma.prismaReservation.count()
     expect(numOfReservations).toBe(0)
   })

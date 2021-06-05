@@ -1,7 +1,10 @@
 import ReservationLocationDto from '@modules/reservation/DTOs/ReservationLocationDto'
 
-export default interface IsTimeAvailableUseCaseDto {
+interface TimeProposalDto {
   startTime: Date
   endTime: Date
   locations: ReservationLocationDto
 }
+
+type AreTimesAvailableUseCaseDto = TimeProposalDto[]
+export default AreTimesAvailableUseCaseDto

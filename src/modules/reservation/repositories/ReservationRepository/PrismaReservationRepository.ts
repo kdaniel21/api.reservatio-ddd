@@ -1,8 +1,9 @@
 import Reservation from '@modules/reservation/domain/Reservation'
 import ReservationLocation from '@modules/reservation/domain/ReservationLocation'
 import ReservationTime from '@modules/reservation/domain/ReservationTime'
+import ReservationTimeProposalDto from '@modules/reservation/DTOs/ReservationTimeProposalDto'
 import ReservationMapper from '@modules/reservation/mappers/ReservationMapper'
-import { Prisma, prisma, PrismaClient, PrismaReservation } from '@prisma/client'
+import { Prisma, PrismaClient, PrismaReservation } from '@prisma/client'
 import { AppError } from '@shared/core/AppError'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
@@ -67,22 +68,21 @@ export default class PrismaReservationRepository implements ReservationRepositor
   }
 
   async isTimeAvailableBulk(
-    times: ReservationTime[],
-    location: ReservationLocation
-  ): PromiseErrorOr<Map<ReservationTime, boolean>> {
+    proposals: ReservationTimeProposalDto[]
+  ): PromiseErrorOr<(ReservationTimeProposalDto & { isAvailable: boolean })[]> {
     try {
-      const queries = times.map(time =>
+      const queries = proposals.map(proposal =>
         this.prisma.prismaReservation.count({
           where: {
-            startTime: { lt: time.endTime },
-            endTime: { gt: time.startTime },
-            OR: [{ tableTennis: location.tableTennis }, { badminton: location.badminton }],
+            startTime: { lt: proposal.time.endTime },
+            endTime: { gt: proposal.time.startTime },
+            OR: [{ tableTennis: proposal.location.tableTennis }, { badminton: proposal.location.badminton }],
           },
         })
       )
 
       const queryResult = await this.prisma.$transaction(queries)
-      const result = new Map(times.map((time, index) => [time, queryResult[index] === 0]))
+      const result = proposals.map((proposal, index) => ({ ...proposal, isAvailable: queryResult[index] === 0 }))
 
       return Result.ok(result)
     } catch (err) {

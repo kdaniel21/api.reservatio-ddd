@@ -1,8 +1,10 @@
 import { DomainError } from '@shared/core/DomainError'
 
-export namespace IsTimeAvailableErrors {
+namespace AreTimesAvailableErrors {
   export class PastTimeError implements DomainError {
     readonly message = 'Time cannot be in the past!'
     readonly code = 'PAST_TIME'
   }
 }
+
+export default AreTimesAvailableErrors

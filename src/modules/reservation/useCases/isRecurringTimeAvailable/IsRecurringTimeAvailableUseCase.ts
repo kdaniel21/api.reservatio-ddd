@@ -5,7 +5,7 @@ import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import UseCase from '@shared/core/UseCase'
 import DateUtils from '@shared/utils/DateUtils'
-import { IsTimeAvailableErrors } from '../isTimeAvailable/IsTimeAvailableErrors'
+import AreTimesAvailableErrors from '../areTimesAvailable/AreTimesAvailableErrors'
 import IsRecurringTimeAvailableResultDto from './DTOs/IsRecurringTimeAvailableResultDto'
 import { IsRecurringTimeAvailableDto, Recurrence, TimePeriod } from './DTOs/IsRecurringTimeAvailableUseCaseDto'
 
@@ -19,7 +19,7 @@ export default class IsRecurringTimeAvailableUseCase extends UseCase<
 
   async executeImpl(request: IsRecurringTimeAvailableDto): PromiseErrorOr<IsRecurringTimeAvailableResultDto> {
     const doesReservationStartInPast = request.startTime.getTime() < Date.now()
-    if (doesReservationStartInPast) return Result.fail(IsTimeAvailableErrors.PastTimeError)
+    if (doesReservationStartInPast) return Result.fail(AreTimesAvailableErrors.PastTimeError)
 
     const { recurrence, timePeriod, includedDates = [], locations } = request
     const excludedDates = request.excludedDates?.map(date => date.getTime()) || []
@@ -43,14 +43,16 @@ export default class IsRecurringTimeAvailableUseCase extends UseCase<
 
     const reservationTimes = reservationTimeResults.map(reservationTimeResult => reservationTimeResult.value)
     const location = locationOrError.value
-    const timeAvailabilityMapOrError = await this.reservationRepo.isTimeAvailableBulk(reservationTimes, location)
-    if (timeAvailabilityMapOrError.isFailure()) return Result.fail(timeAvailabilityMapOrError.error)
+    const timeProposalsOrError = await this.reservationRepo.isTimeAvailableBulk(
+      reservationTimes.map(time => ({ time, location }))
+    )
+    if (timeProposalsOrError.isFailure()) return Result.fail(timeProposalsOrError.error)
 
-    const timeAvailabilityMap = timeAvailabilityMapOrError.value
+    const timeAvailability = timeProposalsOrError.value
     const availableTimes: ReservationTime[] = []
     const unavailableTimes: ReservationTime[] = []
-    timeAvailabilityMap.forEach((isAvailable, time) => {
-      isAvailable ? availableTimes.push(time) : unavailableTimes.push(time)
+    timeAvailability.forEach(time => {
+      time.isAvailable ? availableTimes.push(time.time) : unavailableTimes.push(time.time)
     })
 
     return Result.ok({ availableTimes, unavailableTimes })
