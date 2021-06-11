@@ -29,7 +29,7 @@ export default class AreTimesAvailableUseCase extends UseCase<
         const isInPast = Date.now() > time.startTime.getTime()
         if (isInPast) throw new AreTimesAvailableErrors.PastTimeError()
 
-        return { time, location: locationOrError.value }
+        return { time, location: locationOrError.value, excludedId: proposal.excludedReservationId }
       })
 
       const areTimesAvailableOrError = await this.reservationRepo.isTimeAvailableBulk(timesToValidate)

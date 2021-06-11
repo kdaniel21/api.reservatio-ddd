@@ -2,7 +2,6 @@ import { Result } from '@shared/core/Result'
 import UniqueID from '@shared/domain/UniqueID'
 import BaseMapper from '@shared/infra/BaseMapper'
 import logger from '@shared/infra/Logger/logger'
-import Customer from '../domain/Customer'
 import Reservation from '../domain/Reservation'
 import ReservationLocation from '../domain/ReservationLocation'
 import ReservationName from '../domain/ReservationName'
@@ -45,7 +44,7 @@ export default class ReservationMapper implements BaseMapper<Reservation> {
         name: nameOrError.value,
         customer,
         time: timeOrError.value,
-        isActive: raw.isActive || true,
+        isActive: raw.isActive ?? true,
         locations: locationsOrError.value,
         createdAt: raw.createdAt || new Date(),
         updatedAt: raw.updatedAt || new Date(),

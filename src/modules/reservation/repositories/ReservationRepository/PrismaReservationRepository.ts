@@ -56,6 +56,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
           startTime: { lt: time.endTime },
           endTime: { gt: time.startTime },
           OR: [{ tableTennis: location.tableTennis }, { badminton: location.badminton }],
+          isActive: true,
         },
       })
 
@@ -77,6 +78,8 @@ export default class PrismaReservationRepository implements ReservationRepositor
             startTime: { lt: proposal.time.endTime },
             endTime: { gt: proposal.time.startTime },
             OR: [{ tableTennis: proposal.location.tableTennis }, { badminton: proposal.location.badminton }],
+            id: { not: proposal.excludedId?.toString() },
+            isActive: true,
           },
         })
       )
@@ -93,7 +96,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
 
   async save(reservation: Reservation): PromiseErrorOr {
     try {
-      const { customer, ...reservationObject } = ReservationMapper.toObject(reservation)
+      const { customer, updatedAt, ...reservationObject } = ReservationMapper.toObject(reservation)
 
       await this.prisma.prismaReservation.upsert({
         create: { ...reservationObject, customerId: customer.id },
@@ -111,7 +114,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
   async saveBulk(reservations: Reservation[]): PromiseErrorOr {
     try {
       const upsertOperations = reservations.map(reservation => {
-        const { customer, ...reservationObject } = ReservationMapper.toObject(reservation)
+        const { customer, updatedAt, ...reservationObject } = ReservationMapper.toObject(reservation)
 
         return this.prisma.prismaReservation.upsert({
           create: { ...reservationObject, customerId: customer.id },

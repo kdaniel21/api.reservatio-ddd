@@ -7,6 +7,7 @@ import {
   eachMonthOfInterval,
   differenceInCalendarDays,
   addDays,
+  addMilliseconds,
 } from 'date-fns'
 
 export default class DateUtils {
@@ -20,6 +21,10 @@ export default class DateUtils {
 
   static addMonths(date: Date, numOfMonths: number): Date {
     return addMonths(date, numOfMonths)
+  }
+
+  static addMilliseconds(date: Date, numOfMilliseconds: number): Date {
+    return addMilliseconds(date, numOfMilliseconds)
   }
 
   static getWeeklyInterval(startDate: Date, endDate: Date): Date[] {

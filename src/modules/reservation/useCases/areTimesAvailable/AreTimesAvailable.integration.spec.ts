@@ -124,7 +124,7 @@ describe('AreTimesAvailable Integration', () => {
       }
     }`
 
-    const res = await request.post('/').send({ query }).set('Authorization', accessToken) //.expect(200)
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
     expect(res.body.data.areTimesAvailable[0].isTimeAvailable).toBe(true)
     expect(res.body.data.areTimesAvailable[0].startTime).toBe(new Date('2021-05-03 10:00').toJSON())
@@ -136,6 +136,37 @@ describe('AreTimesAvailable Integration', () => {
     expect(res.body.data.areTimesAvailable[1].endTime).toBe(new Date('2021-05-03 15:00').toJSON())
     expect(res.body.data.areTimesAvailable[1].locations.badminton).toBe(true)
     expect(res.body.data.areTimesAvailable[1].locations.tableTennis).toBe(false)
+  })
+
+  it('should exclude a reservation with a specific ID', async () => {
+    const query = `query {
+      areTimesAvailable(
+        timeProposals: [
+          {
+            startTime: "${new Date('2021-05-04 8:30')}",
+            endTime: "${new Date('2021-05-04 9:30')}",
+            locations: { tableTennis: true },
+            excludedReservation: "${reservations[0].id}"
+          }
+        ],
+      ) {
+        startTime
+        endTime
+        locations {
+          tableTennis
+          badminton
+        }
+        isTimeAvailable
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
+
+    expect(res.body.data.areTimesAvailable[0].isTimeAvailable).toBe(true)
+    expect(res.body.data.areTimesAvailable[0].startTime).toBe(new Date('2021-05-04 8:30').toJSON())
+    expect(res.body.data.areTimesAvailable[0].endTime).toBe(new Date('2021-05-04 9:30').toJSON())
+    expect(res.body.data.areTimesAvailable[0].locations.badminton).toBe(false)
+    expect(res.body.data.areTimesAvailable[0].locations.tableTennis).toBe(true)
   })
 
   it('should return both true and false if one of the times is not available', async () => {
@@ -164,7 +195,7 @@ describe('AreTimesAvailable Integration', () => {
       }
     }`
 
-    const res = await request.post('/').send({ query }).set('Authorization', accessToken)
+    const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
     expect(res.body.data.areTimesAvailable[0].isTimeAvailable).toBe(false)
     expect(res.body.data.areTimesAvailable[0].startTime).toBe(new Date('2021-05-04 8:30').toJSON())

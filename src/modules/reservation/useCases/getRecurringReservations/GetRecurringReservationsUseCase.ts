@@ -23,7 +23,7 @@ export default class GetRecurringReservationsUseCase extends UseCase<
   async executeImpl(
     request: GetRecurringReservationsUseCaseDto
   ): PromiseErrorOr<GetRecurringReservationsUseCaseResultDto> {
-    const query: { [key: string]: any } = { recurringId: request.recurringId.toString() }
+    const query: { [key: string]: any } = { recurringId: request.recurringId.toString(), isActive: true }
     // TODO: Decouple this from Prisma query language
     if (request.futureOnly) query.startTime = { gte: new Date() }
 
