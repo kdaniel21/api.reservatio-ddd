@@ -4,11 +4,11 @@ import { PromiseErrorOr } from '@shared/core/DomainError'
 import User from '@modules/users/domain/User'
 import UserEmail from '@modules/users/domain/UserEmail'
 import UserPassword from '@modules/users/domain/UserPassword'
-import UserRepository from '@modules/users/repositories/UserRepository'
 import CreateUserUseCaseDto from './DTOs/CreateUserUseCaseDto'
 import { CreateUserError } from './CreateUserErrors'
 import CreateUserUseCaseResultDto from './DTOs/CreateUserUseCaseResultDto'
 import CustomerName from '@modules/reservation/domain/CustomerName'
+import UserRepository from '@modules/users/repositories/UserRepository/UserRepository'
 
 export default class CreateUserUseCase extends UseCase<CreateUserUseCaseDto, CreateUserUseCaseResultDto> {
   constructor(private userRepo: UserRepository) {

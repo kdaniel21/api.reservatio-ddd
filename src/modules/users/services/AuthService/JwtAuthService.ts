@@ -5,9 +5,9 @@ import config from '@config'
 import { Result } from '@shared/core/Result'
 import InvalidAccessTokenError from '@modules/users/domain/errors/InvalidAccessTokenError'
 import { ErrorOr, PromiseErrorOr } from '@shared/core/DomainError'
-import RefreshTokenRepository from '@modules/users/repositories/RefreshTokenRepository'
 import UserRefreshToken from '@modules/users/domain/UserRefreshToken'
 import AuthService from './AuthService'
+import RefreshTokenRepository from '@modules/users/repositories/RefreshTokenRepository/RefreshTokenRepository'
 
 export default class JwtAuthService implements AuthService<JwtToken, JwtPayload> {
   constructor(private refreshTokenRepo: RefreshTokenRepository) {}

@@ -1,4 +1,4 @@
-import UserRepository from '@modules/users/repositories/UserRepository'
+import UserRepository from '@modules/users/repositories/UserRepository/UserRepository'
 import AuthService from '@modules/users/services/AuthService/AuthService'
 import { PrismaUser } from '@prisma/client'
 import { PromiseErrorOr } from '@shared/core/DomainError'
@@ -20,7 +20,7 @@ export default class LogoutUseCase extends UseCase<LogoutUseCaseDto, void> {
     if (userOrError.isFailure()) return Result.fail(userOrError.error)
 
     const user = userOrError.value
-    const refreshToken = user.refreshTokens.find(refreshToken => refreshToken.isTokenValid(request.token))
+    const refreshToken = user.refreshTokens.find((refreshToken: any) => refreshToken.isTokenValid(request.token))
     if (!refreshToken) return Result.fail(LogoutErrors.InvalidRefreshTokenError)
 
     const removeResult = await this.authService.removeRefreshToken(refreshToken, user)

@@ -8,4 +8,5 @@ export default {
   passwordResetTokenLength: +process.env.PASSWORD_RESET_TOKEN_LENGTH || 30,
   passwordResetTokenExpirationHours: +process.env.PASSWORD_RESET_TOKEN_EXPIRATION_HOURS || 12,
   emailConfirmationTokenLength: +process.env.EMAIL_CONFIRMATION_TOKEN_LENGTH || 20,
+  invitationExpirationHours: +process.env.INVITATION_EXPIRATION_HOURS || 72,
 }

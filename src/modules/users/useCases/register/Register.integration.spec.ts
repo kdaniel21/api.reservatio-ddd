@@ -17,10 +17,16 @@ import NodeMailerService from '@shared/services/MailerService/NodeMailerService'
 import { Result } from '@shared/core/Result'
 import { RegisterTemplate } from '@shared/services/MailerService/templates/RegisterTemplate'
 import CreateCustomerUseCase from '@modules/reservation/useCases/createCustomer/CreateCustomerUseCase'
+import { PrismaInvitation } from '.prisma/client'
+import TextUtils from '@shared/utils/TextUtils'
+import { advanceTo } from 'jest-date-mock'
 
 describe('Register Integration', () => {
   let initializedServer: InitializedApolloServer
   let request: supertest.SuperTest<supertest.Test>
+
+  let invitation: PrismaInvitation
+  let invitationToken: string
 
   beforeAll(async () => {
     initializedServer = await initApolloServer()
@@ -34,6 +40,29 @@ describe('Register Integration', () => {
   beforeEach(async () => {
     await clearAllData()
 
+    advanceTo('2021-06-12 10:00')
+
+    invitationToken = TextUtils.generateRandomCharacters(30)
+
+    const user = await prisma.prismaUser.create({
+      data: {
+        id: new UniqueID().toString(),
+        email: 'inviter@bar.com',
+        password: await bcrypt.hash('password', config.auth.bcryptSaltRounds),
+        isEmailConfirmed: true,
+      },
+    })
+
+    invitation = await prisma.prismaInvitation.create({
+      data: {
+        id: new UniqueID().toString(),
+        inviterId: user.id,
+        emailAddress: 'foo@bar.com',
+        token: TextUtils.hashText(invitationToken),
+        expiresAt: new Date('2021-06-13 14:00'),
+      },
+    })
+
     jest.spyOn(NodeMailerService.prototype as any, 'send').mockResolvedValue(Result.ok)
 
     jest.clearAllMocks()
@@ -45,7 +74,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Bar",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           id
@@ -62,6 +92,30 @@ describe('Register Integration', () => {
     expect(res.body.data.register.user.email).toBe('foo@bar.com')
   })
 
+  it('should deactivate the invitation after the user has been created', async () => {
+    const query = `mutation {
+      register(params: {
+        email: "foo@bar.com",
+        name: "Foo Bar",
+        password: "Th1sIsAG00dPassw0rd",
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
+      }) {
+        user {
+          id
+          email
+        }
+        accessToken
+        refreshToken
+      }
+    }`
+
+    await request.post('/').send({ query }).expect(200)
+
+    const invitationRecord = await prisma.prismaInvitation.findUnique({ where: { id: invitation.id } })
+    expect(invitationRecord.isActive).toBe(false)
+  })
+
   it('should emit a UserCreatedEvent and fire an AfterUserCreated handler after creating a user', async () => {
     jest.spyOn(User.prototype as any, 'addDomainEvent')
     // jest.spyOn(AfterUserCreated.prototype as any, 'handleEvent')
@@ -70,7 +124,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Bar",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           id
@@ -94,7 +149,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Bar",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           id
@@ -122,7 +178,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Bar",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           id
@@ -148,7 +205,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Bar",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           email
@@ -173,7 +231,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Bar",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           email
@@ -205,7 +264,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Bar",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           email
@@ -239,7 +299,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Bar",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           email
@@ -265,13 +326,150 @@ describe('Register Integration', () => {
     expect(userRecord.passwordResetTokenExpiresAt).toBeFalsy()
   })
 
+  it('should throw an InvalidInvitationError if the invitation is not active', async () => {
+    await prisma.prismaInvitation.update({ where: { id: invitation.id }, data: { isActive: false } })
+    const query = `mutation {
+      register(params: {
+        email: "foo@bar.com",
+        name: "Foo Bar",
+        password: "Th1sIsAG00dPassw0rd",
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
+      }) {
+        user {
+          id
+          email
+        }
+        accessToken
+        refreshToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('INVALID_INVITATION')
+    const numOfUsersWithEmail = await prisma.prismaUser.count({
+      where: { email: 'foo@bar.com' },
+    })
+    expect(numOfUsersWithEmail).toBe(0)
+  })
+
+  it('should throw an InvalidInvitationError if the invitation is expired', async () => {
+    advanceTo('2021-06-13 16:00')
+    const query = `mutation {
+      register(params: {
+        email: "foo@bar.com",
+        name: "Foo Bar",
+        password: "Th1sIsAG00dPassw0rd",
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
+      }) {
+        user {
+          id
+          email
+        }
+        accessToken
+        refreshToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('INVALID_INVITATION')
+    const numOfUsersWithEmail = await prisma.prismaUser.count({
+      where: { email: 'foo@bar.com' },
+    })
+    expect(numOfUsersWithEmail).toBe(0)
+  })
+
+  it('should throw an InvalidInvitationError if the email address is different than the one in the invitation', async () => {
+    const query = `mutation {
+      register(params: {
+        email: "different@bar.com",
+        name: "Foo Bar",
+        password: "Th1sIsAG00dPassw0rd",
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
+      }) {
+        user {
+          id
+          email
+        }
+        accessToken
+        refreshToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('INVALID_INVITATION')
+    const numOfUsersWithEmail = await prisma.prismaUser.count({
+      where: { email: 'different@bar.com' },
+    })
+    expect(numOfUsersWithEmail).toBe(0)
+  })
+
+  it('should throw an InvalidInvitationError if the invitation token is invalid', async () => {
+    const query = `mutation {
+      register(params: {
+        email: "foo@bar.com",
+        name: "Foo Bar",
+        password: "Th1sIsAG00dPassw0rd",
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${new UniqueID().toString()}"
+      }) {
+        user {
+          id
+          email
+        }
+        accessToken
+        refreshToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(200)
+
+    expect(res.body.errors[0].extensions.code).toBe('INVALID_INVITATION')
+    const numOfUsersWithEmail = await prisma.prismaUser.count({
+      where: { email: 'foo@bar.com' },
+    })
+    expect(numOfUsersWithEmail).toBe(0)
+  })
+
+  it(`should throw a GraphQL validation error if no 'invitationToken' is provided`, async () => {
+    const query = `mutation {
+      register(params: {
+        email: "foo@bar.com",
+        name: "Foo Bar",
+        password: "Th1sIsAG00dPassw0rd",
+        passwordConfirm: "Th1sIsAG00dPassw0rd"
+      }) {
+        user {
+          id
+          email
+        }
+        accessToken
+        refreshToken
+      }
+    }`
+
+    const res = await request.post('/').send({ query }).expect(400)
+
+    expect(res.body.errors[0].extensions.code).toBe('GRAPHQL_VALIDATION_FAILED')
+    const numOfUsersWithEmail = await prisma.prismaUser.count({
+      where: { email: 'foo@bar.com' },
+    })
+    expect(numOfUsersWithEmail).toBe(0)
+  })
+
   it('should throw an InvalidUserEmailError if registering with an invalid email address', async () => {
     const query = `mutation {
       register(params: {
         email: "foo",
         name: "Foo Foo",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           email
@@ -296,7 +494,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           email
@@ -321,7 +520,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Foo",
         password: "badpassword",
-        passwordConfirm: "badpassword"
+        passwordConfirm: "badpassword",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           email
@@ -346,7 +546,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Foo",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAB4dPassw0rd"
+        passwordConfirm: "Th1sIsAB4dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           email
@@ -379,7 +580,8 @@ describe('Register Integration', () => {
         email: "foo@bar.com",
         name: "Foo Foo",
         password: "Th1sIsAG00dPassw0rd",
-        passwordConfirm: "Th1sIsAG00dPassw0rd"
+        passwordConfirm: "Th1sIsAG00dPassw0rd",
+        invitationToken: "${invitationToken}"
       }) {
         user {
           email

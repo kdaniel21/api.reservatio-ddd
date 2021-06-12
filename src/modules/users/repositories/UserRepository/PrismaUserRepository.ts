@@ -7,7 +7,7 @@ import { Result } from '@shared/core/Result'
 import UniqueID from '@shared/domain/UniqueID'
 import logger from '@shared/infra/Logger/logger'
 import TextUtils from '@shared/utils/TextUtils'
-import UserRepository from '../UserRepository'
+import UserRepository from './UserRepository'
 
 export default class PrismaUserRepository implements UserRepository<PrismaUser> {
   constructor(private prisma: PrismaClient) {}

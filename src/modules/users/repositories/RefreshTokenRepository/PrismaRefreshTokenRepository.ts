@@ -4,7 +4,7 @@ import { PrismaClient, PrismaRefreshToken } from '@prisma/client'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import logger from '@shared/infra/Logger/logger'
-import RefreshTokenRepository from '../RefreshTokenRepository'
+import RefreshTokenRepository from './RefreshTokenRepository'
 
 export default class PrismaRefreshTokenRepository implements RefreshTokenRepository<PrismaRefreshToken> {
   constructor(private prisma: PrismaClient) {}

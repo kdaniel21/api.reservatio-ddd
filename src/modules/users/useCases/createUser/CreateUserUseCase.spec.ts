@@ -1,5 +1,4 @@
 import { mocked } from 'ts-jest/utils'
-import UserRepository from '@modules/users/repositories/UserRepository'
 import { AppError } from '@shared/core/AppError'
 import CreateUserUseCaseDto from './DTOs/CreateUserUseCaseDto'
 import CreateUserUseCase from './CreateUserUseCase'
@@ -9,6 +8,7 @@ import { InvalidUserPasswordError } from '@modules/users/domain/errors/InvalidUs
 import User from '@modules/users/domain/User'
 import { Result } from '@shared/core/Result'
 import InvalidCustomerNameError from '@modules/reservation/domain/errors/InvalidCustomerNameError'
+import UserRepository from '@modules/users/repositories/UserRepository/UserRepository'
 
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase

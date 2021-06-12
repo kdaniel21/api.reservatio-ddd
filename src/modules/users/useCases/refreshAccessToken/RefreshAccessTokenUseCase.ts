@@ -1,4 +1,3 @@
-import UserRepository from '@modules/users/repositories/UserRepository'
 import AuthService from '@modules/users/services/AuthService/AuthService'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
@@ -6,6 +5,7 @@ import UseCase from '@shared/core/UseCase'
 import RefreshAccessTokenUseCaseDto from './DTOs/RefreshAccessTokenUseCaseDto'
 import { RefreshAccessTokenErrors } from './RefreshAccessTokenErrors'
 import RefreshAccessTokenUseCaseResultDto from './DTOs/RefreshAccessTokenUseCaseResultDto'
+import UserRepository from '@modules/users/repositories/UserRepository/UserRepository'
 
 export default class RefreshAccessTokenUseCase extends UseCase<
   RefreshAccessTokenUseCaseDto,

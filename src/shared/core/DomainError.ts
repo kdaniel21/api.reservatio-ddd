@@ -1,8 +1,8 @@
 import { Either } from './Result'
 
 export interface DomainError {
-  message: string
-  code?: string
+  readonly message: string
+  readonly code?: string
 }
 
 export const isDomainError = (object: any): object is DomainError => {

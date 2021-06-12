@@ -13,4 +13,7 @@ export default class RegisterInputDto {
 
   @Field()
   passwordConfirm: string
+
+  @Field()
+  invitationToken: string
 }

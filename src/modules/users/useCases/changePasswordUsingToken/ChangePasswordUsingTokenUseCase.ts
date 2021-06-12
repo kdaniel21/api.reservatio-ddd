@@ -1,4 +1,4 @@
-import UserRepository from '@modules/users/repositories/UserRepository'
+import UserRepository from '@modules/users/repositories/UserRepository/UserRepository'
 import { PrismaUser } from '@prisma/client'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
@@ -12,7 +12,7 @@ export default class ChangePasswordUsingTokenUseCase extends UseCase<ChangePassw
     super()
   }
 
-  async executeImpl(request: ChangePasswordUsingTokenUseCaseDto): PromiseErrorOr  {
+  async executeImpl(request: ChangePasswordUsingTokenUseCaseDto): PromiseErrorOr {
     const token = request.passwordResetToken
     const hashedToken = TextUtils.hashText(token)
 

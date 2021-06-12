@@ -22,6 +22,7 @@ model PrismaUser {
   refreshTokens               PrismaRefreshToken[]
   customer                    PrismaCustomer?
 
+  PrismaInvitation PrismaInvitation[]
   @@map("users")
 }
 
@@ -64,4 +65,14 @@ model PrismaCustomer {
   role         CustomerRole        @default(CUSTOMER)
 
   @@index([userId])
+}
+
+model PrismaInvitation {
+  id           String     @id
+  token        String     @unique
+  expiresAt    DateTime   @map("expires_at")
+  inviter      PrismaUser @relation(fields: [inviterId], references: [id])
+  inviterId    String     @map("inviter_id")
+  emailAddress String     @map("email_address")
+  isActive     Boolean    @default(true) @map("is_active")
 }
