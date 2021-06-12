@@ -83,13 +83,13 @@ describe('GetRecurringReservations', () => {
       {
         id: new UniqueID().toString(),
         recurringId: recurringId.toString(),
-        name: 'Deactivated future 2',
+        name: 'Future 2',
         startTime: new Date('2021-05-15 10:00:00'),
         endTime: new Date('2021-05-15 12:00:00'),
         badminton: true,
         tableTennis: false,
         customerId: customer.id,
-        isActive: false,
+        isActive: true,
       },
       {
         id: new UniqueID().toString(),
@@ -108,7 +108,20 @@ describe('GetRecurringReservations', () => {
     jest.clearAllMocks()
   })
 
-  it(`should get all reservations that belong to the same 'recurringId'`, async () => {
+  it(`should get all reservations that belong to the same 'recurringId' and are active`, async () => {
+    await prisma.prismaReservation.create({
+      data: {
+        id: new UniqueID().toString(),
+        recurringId: recurringId.toString(),
+        name: 'Deactivated future 5',
+        startTime: new Date('2021-05-28 10:00:00'),
+        endTime: new Date('2021-05-28 12:00:00'),
+        badminton: true,
+        tableTennis: false,
+        customerId: customer.id,
+        isActive: false,
+      },
+    })
     const query = `query {
       recurringReservations(recurringId: "${recurringId.toString()}") {
         id
