@@ -143,7 +143,6 @@ describe('CreateReservation Integration', () => {
     expect(reservationRecord.tableTennis).toBe(true)
     expect(reservationRecord.badminton).toBe(false)
     expect(reservationRecord.createdAt).toBeAfter(requestTime)
-    expect(reservationRecord.updatedAt).toEqual(reservationRecord.createdAt)
   })
 
   it('should create a reservation for a multiple locations if the IsTimeAvailable use case returns true', async () => {
@@ -220,7 +219,6 @@ describe('CreateReservation Integration', () => {
     expect(reservationRecord.tableTennis).toBe(true)
     expect(reservationRecord.badminton).toBe(true)
     expect(reservationRecord.createdAt).toBeAfter(requestTime)
-    expect(reservationRecord.updatedAt).toEqual(reservationRecord.createdAt)
   })
 
   it(`should throw a TimeNotAvailableError if 'IsTimeAvailable' returns false`, async () => {
