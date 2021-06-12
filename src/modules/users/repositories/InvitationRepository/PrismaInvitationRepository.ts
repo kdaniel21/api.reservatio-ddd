@@ -43,7 +43,7 @@ export default class PrismaInvitationRepository implements InvitationRepository<
     } catch (err) {
       logger.error(err)
 
-      return Result.fail()
+      return Result.fail(AppError.UnexpectedError)
     }
   }
 }

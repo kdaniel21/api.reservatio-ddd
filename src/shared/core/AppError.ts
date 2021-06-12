@@ -18,4 +18,9 @@ export namespace AppError {
     readonly code = 'VALIDATION_ERROR'
     abstract readonly message: string
   }
+
+  export class NotAuthorizedError implements DomainError {
+    readonly message = 'You are not authorized to perform this action!'
+    readonly code = 'NOT_AUTHORIZED'
+  }
 }

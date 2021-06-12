@@ -7,10 +7,10 @@ import User from './User'
 import UserEmail from './UserEmail'
 
 export interface InvitationProps extends TokenEntityProps {
-  createdAt: Date
+  createdAt?: Date
   emailAddress: UserEmail
   inviter: User
-  isActive: boolean
+  isActive?: boolean
 }
 
 export class Invitation extends TokenEntity<InvitationProps> {
@@ -44,7 +44,12 @@ export class Invitation extends TokenEntity<InvitationProps> {
 
     if (validPropsOrError.isFailure()) return Result.fail(validPropsOrError.error)
 
-    const validProps = { ...props, ...validPropsOrError.value }
+    const validProps: InvitationProps = {
+      ...props,
+      ...validPropsOrError.value,
+      isActive: props.isActive ?? true,
+      createdAt: props.createdAt || new Date(),
+    }
     const invitation = new Invitation(validProps, id)
     return Result.ok(invitation)
   }

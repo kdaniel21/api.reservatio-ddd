@@ -1,18 +1,18 @@
-import mjml2html from 'mjml'
-import User from '@modules/users/domain/User'
-import { BaseTemplate } from './BaseTemplate'
 import config from '@config'
+import { Invitation } from '@modules/users/domain/Invitation'
+import mjml2html from 'mjml-core'
+import { BaseTemplate } from './BaseTemplate'
 
-export interface ConfirmEmailTemplateData {
-  user: User
+export interface InvitationTemplateData {
+  invitation: Invitation
 }
 
-export class ConfirmEmailTemplate extends BaseTemplate {
-  constructor(private templateData: ConfirmEmailTemplateData) {
+export class InvitationTemplate extends BaseTemplate {
+  constructor(private readonly templateData: InvitationTemplateData) {
     super()
   }
 
-  readonly subject = 'Confirm your email address!'
+  readonly subject = 'Invitation to Reservatio'
   readonly template = mjml2html(`
     <mjml>
       <mj-body>
@@ -29,10 +29,10 @@ export class ConfirmEmailTemplate extends BaseTemplate {
             <mj-divider border-color="#F45E43"></mj-divider>
 
             <mj-text font-size="20px" color="#F45E43" font-family="helvetica">
-              Hello!
+              Hello ${this.templateData.invitation.emailAddress.value}!
             </mj-text>
 
-            <mj-button href="${config.frontendHost}/confirm-email/${this.templateData.user.userId}">
+            <mj-button href="${config.frontendHost}/auth/invitation/${this.templateData.invitation.token}">
               Confirm
             </mj-button>
           </mj-column>

@@ -24,8 +24,8 @@ export default class PrismaCustomerRepository implements CustomerRepository<Pris
       const prismaCustomer = await this.prisma.prismaCustomer.findFirst({ where, include })
       if (!prismaCustomer) return Result.fail()
 
-      const user = CustomerMapper.toDomain(prismaCustomer)
-      return Result.ok(user)
+      const customer = CustomerMapper.toDomain(prismaCustomer)
+      return Result.ok(customer)
     } catch (err) {
       logger.error(err)
 
