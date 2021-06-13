@@ -79,7 +79,7 @@ describe('GetReservation Integration', () => {
     })
     adminAccessToken = jwt.sign(
       { userId: adminUser.id, email: adminUser.email } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
 
     userWithoutReservations = await prisma.prismaUser.create({
@@ -99,7 +99,7 @@ describe('GetReservation Integration', () => {
     })
     accessTokenWithoutReservation = jwt.sign(
       { userId: userWithoutReservations.id, email: userWithoutReservations.email } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
 
     reservations = [

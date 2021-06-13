@@ -53,8 +53,8 @@ export default class ReservationTime extends ValueObject<ReservationTimeProps> {
     if (hourDifference < this.MIN_RESERVATION_HOURS || hourDifference > this.MAX_RESERVATION_HOURS)
       return Result.fail(
         new InvalidReservationTimeError(
-          `The time difference must be between ${this.MIN_RESERVATION_HOURS} and ${this.MAX_RESERVATION_HOURS} hours!`
-        )
+          `The time difference must be between ${this.MIN_RESERVATION_HOURS} and ${this.MAX_RESERVATION_HOURS} hours!`,
+        ),
       )
 
     const reservationTime = new ReservationTime({ startTime, endTime })

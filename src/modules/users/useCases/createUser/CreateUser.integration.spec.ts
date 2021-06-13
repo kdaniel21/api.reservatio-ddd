@@ -1,7 +1,4 @@
-import {
-  initApolloServer,
-  InitializedApolloServer,
-} from '@shared/infra/http/apollo/initApolloServer'
+import { initApolloServer, InitializedApolloServer } from '@shared/infra/http/apollo/initApolloServer'
 import supertest from 'supertest'
 
 describe.skip('CreateUser Integration', () => {

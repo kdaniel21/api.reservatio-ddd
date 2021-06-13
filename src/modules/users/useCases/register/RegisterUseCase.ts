@@ -14,7 +14,7 @@ export default class RegisterUseCase extends UseCase<RegisterUseCaseDto, Registe
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly authService: AuthService<JwtToken, JwtPayload>,
-    private readonly invitationRepo: InvitationRepository
+    private readonly invitationRepo: InvitationRepository,
   ) {
     super()
   }

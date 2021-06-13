@@ -16,7 +16,7 @@ export default class RefreshAccessTokenUseCase extends UseCase<
   }
 
   protected async executeImpl(
-    request: RefreshAccessTokenUseCaseDto
+    request: RefreshAccessTokenUseCaseDto,
   ): PromiseErrorOr<RefreshAccessTokenUseCaseResultDto> {
     const { refreshToken } = request
 

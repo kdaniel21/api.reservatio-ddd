@@ -13,7 +13,7 @@ export default class GetReservationsResolver {
   @Query(() => [GraphQLReservation])
   async reservations(
     @Args() params: GetReservationsArgs,
-    @Ctx() { user }: ApolloContext
+    @Ctx() { user }: ApolloContext,
   ): Promise<GraphQLReservation[]> {
     const result = await this.useCase.execute({ ...params, redactedUser: user })
     if (result.isFailure()) throw result.error

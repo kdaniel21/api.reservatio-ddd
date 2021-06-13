@@ -78,7 +78,7 @@ describe('UpdateReservation Integration', () => {
     })
     adminAccessToken = jwt.sign(
       { userId: adminUser.id, email: adminUser.email } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
 
     reservations = [
@@ -805,7 +805,7 @@ describe('UpdateReservation Integration', () => {
     })
     const otherUserAccessToken = jwt.sign(
       { userId: otherUser.id, email: otherUser.email } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
     const query = `mutation {
       updateReservation(

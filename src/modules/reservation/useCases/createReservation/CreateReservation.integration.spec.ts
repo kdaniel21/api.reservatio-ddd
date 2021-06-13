@@ -66,7 +66,7 @@ describe('CreateReservation Integration', () => {
     jest.spyOn(AreTimesAvailableUseCase.prototype, 'execute')
     // mocked(AreTimesAvailableUseCase.prototype.execute).mockImplementation(Result.ok({ times: [ { isAvailable: true}]}))
     mocked(AreTimesAvailableUseCase.prototype.execute).mockImplementation(async foo =>
-      Result.ok(foo.map(() => ({ isAvailable: true } as any)))
+      Result.ok(foo.map(() => ({ isAvailable: true } as any))),
     )
   })
 
@@ -223,7 +223,7 @@ describe('CreateReservation Integration', () => {
 
   it(`should throw a TimeNotAvailableError if 'IsTimeAvailable' returns false`, async () => {
     mocked(AreTimesAvailableUseCase.prototype.execute).mockImplementation(async foo =>
-      Result.ok(foo.map(() => ({ isAvailable: false } as any)))
+      Result.ok(foo.map(() => ({ isAvailable: false } as any))),
     )
     const query = `mutation {
       createReservation(
@@ -423,7 +423,7 @@ describe('CreateReservation Integration', () => {
   it('should throw an InvalidAccessTokenError if the provided access token is invalid', async () => {
     const invalidAccessToken = jwt.sign(
       { userId: user.id, email: user.email } as JwtPayload,
-      'DefinitelyNotAValidJwTSecret'
+      'DefinitelyNotAValidJwTSecret',
     )
     const query = `mutation {
       createReservation(

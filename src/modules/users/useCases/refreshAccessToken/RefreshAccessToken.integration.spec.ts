@@ -70,7 +70,7 @@ describe('RefreshAccessToken Integration', () => {
     expect(res.body.data.refreshAccessToken.accessToken).toBeTruthy()
     const accessTokenPayload = jwt.verify(
       res.body.data.refreshAccessToken.accessToken,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     ) as JwtPayload
     expect(accessTokenPayload.email).toBe(userRecord.email)
     expect(accessTokenPayload.userId).toBe(userRecord.id)
@@ -88,7 +88,7 @@ describe('RefreshAccessToken Integration', () => {
     expect(res.body.data.refreshAccessToken.accessToken).toBeTruthy()
     const accessTokenPayload = jwt.verify(
       res.body.data.refreshAccessToken.accessToken,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     ) as JwtPayload
     expect(accessTokenPayload.email).toBe(userRecord.email)
     expect(accessTokenPayload.userId).toBe(userRecord.id)
@@ -119,7 +119,7 @@ describe('RefreshAccessToken Integration', () => {
     expect(res.body.data.refreshAccessToken.accessToken).toBeTruthy()
     const accessTokenPayload = jwt.verify(
       res.body.data.refreshAccessToken.accessToken,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     ) as JwtPayload
     expect(accessTokenPayload.email).toBe(userRecord.email)
     expect(accessTokenPayload.userId).toBe(userRecord.id)

@@ -85,7 +85,7 @@ describe('ResetPassword Integration', () => {
     const user = await prisma.prismaUser.findUnique({ where: { email: userRecord.email } })
     expect(user.passwordResetTokenExpiresAt).toBeTruthy()
     const estimatedExpirationTime = new Date(
-      Date.now() + config.auth.passwordResetTokenExpirationHours * 60 * 60 * 1000
+      Date.now() + config.auth.passwordResetTokenExpirationHours * 60 * 60 * 1000,
     ).getTime()
     const expirationThreshold = 30 * 1000
     const expirationTime = new Date(user.passwordResetTokenExpiresAt).getTime()

@@ -20,7 +20,7 @@ export default class CreateInvitationUseCase extends UseCase<CreateInvitationUse
     private readonly customerRepo: CustomerRepository,
     private readonly invitationRepo: InvitationRepository,
     private readonly userRepo: UserRepository,
-    private readonly mailerService: MailerService
+    private readonly mailerService: MailerService,
   ) {
     super()
   }

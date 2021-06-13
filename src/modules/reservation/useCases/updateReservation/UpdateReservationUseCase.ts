@@ -24,7 +24,7 @@ export default class UpdateReservationUseCase extends UseCase<
   constructor(
     private readonly reservationRepo: ReservationRepository,
     private readonly customerRepo: CustomerRepository,
-    private readonly areTimesAvailableUseCase: AreTimesAvailableUseCase
+    private readonly areTimesAvailableUseCase: AreTimesAvailableUseCase,
   ) {
     super()
   }
@@ -72,7 +72,7 @@ export default class UpdateReservationUseCase extends UseCase<
           updatedProperties.startTime || updatedProperties.endTime
             ? ReservationTime.create(
                 updatedProperties.startTime || reservationToUpdate.time.startTime,
-                updatedProperties.endTime || reservationToUpdate.time.endTime
+                updatedProperties.endTime || reservationToUpdate.time.endTime,
               )
             : Result.ok(reservationToUpdate.time)
         if (timeOrError.isFailure()) return Result.fail(timeOrError.error as any)
@@ -87,7 +87,7 @@ export default class UpdateReservationUseCase extends UseCase<
           updatedProperties.startTime || updatedProperties.endTime
             ? ReservationTime.create(
                 DateUtils.addMilliseconds(reservationToUpdate.time.startTime, startTimeDifferenceMs),
-                DateUtils.addMilliseconds(reservationToUpdate.time.endTime, endTimeDifferenceMs)
+                DateUtils.addMilliseconds(reservationToUpdate.time.endTime, endTimeDifferenceMs),
               )
             : Result.ok(reservationToUpdate.time)
       }
@@ -103,7 +103,7 @@ export default class UpdateReservationUseCase extends UseCase<
           locations: updatedLocationOrError.value,
           isActive: updatedProperties.isActive ?? reservationToUpdate.isActive,
         },
-        reservationToUpdate.id
+        reservationToUpdate.id,
       )
       if (updatedReservationOrError.isFailure()) throw updatedReservationOrError.error
 
@@ -118,7 +118,7 @@ export default class UpdateReservationUseCase extends UseCase<
           endTime: time.endTime,
           locations,
           excludedReservationId: id,
-        }))
+        })),
       )
       if (timeAvailabilityOrError.isFailure()) return Result.fail(timeAvailabilityOrError.error)
 

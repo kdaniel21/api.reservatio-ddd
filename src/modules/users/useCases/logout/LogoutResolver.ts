@@ -14,7 +14,7 @@ export default class LogoutResolver {
   @Mutation(() => MessageResponseDto)
   async logout(
     @Ctx() { cookies, user }: ApolloContext,
-    @Arg('refreshToken', { nullable: true }) refreshTokenInput?: string
+    @Arg('refreshToken', { nullable: true }) refreshTokenInput?: string,
   ): Promise<MessageResponseDto> {
     const refreshToken = refreshTokenInput || cookies.get(config.auth.refreshTokenCookieName)
     if (!refreshToken) throw new LogoutErrors.InvalidRefreshTokenError()

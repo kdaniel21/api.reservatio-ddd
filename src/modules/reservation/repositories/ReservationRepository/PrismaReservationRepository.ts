@@ -20,7 +20,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
 
   async findOne(
     where: Partial<PrismaReservation>,
-    include: Prisma.PrismaReservationInclude = { customer: true }
+    include: Prisma.PrismaReservationInclude = { customer: true },
   ): PromiseErrorOr<Reservation> {
     try {
       const reservationObject = await this.prisma.prismaReservation.findFirst({ where, include })
@@ -35,7 +35,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
 
   async findMany(
     where: Partial<PrismaReservation>,
-    include: Prisma.PrismaReservationInclude = { customer: true }
+    include: Prisma.PrismaReservationInclude = { customer: true },
   ): PromiseErrorOr<Reservation[]> {
     try {
       const reservationObjects = await this.prisma.prismaReservation.findMany({ where, include })
@@ -69,7 +69,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
   }
 
   async isTimeAvailableBulk(
-    proposals: ReservationTimeProposalDto[]
+    proposals: ReservationTimeProposalDto[],
   ): PromiseErrorOr<(ReservationTimeProposalDto & { isAvailable: boolean })[]> {
     try {
       const queries = proposals.map(proposal =>
@@ -81,7 +81,7 @@ export default class PrismaReservationRepository implements ReservationRepositor
             id: { not: proposal.excludedId?.toString() },
             isActive: true,
           },
-        })
+        }),
       )
 
       const queryResult = await this.prisma.$transaction(queries)

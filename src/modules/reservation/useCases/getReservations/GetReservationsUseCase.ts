@@ -34,7 +34,7 @@ export default class GetReservationsUseCase extends UseCase<
     const startAndEndDifferenceDays = DateUtils.differenceInCalendarDays(startDateWithoutTime, endDateWithoutTime)
     if (startAndEndDifferenceDays > this.MAX_DAYS)
       return Result.fail(
-        new InvalidReservationTimeError(`The maximum date range that can be queried is ${this.MAX_DAYS}`)
+        new InvalidReservationTimeError(`The maximum date range that can be queried is ${this.MAX_DAYS}`),
       )
 
     const userId = new UniqueID(request.redactedUser.userId)
@@ -55,7 +55,7 @@ export default class GetReservationsUseCase extends UseCase<
   private async getReservationsForCustomer(
     startDate: Date,
     endDate: Date,
-    customer: Customer
+    customer: Customer,
   ): PromiseErrorOr<Reservation[]> {
     // TODO: Decouple from the prisma query structure
     return this.reservationRepo.findMany({

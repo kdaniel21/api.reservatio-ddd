@@ -20,7 +20,7 @@ export default class CreateReservationUseCase extends UseCase<
   constructor(
     private areTimesAvailableUseCase: AreTimesAvailableUseCase,
     private reservationRepo: ReservationRepository,
-    private customerRepo: CustomerRepository
+    private customerRepo: CustomerRepository,
   ) {
     super()
   }

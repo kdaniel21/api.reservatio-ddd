@@ -36,7 +36,7 @@ export default class IsRecurringTimeAvailableUseCase extends UseCase<
 
     const locationOrError = ReservationLocation.create(locations)
     const reservationTimeResults = plainReservationDates.map(({ startTime, endTime }) =>
-      ReservationTime.create(startTime, endTime)
+      ReservationTime.create(startTime, endTime),
     )
     const combinedResult = Result.combine([...reservationTimeResults, locationOrError])
     if (combinedResult.isFailure()) return Result.fail(combinedResult.error)
@@ -44,7 +44,7 @@ export default class IsRecurringTimeAvailableUseCase extends UseCase<
     const reservationTimes = reservationTimeResults.map(reservationTimeResult => reservationTimeResult.value)
     const location = locationOrError.value
     const timeProposalsOrError = await this.reservationRepo.isTimeAvailableBulk(
-      reservationTimes.map(time => ({ time, location }))
+      reservationTimes.map(time => ({ time, location })),
     )
     if (timeProposalsOrError.isFailure()) return Result.fail(timeProposalsOrError.error)
 

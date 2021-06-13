@@ -25,7 +25,7 @@ export default class RefreshTokenMapper implements BaseMapper<UserRefreshToken> 
         expiresAt: raw.expiresAt,
         token: raw.token,
       },
-      new UniqueID(raw.id)
+      new UniqueID(raw.id),
     )
 
     if (refreshTokenOrError.isFailure()) {

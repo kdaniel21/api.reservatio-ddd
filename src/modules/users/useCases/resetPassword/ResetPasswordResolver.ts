@@ -13,8 +13,7 @@ export default class ResetPasswordResolver {
     if (result.isFailure() && result.error) throw result.error
 
     return {
-      message:
-        'A password reset email has been sent to the email address if it is registered.',
+      message: 'A password reset email has been sent to the email address if it is registered.',
     }
   }
 }

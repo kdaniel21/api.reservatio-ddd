@@ -76,7 +76,7 @@ describe('GetReservation Integration', () => {
     })
     adminAccessToken = jwt.sign(
       { userId: adminUser.id, email: adminUser.email } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
 
     reservation = await prisma.prismaReservation.create({
@@ -238,7 +238,7 @@ describe('GetReservation Integration', () => {
     })
     const otherUserAccessToken = jwt.sign(
       { userId: otherUser.id, email: otherUser.email } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
     const query = `query {
       reservation(id: "${reservation.id}") {
@@ -350,7 +350,7 @@ describe('GetReservation Integration', () => {
     })
     const userWithoutCustomerProfileAccessToken = jwt.sign(
       { userId: userWithoutCustomerProfile.id, email: userWithoutCustomerProfile.email } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
     const query = `query {
       reservation(id: "${reservation.id}") {

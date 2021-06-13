@@ -45,7 +45,7 @@ export default class CustomerMapper implements BaseMapper<Customer> {
         role,
         reservations,
       },
-      new UniqueID(raw.id)
+      new UniqueID(raw.id),
     )
 
     if (customerOrError.isFailure()) logger.error(`Error while mapping to domain: ${combinedResult.error.message}`)

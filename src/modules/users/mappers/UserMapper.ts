@@ -28,11 +28,11 @@ export default class UserMapper implements BaseMapper<User> {
         token: raw.passwordResetToken,
         expiresAt: raw.passwordResetTokenExpiresAt,
       },
-      new UniqueID()
+      new UniqueID(),
     )
     const emailConfirmationTokenOrError = UserEmailConfirmationToken.create(
       { token: raw.emailConfirmationToken },
-      new UniqueID()
+      new UniqueID(),
     )
 
     const combinedResult = Result.combine([emailOrError, passwordOrError])
@@ -57,7 +57,7 @@ export default class UserMapper implements BaseMapper<User> {
           ? emailConfirmationTokenOrError.value
           : undefined,
       },
-      id
+      id,
     )
 
     if (userOrError.isFailure()) logger.error(userOrError.error.message)

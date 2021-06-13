@@ -48,7 +48,7 @@ export default class InvitationMapper implements BaseMapper<Invitation> {
         isActive: raw.isActive,
         expiresAt: raw.expiresAt,
       },
-      new UniqueID(raw.id)
+      new UniqueID(raw.id),
     )
 
     if (invitationOrError.isFailure()) {

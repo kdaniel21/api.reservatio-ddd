@@ -126,7 +126,7 @@ describe('Login Integration', () => {
     expect(cookieExpiration).toBeGreaterThan(expectedExpiration - expirationThreshold)
     expect(cookieExpiration).toBeLessThan(expectedExpiration + expirationThreshold)
     expect(crypto.createHash('sha256').update(refreshTokenCookie.value).digest('hex').toString()).toBe(
-      refreshTokenRecord.token
+      refreshTokenRecord.token,
     )
   })
 

@@ -10,7 +10,7 @@ export default class IsRecurringTimeAvailableResolver {
   @Authorized()
   @Query(() => IsRecurringTimeAvailableResponseDto)
   async isRecurringTimeAvailable(
-    @Args() params: IsRecurringTimeAvailableArgs
+    @Args() params: IsRecurringTimeAvailableArgs,
   ): Promise<IsRecurringTimeAvailableResponseDto> {
     const result = await this.useCase.execute(params)
 

@@ -15,7 +15,7 @@ export default class UpdateReservationResolver {
   @Mutation(() => GraphQLReservation)
   async updateReservation(
     @Args() params: UpdateReservationInputDto,
-    @Ctx() { user }: ApolloContext
+    @Ctx() { user }: ApolloContext,
   ): Promise<GraphQLReservation> {
     const request: UpdateReservationUseCaseDto = {
       id: new UniqueID(params.id),

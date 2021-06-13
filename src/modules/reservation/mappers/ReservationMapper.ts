@@ -31,10 +31,10 @@ export default class ReservationMapper implements BaseMapper<Reservation> {
     const timeOrError = ReservationTime.create(raw.startTime, raw.endTime)
     const { tableTennis, badminton } = raw
     const locationsOrError = ReservationLocation.create({ tableTennis, badminton })
-    
+
     const combinedResult = Result.combine([nameOrError, timeOrError, locationsOrError])
     if (combinedResult.isFailure()) logger.error(`Error while mapping to domain: ${combinedResult.error.message}`)
-    
+
     const id = raw.id ? new UniqueID(raw.id) : undefined
     const customer = CustomerMapper.toDomain(raw.customer)
 
@@ -49,7 +49,7 @@ export default class ReservationMapper implements BaseMapper<Reservation> {
         createdAt: raw.createdAt || new Date(),
         updatedAt: raw.updatedAt || new Date(),
       },
-      id
+      id,
     )
     if (reservationOrError.isFailure()) logger.error(`Error while mapping to domain: ${combinedResult.error.message}`)
 

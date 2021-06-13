@@ -53,7 +53,7 @@ export abstract class TokenEntity<T extends TokenEntityProps = TokenEntityProps>
   protected static validateProps(
     props?: TokenEntityProps,
     id?: UniqueID,
-    options?: TokenEntityOptions
+    options?: TokenEntityOptions,
   ): ErrorOr<TokenEntityProps> {
     const tokenLength = options?.tokenLength || this.DEFAULT_TOKEN_LENGTH
     const { expirationHours } = options

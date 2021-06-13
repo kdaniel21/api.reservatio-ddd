@@ -226,7 +226,7 @@ describe('GetRecurringReservations', () => {
     })
     const otherUserAccessToken = jwt.sign(
       { userId: otherUser.id, email: otherUser.email } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
 
     const query = `query {
@@ -261,7 +261,7 @@ describe('GetRecurringReservations', () => {
     })
     const adminAccessToken = jwt.sign(
       { userId: adminUser.id, email: adminUser.email } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
 
     const query = `query {

@@ -15,13 +15,13 @@ export default class GetRecurringReservationsUseCase extends UseCase<
 > {
   constructor(
     private readonly reservationRepo: ReservationRepository,
-    private readonly customerRepo: CustomerRepository
+    private readonly customerRepo: CustomerRepository,
   ) {
     super()
   }
 
   async executeImpl(
-    request: GetRecurringReservationsUseCaseDto
+    request: GetRecurringReservationsUseCaseDto,
   ): PromiseErrorOr<GetRecurringReservationsUseCaseResultDto> {
     const query: { [key: string]: any } = { recurringId: request.recurringId.toString(), isActive: true }
     // TODO: Decouple this from Prisma query language

@@ -57,10 +57,7 @@ describe('Logout Integration', () => {
       },
     })
 
-    accessToken = jwt.sign(
-      { userId: userRecord.id, email: userRecord.email } as JwtPayload,
-      config.auth.jwtSecretKey
-    )
+    accessToken = jwt.sign({ userId: userRecord.id, email: userRecord.email } as JwtPayload, config.auth.jwtSecretKey)
   })
 
   it('should get the refresh token from the cookie and remove it from the database', async () => {
@@ -182,7 +179,7 @@ describe('Logout Integration', () => {
         email: 'whatever@foo.com',
         userId: new UniqueID().toString(),
       } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
     const query = `
       mutation {

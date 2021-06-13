@@ -11,7 +11,7 @@ export default class AreTimesAvailableResolver {
   @Authorized()
   @Query(() => [AreTimesAvailableResponseDto])
   async areTimesAvailable(
-    @Arg('timeProposals', () => [TimeAvailableInputDto]) timeProposals: TimeAvailableInputDto[]
+    @Arg('timeProposals', () => [TimeAvailableInputDto]) timeProposals: TimeAvailableInputDto[],
   ): Promise<AreTimesAvailableResponseDto[]> {
     const proposals = timeProposals.map(proposal => ({
       ...proposal,

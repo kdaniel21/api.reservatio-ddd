@@ -6,7 +6,7 @@ import CreateReservationUseCase from './CreateReservationUseCase'
 export const createReservationUseCase = new CreateReservationUseCase(
   areTimesAvailableUseCase,
   reservationRepository,
-  customerRepository
+  customerRepository,
 )
 
 export const createReservationResolver = new CreateReservationResolver(createReservationUseCase)

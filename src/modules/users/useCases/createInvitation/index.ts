@@ -8,7 +8,7 @@ export const createInvitationUseCase = new CreateInvitationUseCase(
   customerRepository,
   invitationRepository,
   userRepository,
-  mailerService
+  mailerService,
 )
 
 export const createInvitationResolver = new CreateInvitationResolver(createInvitationUseCase)

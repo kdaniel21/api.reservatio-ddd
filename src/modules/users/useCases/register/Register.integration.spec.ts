@@ -254,7 +254,7 @@ describe('Register Integration', () => {
     expect(refreshTokenRecord.expiresAt.getTime()).toBeGreaterThan(Date.now())
     const plainRefreshToken = res.body.data.register.refreshToken
     expect(crypto.createHash('sha256').update(plainRefreshToken).digest('hex').toString()).toBe(
-      refreshTokenRecord.token
+      refreshTokenRecord.token,
     )
   })
 
@@ -289,7 +289,7 @@ describe('Register Integration', () => {
     expect(cookieExpiration).toBeGreaterThan(expectedExpiration - expirationThreshold)
     expect(cookieExpiration).toBeLessThan(expectedExpiration + expirationThreshold)
     expect(crypto.createHash('sha256').update(refreshTokenCookie.value).digest('hex').toString()).toBe(
-      refreshTokenRecord.token
+      refreshTokenRecord.token,
     )
   })
 

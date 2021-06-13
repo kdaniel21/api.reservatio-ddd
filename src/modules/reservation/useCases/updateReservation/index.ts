@@ -6,7 +6,7 @@ import UpdateReservationUseCase from './UpdateReservationUseCase'
 export const updateReservationUseCase = new UpdateReservationUseCase(
   reservationRepository,
   customerRepository,
-  areTimesAvailableUseCase
+  areTimesAvailableUseCase,
 )
 
 export const updateReservationResolver = new UpdateReservationResolver(updateReservationUseCase)

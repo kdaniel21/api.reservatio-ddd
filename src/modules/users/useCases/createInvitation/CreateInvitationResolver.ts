@@ -11,7 +11,7 @@ export default class CreateInvitationResolver {
   @Mutation(() => MessageResponseDto)
   async sendInvitation(
     @Arg('email') emailAddress: string,
-    @Ctx() { user }: ApolloContext
+    @Ctx() { user }: ApolloContext,
   ): Promise<MessageResponseDto> {
     const result = await this.useCase.execute({ emailAddress, redactedUser: user })
     if (result.isFailure()) throw result.error

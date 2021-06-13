@@ -53,7 +53,7 @@ export default class Customer extends AggregateRoot<CustomerProps> {
         ...props,
         reservations: [],
       },
-      id
+      id,
     )
 
     return Result.ok(customer)

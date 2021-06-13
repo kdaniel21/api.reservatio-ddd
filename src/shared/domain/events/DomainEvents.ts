@@ -14,7 +14,7 @@ export default class DomainEvents {
 
     this.markedAggregatesList.push(aggregate)
     logger.info(
-      `[EVENTS] Aggregate ${aggregate.id} has been marked for dispatch. Waiting for ORM to complete transaction...`
+      `[EVENTS] Aggregate ${aggregate.id} has been marked for dispatch. Waiting for ORM to complete transaction...`,
     )
   }
 
@@ -59,7 +59,7 @@ export default class DomainEvents {
 
   private static removeAggregateFromDispatchList(aggregate: AggregateRoot<any>): void {
     const aggregateIndex = this.markedAggregatesList.findIndex(markedAggregate =>
-      markedAggregate.id.equals(aggregate.id)
+      markedAggregate.id.equals(aggregate.id),
     )
 
     this.markedAggregatesList.splice(aggregateIndex, 1)

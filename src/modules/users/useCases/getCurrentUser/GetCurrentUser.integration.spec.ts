@@ -104,7 +104,7 @@ describe('GetCurrentUser Integration', () => {
         email: 'invalid@bar.com',
         userId: new UniqueID().toString(),
       } as JwtPayload,
-      config.auth.jwtSecretKey
+      config.auth.jwtSecretKey,
     )
     const query = `query {
       currentUser {

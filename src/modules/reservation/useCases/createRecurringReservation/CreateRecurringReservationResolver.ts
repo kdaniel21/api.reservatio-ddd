@@ -12,7 +12,7 @@ export default class CreateRecurringReservationResolver {
   @Mutation(() => CreateRecurringReservationResponseDto)
   async createRecurringReservation(
     @Ctx() { user }: ApolloContext,
-    @Args() params: CreateRecurringReservationArgs
+    @Args() params: CreateRecurringReservationArgs,
   ): Promise<CreateRecurringReservationResponseDto> {
     const result = await this.useCase.execute({ ...params, redactedUser: user })
 

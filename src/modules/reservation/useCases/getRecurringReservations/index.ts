@@ -4,7 +4,7 @@ import GetRecurringReservationsUseCase from './GetRecurringReservationsUseCase'
 
 export const getRecurringReservationsUseCase = new GetRecurringReservationsUseCase(
   reservationRepository,
-  customerRepository
+  customerRepository,
 )
 
 export const getRecurringReservationsResolver = new GetRecurringReservationsResolver(getRecurringReservationsUseCase)

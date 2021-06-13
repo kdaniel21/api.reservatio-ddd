@@ -78,7 +78,7 @@ export default class Reservation extends AggregateRoot<ReservationProps> {
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },
-      id
+      id,
     )
 
     return Result.ok(reservation)

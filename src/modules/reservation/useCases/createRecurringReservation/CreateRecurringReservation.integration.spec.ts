@@ -621,7 +621,7 @@ describe('CreateRecurringReservation Integration', () => {
       Result.ok({
         availableTimes: [new Date() as any],
         unavailableTimes: [ReservationTime.create(new Date('2021-05-04 13:00'), new Date('2021-05-04 15:00')).value],
-      })
+      }),
     )
     const query = `mutation {
       createRecurringReservation (

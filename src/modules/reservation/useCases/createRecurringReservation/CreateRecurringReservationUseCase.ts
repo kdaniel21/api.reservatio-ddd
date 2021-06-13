@@ -19,13 +19,13 @@ export default class CreateRecurringReservationUseCase extends UseCase<
   constructor(
     private isRecurringTimeAvailableUseCase: IsRecurringTimeAvailableUseCase,
     private customerRepo: CustomerRepository,
-    private reservationRepo: ReservationRepository
+    private reservationRepo: ReservationRepository,
   ) {
     super()
   }
 
   async executeImpl(
-    request: CreateRecurringReservationUseCaseDto
+    request: CreateRecurringReservationUseCaseDto,
   ): PromiseErrorOr<CreateRecurringReservationResultDto> {
     const nameOrError = ReservationName.create(request.name)
     const locationsOrError = ReservationLocation.create(request.locations)
@@ -51,7 +51,7 @@ export default class CreateRecurringReservationUseCase extends UseCase<
         customer: customerOrError.value,
         locations: locationsOrError.value,
         recurringId,
-      })
+      }),
     )
     const combinedReservationResult = Result.combine(reservationsResult)
     if (combinedReservationResult.isFailure()) Result.fail(combinedReservationResult.error)

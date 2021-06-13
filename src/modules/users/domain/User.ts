@@ -150,7 +150,7 @@ export default class User extends AggregateRoot<UserProps> {
         isEmailConfirmed: props.isEmailConfirmed ?? false,
         isDeleted: props.isDeleted ?? false,
       },
-      id
+      id,
     )
 
     if (isNewUser) user.addDomainEvent(new UserCreatedEvent(user, props.name))

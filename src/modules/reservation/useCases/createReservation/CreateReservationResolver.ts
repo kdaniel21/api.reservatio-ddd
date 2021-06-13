@@ -13,7 +13,7 @@ export default class CreateReservationResolver {
   @Mutation(() => GraphQLReservation)
   async createReservation(
     @Args() params: CreateReservationInputDto,
-    @Ctx() { user }: ApolloContext
+    @Ctx() { user }: ApolloContext,
   ): Promise<GraphQLReservation> {
     const result = await this.useCase.execute({ ...params, user })
     if (result.isFailure()) throw result.error

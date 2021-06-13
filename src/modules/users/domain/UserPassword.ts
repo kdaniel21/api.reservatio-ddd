@@ -40,8 +40,7 @@ export default class UserPassword extends ValueObject<UserPasswordProps> {
       Guard.againstShorterThan(this.MIN_PASSWORD_LENGTH, guardArgument),
       Guard.againstLongerThan(this.MAX_PASSWORD_LENGTH, guardArgument),
     ])
-    if (!combinedResult.isSuccess)
-      return Result.fail(new InvalidUserPasswordError(combinedResult.message))
+    if (!combinedResult.isSuccess) return Result.fail(new InvalidUserPasswordError(combinedResult.message))
 
     if (!this.PASSWORD_REGEX.test(password)) {
       const message = 'The password must contain a mix of characters and numbers.'

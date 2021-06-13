@@ -15,7 +15,7 @@ export default class GetRecurringReservationsResolver {
   @Query(() => [GraphQLReservation])
   async recurringReservations(
     @Args() params: GetRecurringReservationsInputDto,
-    @Ctx() { user }: ApolloContext
+    @Ctx() { user }: ApolloContext,
   ): Promise<GraphQLReservation[]> {
     const request: GetRecurringReservationsUseCaseDto = {
       ...params,

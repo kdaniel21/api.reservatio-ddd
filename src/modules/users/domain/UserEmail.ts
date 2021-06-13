@@ -25,8 +25,7 @@ export default class UserEmail extends ValueObject<UserEmailProps> {
       argument: email,
       argumentName: 'email',
     })
-    if (!guardResult.isSuccess)
-      return Result.fail(new AppError.UndefinedArgumentError(guardResult.message))
+    if (!guardResult.isSuccess) return Result.fail(new AppError.UndefinedArgumentError(guardResult.message))
 
     const isValid = this.isValidEmail(email)
     if (!isValid) return Result.fail(InvalidUserEmailError)

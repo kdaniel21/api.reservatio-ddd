@@ -7,8 +7,7 @@ export namespace LoginErrors {
   }
 
   export class EmailAddressNotConfirmedError implements DomainError {
-    readonly message =
-      'The email address has not been verified yet. Please verify it and try again!'
+    readonly message = 'The email address has not been verified yet. Please verify it and try again!'
     readonly code = 'EMAIL_NOT_VERIFIED'
   }
 }

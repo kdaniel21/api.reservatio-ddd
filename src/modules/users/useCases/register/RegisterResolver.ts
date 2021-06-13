@@ -15,7 +15,7 @@ export default class RegisterResolver {
   @Mutation(() => RegisterResponseDto)
   async register(
     @Arg('params') params: RegisterInputDto,
-    @Ctx() { cookies }: ApolloContext
+    @Ctx() { cookies }: ApolloContext,
   ): Promise<RegisterResponseDto> {
     if (params.password !== params.passwordConfirm)
       throw new ApolloError('The passwords must match!', 'VALIDATION_ERROR')

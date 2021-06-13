@@ -30,9 +30,9 @@ export default class DateUtils {
   static getWeeklyInterval(startDate: Date, endDate: Date): Date[] {
     return eachWeekOfInterval(
       { start: startDate, end: endDate },
-      { weekStartsOn: startDate.getDay() as 1 | 2 | 3 | 4 | 5 | 6 }
+      { weekStartsOn: startDate.getDay() as 1 | 2 | 3 | 4 | 5 | 6 },
     ).map(weekStart =>
-      set(weekStart, { hours: startDate.getHours(), minutes: startDate.getMinutes(), seconds: startDate.getSeconds() })
+      set(weekStart, { hours: startDate.getHours(), minutes: startDate.getMinutes(), seconds: startDate.getSeconds() }),
     )
   }
 

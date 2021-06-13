@@ -6,9 +6,9 @@ import CreateRecurringReservationUseCase from './CreateRecurringReservationUseCa
 export const createRecurringReservationUseCase = new CreateRecurringReservationUseCase(
   isRecurringTimeAvailableUseCase,
   customerRepository,
-  reservationRepository
+  reservationRepository,
 )
 
 export const createRecurringReservationResolver = new CreateRecurringReservationResolver(
-  createRecurringReservationUseCase
+  createRecurringReservationUseCase,
 )
