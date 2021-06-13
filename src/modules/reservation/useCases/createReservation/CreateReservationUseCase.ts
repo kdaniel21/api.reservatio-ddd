@@ -6,7 +6,7 @@ import CustomerRepository from '@modules/reservation/repositories/CustomerReposi
 import ReservationRepository from '@modules/reservation/repositories/ReservationRepository/ReservationRepository'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
-import UseCase from '@shared/core/UseCase'
+import UseCase from '@shared/core/UseCase/UseCase'
 import UniqueID from '@shared/domain/UniqueID'
 import AreTimesAvailableUseCase from '../areTimesAvailable/AreTimesAvailableUseCase'
 import { CreateReservationErrors } from './CreateReservationErrors'

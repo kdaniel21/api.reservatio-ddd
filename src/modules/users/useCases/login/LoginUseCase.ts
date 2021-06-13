@@ -1,4 +1,4 @@
-import UseCase from '@shared/core/UseCase'
+import UseCase from '@shared/core/UseCase/UseCase'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
 import AuthService from '@modules/users/services/AuthService/AuthService'

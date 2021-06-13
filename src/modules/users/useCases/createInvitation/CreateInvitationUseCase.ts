@@ -7,7 +7,7 @@ import UserRepository from '@modules/users/repositories/UserRepository/UserRepos
 import { AppError } from '@shared/core/AppError'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
-import UseCase from '@shared/core/UseCase'
+import UseCase from '@shared/core/UseCase/UseCase'
 import UniqueID from '@shared/domain/UniqueID'
 import MailerService from '@shared/services/MailerService/MailerService'
 import { InvitationTemplate } from '@shared/services/MailerService/templates/InvitationTemplate'

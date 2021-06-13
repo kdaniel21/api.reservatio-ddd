@@ -787,7 +787,7 @@ describe('UpdateReservation Integration', () => {
     expect(prisma.prismaReservation.updateMany).toHaveBeenCalledTimes(0)
   })
 
-  it('should throw a ReservationNotAuthorizedError if the reservation does not belong to the user', async () => {
+  it('should throw a NotAuthorizedError if the reservation does not belong to the user', async () => {
     const otherUser = await prisma.prismaUser.create({
       data: {
         id: new UniqueID().toString(),
@@ -823,7 +823,7 @@ describe('UpdateReservation Integration', () => {
 
     const res = await request.post('/').send({ query }).set('Authorization', otherUserAccessToken).expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('RESERVATION_NOT_AUTHORIZED')
+    expect(res.body.errors[0].extensions.code).toBe('NOT_AUTHORIZED')
     const updatedRecord = await prisma.prismaReservation.findUnique({ where: { id: reservationToUpdate.id } })
     expect(updatedRecord.name).toBe(reservationToUpdate.name)
     expect(updatedRecord.badminton).toBe(reservationToUpdate.badminton)
@@ -836,7 +836,7 @@ describe('UpdateReservation Integration', () => {
     expect(prisma.prismaReservation.updateMany).toHaveBeenCalledTimes(0)
   })
 
-  it('should not throw a ReservationNotAuthorizedError if the reservation does not belong to the user, yet the user is an admin', async () => {
+  it('should not throw a NotAuthorizedError if the reservation does not belong to the user, yet the user is an admin', async () => {
     const query = `mutation {
         updateReservation(
           id: "${reservationToUpdate.id}",
@@ -1074,7 +1074,7 @@ describe('UpdateReservation Integration', () => {
     expect(prisma.prismaReservation.updateMany).toHaveBeenCalledTimes(0)
   })
 
-  it('should throw ReservationNotAuthorized if a past reservation is being updated', async () => {
+  it('should throw NotAuthorized if a past reservation is being updated', async () => {
     const query = `mutation {
       updateReservation(
         id: "${reservations[0].id}",
@@ -1090,7 +1090,7 @@ describe('UpdateReservation Integration', () => {
 
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('RESERVATION_NOT_AUTHORIZED')
+    expect(res.body.errors[0].extensions.code).toBe('NOT_AUTHORIZED')
     const updatedRecord = await prisma.prismaReservation.findUnique({ where: { id: reservations[0].id } })
     expect(updatedRecord.name).toBe(reservations[0].name)
     expect(updatedRecord.badminton).toBe(reservations[0].badminton)
@@ -1131,7 +1131,7 @@ describe('UpdateReservation Integration', () => {
     expect(prisma.prismaReservation.updateMany).toHaveBeenCalledTimes(0)
   })
 
-  it('should throw ReservationNotAuthorized if an inactive reservation is updated', async () => {
+  it('should throw NotAuthorized if an inactive reservation is updated', async () => {
     await prisma.prismaReservation.update({ where: { id: reservationToUpdate.id }, data: { isActive: false } })
     jest.clearAllMocks()
     const query = `mutation {
@@ -1149,7 +1149,7 @@ describe('UpdateReservation Integration', () => {
 
     const res = await request.post('/').send({ query }).set('Authorization', accessToken).expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('RESERVATION_NOT_AUTHORIZED')
+    expect(res.body.errors[0].extensions.code).toBe('NOT_AUTHORIZED')
     const updatedRecord = await prisma.prismaReservation.findUnique({ where: { id: reservationToUpdate.id } })
     expect(updatedRecord.name).toBe(reservationToUpdate.name)
     expect(updatedRecord.badminton).toBe(reservationToUpdate.badminton)

@@ -1,9 +1,9 @@
-import CustomerRole from '@modules/reservation/domain/CustomerRole'
 import CustomerRepository from '@modules/reservation/repositories/CustomerRepository/CustomerRepository'
 import ReservationRepository from '@modules/reservation/repositories/ReservationRepository/ReservationRepository'
+import { AppError } from '@shared/core/AppError'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
-import UseCase from '@shared/core/UseCase'
+import UseCase from '@shared/core/UseCase/UseCase'
 import UniqueID from '@shared/domain/UniqueID'
 import GetReservationUseCaseDto from './DTOs/GetReservationUseCaseDto'
 import GetReservationUseCaseResultDto from './DTOs/GetReservationUseCaseResultDto'
@@ -19,18 +19,13 @@ export default class GetReservationUseCase extends UseCase<GetReservationUseCase
     if (reservationOrError.isFailure()) return Result.fail(GetReservationErrors.ReservationNotFoundError)
 
     const reservation = reservationOrError.value
+
     const userId = new UniqueID(request.redactedUser.userId)
-    const doesReservationBelongToCustomer = reservation.customer.userId.equals(userId)
+    const customerOrError = await this.customerRepo.findByUserId(userId)
+    if (customerOrError.isFailure()) return Result.fail(AppError.NotAuthorizedError)
 
-    if (!doesReservationBelongToCustomer) {
-      const customerOrError = await this.customerRepo.findByUserId(userId)
-      if (customerOrError.isFailure()) return Result.fail(GetReservationErrors.CustomerNotFoundError)
-
-      const customer = customerOrError.value
-      const isAdmin = customer.role === CustomerRole.Admin
-
-      if (!isAdmin) return Result.fail(GetReservationErrors.ReservationNotAuthorizedError)
-    }
+    const canAccess = reservation.canAccess(customerOrError.value)
+    if (!canAccess) return Result.fail(AppError.NotAuthorizedError)
 
     return Result.ok({ reservation })
   }

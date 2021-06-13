@@ -208,7 +208,7 @@ describe('GetRecurringReservations', () => {
     expect(responseNames).toIncludeSameMembers(reservationNames)
   })
 
-  it('should throw a ReservationNotAuthorized error if the reservations do not belong to the user', async () => {
+  it('should throw a NotAuthorized error if the reservations do not belong to the user', async () => {
     const otherUser = await prisma.prismaUser.create({
       data: {
         id: new UniqueID().toString(),
@@ -239,10 +239,10 @@ describe('GetRecurringReservations', () => {
 
     const res = await request.post('/').send({ query }).set('Authorization', otherUserAccessToken).expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('RESERVATION_NOT_AUTHORIZED')
+    expect(res.body.errors[0].extensions.code).toBe('NOT_AUTHORIZED')
   })
 
-  it('should not throw a ReservationNotAuthorizedError if the reservation do not belong to the user but the user is an admin', async () => {
+  it('should not throw a NotAuthorizedError if the reservation do not belong to the user but the user is an admin', async () => {
     const adminUser = await prisma.prismaUser.create({
       data: {
         id: new UniqueID().toString(),

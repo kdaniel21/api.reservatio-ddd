@@ -1,7 +1,7 @@
 import UserRepository from '@modules/users/repositories/UserRepository/UserRepository'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
-import UseCase from '@shared/core/UseCase'
+import UseCase from '@shared/core/UseCase/UseCase'
 import MailerService from '@shared/services/MailerService/MailerService'
 import { ConfirmEmailTemplate } from '@shared/services/MailerService/templates/ConfirmEmailTemplate'
 import SendEmailConfirmationUseCaseDto from './DTOs/SendEmailConfirmationUseCaseDto'

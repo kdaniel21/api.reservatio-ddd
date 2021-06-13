@@ -19,9 +19,6 @@ export default class CreateRecurringReservationResolver {
     if (result.isFailure()) throw result.error
 
     const { count, recurringId } = result.value
-    return {
-      count,
-      recurringId: recurringId.toString(),
-    }
+    return { count, recurringId: recurringId.toString() }
   }
 }

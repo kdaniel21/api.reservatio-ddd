@@ -1,4 +1,4 @@
-import UseCase from '@shared/core/UseCase'
+import UseCase from '@shared/core/UseCase/UseCase'
 import { Result } from '@shared/core/Result'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import User from '@modules/users/domain/User'

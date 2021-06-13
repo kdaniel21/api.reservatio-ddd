@@ -6,7 +6,19 @@ export interface DomainError {
 }
 
 export const isDomainError = (object: any): object is DomainError => {
-  return 'message' in object
+  return typeof object === 'object' && 'message' in object
+}
+
+type DomainErrorConstructor = new () => DomainError
+
+export const isDomainErrorConstructor = (ErrorClass: any): ErrorClass is DomainErrorConstructor => {
+  try {
+    const errorInstance = new ErrorClass()
+
+    return !!errorInstance && isDomainError(errorInstance)
+  } catch {
+    return false
+  }
 }
 
 export type ErrorOr<S = void> = Either<DomainError, S>

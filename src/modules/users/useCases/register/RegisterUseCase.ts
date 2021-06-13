@@ -4,7 +4,7 @@ import InvitationRepository from '@modules/users/repositories/InvitationReposito
 import AuthService from '@modules/users/services/AuthService/AuthService'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
-import UseCase from '@shared/core/UseCase'
+import UseCase from '@shared/core/UseCase/UseCase'
 import CreateUserUseCase from '../createUser/CreateUserUseCase'
 import RegisterUseCaseDto from './DTOs/RegisterUseCaseDto'
 import RegisterUseCaseResultDto from './DTOs/RegisterUseCaseResultDto'

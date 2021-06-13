@@ -17,8 +17,8 @@ export default class GetReservationResolver {
 
     if (result.isFailure()) throw result.error
 
-    const foo = ReservationMapper.toDto(result.value.reservation)
+    const reservation = ReservationMapper.toDto(result.value.reservation)
 
-    return foo
+    return reservation
   }
 }

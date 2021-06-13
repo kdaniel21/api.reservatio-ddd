@@ -2,7 +2,7 @@ import UserPasswordResetToken from '@modules/users/domain/UserPasswordResetToken
 import UserRepository from '@modules/users/repositories/UserRepository/UserRepository'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
-import UseCase from '@shared/core/UseCase'
+import UseCase from '@shared/core/UseCase/UseCase'
 import { LoginErrors } from '../login/LoginErrors'
 import ResetPasswordUseCaseDto from './DTOs/ResetPasswordUseCaseDto'
 

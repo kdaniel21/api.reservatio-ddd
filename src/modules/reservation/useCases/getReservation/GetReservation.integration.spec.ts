@@ -220,7 +220,7 @@ describe('GetReservation Integration', () => {
     expect(prisma.prismaReservation.findFirst).toBeCalled()
   })
 
-  it('should throw a ReservationNotAuthorizedError if the reservation does not belong to the user', async () => {
+  it('should throw a NotAuthorizedError if the reservation does not belong to the user', async () => {
     const otherUser = await prisma.prismaUser.create({
       data: {
         id: new UniqueID().toString(),
@@ -268,7 +268,7 @@ describe('GetReservation Integration', () => {
 
     const res = await request.post('/').send({ query }).set('Authorization', otherUserAccessToken).expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('RESERVATION_NOT_AUTHORIZED')
+    expect(res.body.errors[0].extensions.code).toBe('NOT_AUTHORIZED')
   })
 
   it(`should throw a GraphQL validation error if the 'id' argument is not specified`, async () => {
@@ -339,7 +339,7 @@ describe('GetReservation Integration', () => {
     expect(GetReservationUseCase.prototype.execute).not.toBeCalled()
   })
 
-  it('should throw a CustomerNotFoundError if the customer profile does not exist', async () => {
+  it('should throw a NotAuthorizedError if the customer profile does not exist', async () => {
     const userWithoutCustomerProfile = await prisma.prismaUser.create({
       data: {
         id: new UniqueID().toString(),
@@ -384,6 +384,6 @@ describe('GetReservation Integration', () => {
       .set('Authorization', userWithoutCustomerProfileAccessToken)
       .expect(200)
 
-    expect(res.body.errors[0].extensions.code).toBe('CUSTOMER_NOT_FOUND')
+    expect(res.body.errors[0].extensions.code).toBe('NOT_AUTHORIZED')
   })
 })

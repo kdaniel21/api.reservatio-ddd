@@ -1,14 +1,14 @@
 import Customer from '@modules/reservation/domain/Customer'
-import CustomerRole from '@modules/reservation/domain/CustomerRole'
 import Reservation from '@modules/reservation/domain/Reservation'
 import ReservationLocation from '@modules/reservation/domain/ReservationLocation'
 import ReservationName from '@modules/reservation/domain/ReservationName'
 import ReservationTime from '@modules/reservation/domain/ReservationTime'
 import CustomerRepository from '@modules/reservation/repositories/CustomerRepository/CustomerRepository'
 import ReservationRepository from '@modules/reservation/repositories/ReservationRepository/ReservationRepository'
+import { AppError } from '@shared/core/AppError'
 import { ErrorOr, PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
-import UseCase from '@shared/core/UseCase'
+import UseCase from '@shared/core/UseCase/UseCase'
 import UniqueID from '@shared/domain/UniqueID'
 import DateUtils from '@shared/utils/DateUtils'
 import AreTimesAvailableUseCase from '../areTimesAvailable/AreTimesAvailableUseCase'
@@ -21,6 +21,8 @@ export default class UpdateReservationUseCase extends UseCase<
   UpdateReservationUseCaseDto,
   UpdateReservationUseCaseResultDto
 > {
+  private customer: Customer
+
   constructor(
     private readonly reservationRepo: ReservationRepository,
     private readonly customerRepo: CustomerRepository,
@@ -29,11 +31,17 @@ export default class UpdateReservationUseCase extends UseCase<
     super()
   }
 
-  async executeImpl(request: UpdateReservationUseCaseDto): PromiseErrorOr<UpdateReservationUseCaseResultDto> {
+  protected async canExecute(request: UpdateReservationUseCaseDto): Promise<boolean> {
     const userId = new UniqueID(request.redactedUser.userId)
     const customerOrError = await this.customerRepo.findByUserId(userId)
-    if (customerOrError.isFailure()) return Result.fail(GetReservationErrors.ReservationNotAuthorizedError)
 
+    if (customerOrError.isFailure()) return false
+
+    this.customer = customerOrError.value
+    return true
+  }
+
+  protected async executeImpl(request: UpdateReservationUseCaseDto): PromiseErrorOr<UpdateReservationUseCaseResultDto> {
     // TODO: Remove Prisma query language dependency
     const connectedUpdateIds = request.connectedUpdates.map(id => id.toString())
     const reservationsToUpdateOrError = await this.reservationRepo.findMany({
@@ -41,7 +49,7 @@ export default class UpdateReservationUseCase extends UseCase<
     })
     if (reservationsToUpdateOrError.isFailure()) throw new GetReservationErrors.ReservationNotFoundError()
 
-    const customer = customerOrError.value
+    const { customer } = this
     const reservationsToUpdate = reservationsToUpdateOrError.value
 
     let startTimeDifferenceMs: number
@@ -53,8 +61,8 @@ export default class UpdateReservationUseCase extends UseCase<
     for (const reservationToUpdate of reservationsToUpdate) {
       const isReferenceReservationUpdated = reservationToUpdate.id.equals(request.id)
 
-      const canUpdateReservation = this.canCustomerUpdateReservation(customer, reservationToUpdate)
-      if (!canUpdateReservation) return Result.fail(GetReservationErrors.ReservationNotAuthorizedError)
+      const canUpdateReservation = reservationToUpdate.canUpdate(customer)
+      if (!canUpdateReservation) return Result.fail(AppError.NotAuthorizedError)
 
       const updatedNameOrError = updatedProperties.name
         ? ReservationName.create(updatedProperties.name)
@@ -130,16 +138,6 @@ export default class UpdateReservationUseCase extends UseCase<
     if (saveResult.isFailure()) return Result.fail(saveResult.error)
 
     return Result.ok({ reservation: reservationsToSave[0] })
-  }
-
-  private canCustomerUpdateReservation(customer: Customer, reservation: Reservation): boolean {
-    const isAdmin = customer.role === CustomerRole.Admin
-
-    const doesReservationBelongToCustomer = reservation.customer.id.equals(customer.id)
-    const isReservationPast = reservation.time.startTime.getTime() < Date.now()
-    const canNormalCustomerEdit = doesReservationBelongToCustomer && !isReservationPast && reservation.isActive
-
-    return canNormalCustomerEdit || isAdmin
   }
 
   private shouldReValidateAvailability(updatedProperties: UpdateReservationUseCaseDto['updatedProperties']): boolean {

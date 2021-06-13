@@ -2,7 +2,7 @@ import UserRepository from '@modules/users/repositories/UserRepository/UserRepos
 import { PrismaUser } from '@prisma/client'
 import { PromiseErrorOr } from '@shared/core/DomainError'
 import { Result } from '@shared/core/Result'
-import UseCase from '@shared/core/UseCase'
+import UseCase from '@shared/core/UseCase/UseCase'
 import TextUtils from '@shared/utils/TextUtils'
 import { ChangePasswordUsingTokenErrors } from './ChangePasswordUsingTokenErrors'
 import ChangePasswordUsingTokenUseCaseDto from './DTOs/ChangePasswordUsingTokenUseCaseDto'

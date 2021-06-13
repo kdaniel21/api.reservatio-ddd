@@ -5,6 +5,7 @@ import { Result } from '@shared/core/Result'
 import AggregateRoot from '@shared/domain/AggregateRoot'
 import UniqueID from '@shared/domain/UniqueID'
 import Customer from './Customer'
+import CustomerRole from './CustomerRole'
 import ReservationLocation from './ReservationLocation'
 import ReservationName from './ReservationName'
 import ReservationTime from './ReservationTime'
@@ -82,5 +83,24 @@ export default class Reservation extends AggregateRoot<ReservationProps> {
     )
 
     return Result.ok(reservation)
+  }
+
+  canUpdate(customer: Customer): boolean {
+    const isAdmin = customer.role === CustomerRole.Admin
+
+    const doesReservationBelongToCustomer = this.customer.id.equals(customer.id)
+    const isReservationPast = this.time.startTime.getTime() < Date.now()
+    const canNormalCustomerEdit = doesReservationBelongToCustomer && !isReservationPast && this.isActive
+
+    return canNormalCustomerEdit || isAdmin
+  }
+
+  canAccess(customer: Customer): boolean {
+    const isAdmin = customer.role === CustomerRole.Admin
+
+    const doesReservationBelongToCustomer = this.customer.id.equals(customer.id)
+    const canNormalCustomerAccess = doesReservationBelongToCustomer && this.isActive
+
+    return canNormalCustomerAccess || isAdmin
   }
 }
